@@ -14,75 +14,105 @@ import java.awt.*;
 public class Vista extends JFrame {
 
     private JMenuItem itemSalir;
-    private JPanel panelCentral;
-    private JButton btnEjecutar;
+    private JRadioButtonMenuItem optN, optNlogN, optN2, optN3, optTots;
+    private JButton btnIniciar;
+    private PanelGrafico panelGrafico;
 
     /**
      * Constructor de la interficie
-     * @param titol texto que aparece en la barra de título de la ventana
+     * @param titulo nombre de la ventana
      */
-    public Vista(String titol) {
-        super(titol);
-        configurarVentana();
-        crearMenu();
-        inicializarComponentes();
+    public Vista(String titulo) {
+        super(titulo);
+        configVentana();
+        crearMenus();
+        inicialitzarComponents();
     }
 
     /**
-     * Configuración de las propiedades básicas de la ventana
+     * Método que configura la ventana
      */
-    private void configurarVentana() {
-        setSize(850, 650);
-        setMinimumSize(new Dimension(500, 400));
+    private void configVentana() {
+        setSize(1000, 700);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
     }
 
     /**
-     * Crea la barra de menú superior y sus opciones
+     * Método que crea toda la parte de barra de menú
      */
-    private void crearMenu() {
-        JMenuBar menuBar = new JMenuBar();
-        
-        JMenu menuVentana = new JMenu("Ventana");
-        itemSalir = new JMenuItem("Salir");
-        menuVentana.add(itemSalir);
+    private void crearMenus() {
+        JMenuBar mb = new JMenuBar();
 
-        menuBar.add(menuVentana);
-        setJMenuBar(menuBar);
+        // Menú Archivo
+        JMenu menuArxiu = new JMenu("Arxiu");
+        itemSalir = new JMenuItem("Sortir");
+        menuArxiu.add(itemSalir);
+
+        // Menú Complejidad (RadioButtons para seleccionar solo uno)
+        JMenu menuComp = new JMenu("Algorismes");
+        ButtonGroup grup = new ButtonGroup();
+
+        optN = new JRadioButtonMenuItem("O(n)");
+        optNlogN = new JRadioButtonMenuItem("O(n log n)");
+        optN2 = new JRadioButtonMenuItem("O(n^2)");
+        optN3 = new JRadioButtonMenuItem("O(n^3)");
+        optTots = new JRadioButtonMenuItem("Tots", true); // Seleccionado por defecto
+
+        JRadioButtonMenuItem[] opts = {optN, optNlogN, optN2, optN3, optTots};
+        for (JRadioButtonMenuItem o : opts) {
+            grup.add(o);
+            menuComp.add(o);
+        }
+
+        mb.add(menuArxiu);
+        mb.add(menuComp);
+        setJMenuBar(mb);
     }
 
     /**
-     * Método que instancia i posiciona los componentes de la ventana
+     * Método que inicializa los componentes principales de la pantalla
      */
-    private void inicializarComponentes() {
-        // Panel central para dibujos, graficas u otros
-        panelCentral = new JPanel();
-        panelCentral.setBackground(Color.WHITE);
-        panelCentral.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
-        
-        
-        add(panelCentral, BorderLayout.CENTER);
+    private void inicialitzarComponents() {
+        panelGrafico = new PanelGrafico();
+        add(panelGrafico, BorderLayout.CENTER);
 
-        // Panel inferior para controles
-        JPanel panellSud = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
-        btnEjecutar = new JButton("Executar");
-        panellSud.add(btnEjecutar);
-        
-        add(panellSud, BorderLayout.SOUTH);
+        JPanel pnlSud = new JPanel();
+        btnIniciar = new JButton("Iniciar Simulació");
+        pnlSud.add(btnIniciar);
+        add(pnlSud, BorderLayout.SOUTH);
+    }
+    
+        /**
+     * Retorna el nombre del algoritmo seleccionado en el menú
+     */
+    public String getSeleccio() {
+        if (optN.isSelected()) {
+            return "O(n)";
+        }
+        if (optNlogN.isSelected()) {
+            return "O(n log n)";
+        }
+        if (optN2.isSelected()) {
+            return "O(n^2)";
+        }
+        if (optN3.isSelected()) {
+            return "O(n^3)";
+        }
+        return "Tots";
     }
 
-    // -- Getters para que el Controlador pueda acceder
+    // Getters para el controlador
     public JMenuItem getItemSortir() {
         return itemSalir;
     }
-    
-    public JButton getBtnExecutar() {
-        return btnEjecutar;
+
+    public JButton getBtnIniciar() {
+        return btnIniciar;
     }
-    
-    public JPanel getPanellCentral() {
-        return panelCentral;
+
+    public PanelGrafico getPanelGrafica() {
+        return panelGrafico;
     }
 }
