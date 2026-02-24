@@ -23,15 +23,15 @@ public class PanelGrafico extends JPanel {
     private double maxT = 1.0;
 
     /**
-     * Método que 
-     * @param n
-     * @param nl
-     * @param n2
-     * @param n3 
+     * Método que actualiza los datos para pintar las gráficas
+     * @param n lista de puntos de 0(n)
+     * @param nlog lista de puntos de 0(n log_n)
+     * @param n2 lista de puntos de 0(n^2)
+     * @param n3 lista de puntos de 0(n^3)
      */
-    public void setDatos(ArrayList<Punto> n, ArrayList<Punto> nl, ArrayList<Punto> n2, ArrayList<Punto> n3) {
+    public void setDatos(ArrayList<Punto> n, ArrayList<Punto> nlog, ArrayList<Punto> n2, ArrayList<Punto> n3) {
         this.dN = n;
-        this.dNlogN = nl;
+        this.dNlogN = nlog;
         this.dN2 = n2;
         this.dN3 = n3;
 
@@ -42,9 +42,15 @@ public class PanelGrafico extends JPanel {
         actualizarMaxT(dN2);
         actualizarMaxT(dN3);
 
+        // Repintar
         repaint();
     }
 
+    /**
+     * Método que actualiza el valor de maxT para buscar el tiempo máximo y asi
+     * poder escalar la gráfica
+     * @param lista 
+     */
     private void actualizarMaxT(ArrayList<Punto> lista) {
         if (lista == null) {
             return;
@@ -56,48 +62,69 @@ public class PanelGrafico extends JPanel {
         }
     }
 
+    /**
+     * Método que pinta las 4 gráficas
+     * @param g 
+     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        int w = getWidth(), h = getHeight(), m = 60;
-        double maxN = 600.0; // El mismo límite que en el controlador
+        int w = getWidth();
+        int h = getHeight();
+        int m = 30;
+        double maxN = 1000.0;
 
         // Fondo y Ejes
         g2.setColor(Color.WHITE);
         g2.fillRect(0, 0, w, h);
         g2.setColor(Color.BLACK);
-        g2.drawLine(m, h - m, w - m, h - m); // X
-        g2.drawLine(m, m, m, h - m);     // Y
+        g2.drawLine(m, h - m, w - m, h - m);    // X
+        g2.drawLine(m, m, m, h - m);            // Y
 
-        // Curvas
-        dibujarCurva(g2, dN, Color.BLUE, w, h, m, maxN);
-        dibujarCurva(g2, dNlogN, Color.GREEN, w, h, m, maxN);
-        dibujarCurva(g2, dN2, Color.ORANGE, w, h, m, maxN);
-        dibujarCurva(g2, dN3, Color.RED, w, h, m, maxN);
+        // Curvas de gráficas
+        dibujarLineaGrafica(g2, dN, Color.BLUE, w, h, m, maxN);
+        dibujarLineaGrafica(g2, dNlogN, Color.GREEN, w, h, m, maxN);
+        dibujarLineaGrafica(g2, dN2, Color.ORANGE, w, h, m, maxN);
+        dibujarLineaGrafica(g2, dN3, Color.RED, w, h, m, maxN);
     }
 
-    private void dibujarCurva(Graphics2D g2, ArrayList<Punto> punts, Color c, int w, int h, int m, double maxN) {
-        if (punts == null || punts.size() < 2) {
+    /**
+     * Método que dibuja en el panel grafico los puntos y lineas correspondientes
+     * a las complejidades algoritmicas
+     * @param g2 Objeto graphics 2d
+     * @param puntos Array de puntos de la gráfica a pintar
+     * @param c Color especifico para cada complejidad
+     * @param w width
+     * @param h height
+     * @param m margin
+     * @param maxN max grafico
+     */
+    private void dibujarLineaGrafica(Graphics2D g2, ArrayList<Punto> puntos, Color c, int w, int h, int m, double maxN) {
+        
+        // Mirar si hay almenos 2 puntos
+        if (puntos == null || puntos.size() < 2) {
             return;
         }
         g2.setColor(c);
         g2.setStroke(new BasicStroke(2f));
 
-        for (int i = 0; i < punts.size() - 1; i++) {
-            Punto pActual = punts.get(i);
-            Punto pSeguent = punts.get(i + 1);
+        for (int i = 0; i < puntos.size() - 1; i++) {
+            Punto pActual = puntos.get(i);
+            Punto pSiguiente = puntos.get(i + 1);
 
-            // Usem els getters de la classe Punt
+            // Obtenemos coordenadas de los puntos
             int x1 = m + (int) (pActual.getN() * (w - 2 * m) / maxN);
             int y1 = (h - m) - (int) (pActual.getTiempo() * (h - 2 * m) / maxT);
 
-            int x2 = m + (int) (pSeguent.getN() * (w - 2 * m) / maxN);
-            int y2 = (h - m) - (int) (pSeguent.getTiempo() * (h - 2 * m) / maxT);
+            int x2 = m + (int) (pSiguiente.getN() * (w - 2 * m) / maxN);
+            int y2 = (h - m) - (int) (pSiguiente.getTiempo() * (h - 2 * m) / maxT);
 
+            // Dibujamos linea entre dos puntos y dibujamos los puntos
             g2.drawLine(x1, y1, x2, y2);
+            g2.drawOval(x2-2, y2-2, 4, 4);
         }
     }
 }

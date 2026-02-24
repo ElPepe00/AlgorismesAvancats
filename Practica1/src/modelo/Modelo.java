@@ -20,29 +20,37 @@ public class Modelo {
      */
     public long simular(int n, String tipo) {
         long inicio = System.nanoTime();
-        double dummy = 0;
+        double d = 0;
         switch (tipo) {
             case "O(n)" -> {
                 for (int i = 0; i < n; i++) {
-                    dummy += Math.sin(i);
+                    d += i;
                 }
             }
 
             case "O(n log n)" -> {
-                for (int i = 0; i < n * (Math.log(n + 1) / Math.log(2)); i++) {
-                    dummy += Math.sin(i);
+                for (int i = 0; i < n; i++) {
+                    for (int j = 1; j < n; j *= 2) {
+                        d += i + j;
+                    }
                 }
             }
 
             case "O(n^2)" -> {
-                for (int i = 0; i < n * n; i++) {
-                    dummy += Math.sin(i);
+                for (int i = 0; i < n; i++) {
+                    for (int j = 0; j < n; j++) {
+                        d += i + j;
+                    }
                 }
             }
 
             case "O(n^3)" -> {
-                for (int i = 0; i < n * n * n / 100; i++) {
-                    dummy += Math.sin(i);
+                for (int i = 0; i < n; i++) {
+                    for (int j = 0; j < n; j++) {
+                        for (int k = 0; k < n; k++) {
+                            d += i + j + k;
+                        }
+                    }
                 }
             }
         }

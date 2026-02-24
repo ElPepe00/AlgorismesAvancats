@@ -19,7 +19,7 @@ public class Practica1 {
      */
     public static void main(String[] args) {
         
-        String tituloVentana = "Practica 1 - Complejidad Algorítmica";
+        String tituloVentana = "Practica 1 - Complexitat Algorítmica";
         
         Modelo modelo = new Modelo();
         Vista vista = new Vista(tituloVentana);

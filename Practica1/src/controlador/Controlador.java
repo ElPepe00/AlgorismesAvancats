@@ -19,7 +19,7 @@ public class Controlador {
     private Vista vista;
     private Timer timer;
     private int nActual = 1;
-    private final int N_MAX = 600;
+    private final int N_MAX = 1000;
 
     /**
      * Constructor del Controlador

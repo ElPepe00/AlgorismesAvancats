@@ -45,8 +45,8 @@ public class Vista extends JFrame {
     private void crearMenus() {
         JMenuBar mb = new JMenuBar();
 
-        // Menú Archivo
-        JMenu menuArxiu = new JMenu("Arxiu");
+        // Menú Ventana
+        JMenu menuArxiu = new JMenu("Finestra");
         itemSalir = new JMenuItem("Sortir");
         menuArxiu.add(itemSalir);
 
@@ -75,16 +75,18 @@ public class Vista extends JFrame {
      * Método que inicializa los componentes principales de la pantalla
      */
     private void inicialitzarComponents() {
+        //panel grafico
         panelGrafico = new PanelGrafico();
         add(panelGrafico, BorderLayout.CENTER);
 
+        //panel boton iniciar simulacion
         JPanel pnlSud = new JPanel();
         btnIniciar = new JButton("Iniciar Simulació");
         pnlSud.add(btnIniciar);
         add(pnlSud, BorderLayout.SOUTH);
     }
     
-        /**
+    /**
      * Retorna el nombre del algoritmo seleccionado en el menú
      */
     public String getSeleccio() {
