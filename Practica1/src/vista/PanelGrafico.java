@@ -21,7 +21,16 @@ public class PanelGrafico extends JPanel {
 
     private ArrayList<Punto> dN, dNlogN, dN2, dN3;
     private double maxT = 1.0;
+    private double maxN = 1000.0;
 
+    /**
+     * Método que actualiza el valor maximo de N
+     * @param maxN 
+     */
+    public void setMaxN(double maxN) {
+        this.maxN = maxN;
+    }
+    
     /**
      * Método que actualiza los datos para pintar las gráficas
      * @param n lista de puntos de 0(n)
@@ -55,9 +64,12 @@ public class PanelGrafico extends JPanel {
         if (lista == null) {
             return;
         }
-        for (Punto p : lista) {
-            if (p.getTiempo() > maxT) {
-                maxT = p.getTiempo();
+        
+        synchronized (lista) {
+            for (Punto p : lista) {
+                if (p.getTiempo() > maxT) {
+                    maxT = p.getTiempo();
+                }
             }
         }
     }
@@ -75,7 +87,6 @@ public class PanelGrafico extends JPanel {
         int w = getWidth();
         int h = getHeight();
         int m = 30;
-        double maxN = 1000.0;
 
         // Fondo y Ejes
         g2.setColor(Color.WHITE);
@@ -85,10 +96,10 @@ public class PanelGrafico extends JPanel {
         g2.drawLine(m, m, m, h - m);            // Y
 
         // Curvas de gráficas
-        dibujarLineaGrafica(g2, dN, Color.BLUE, w, h, m, maxN);
-        dibujarLineaGrafica(g2, dNlogN, Color.GREEN, w, h, m, maxN);
-        dibujarLineaGrafica(g2, dN2, Color.ORANGE, w, h, m, maxN);
-        dibujarLineaGrafica(g2, dN3, Color.RED, w, h, m, maxN);
+        dibujarLineaGrafica(g2, dN, Color.BLUE, w, h, m);
+        dibujarLineaGrafica(g2, dNlogN, Color.GREEN, w, h, m);
+        dibujarLineaGrafica(g2, dN2, Color.ORANGE, w, h, m);
+        dibujarLineaGrafica(g2, dN3, Color.RED, w, h, m);
     }
 
     /**
@@ -100,31 +111,31 @@ public class PanelGrafico extends JPanel {
      * @param w width
      * @param h height
      * @param m margin
-     * @param maxN max grafico
      */
-    private void dibujarLineaGrafica(Graphics2D g2, ArrayList<Punto> puntos, Color c, int w, int h, int m, double maxN) {
+    private void dibujarLineaGrafica(Graphics2D g2, ArrayList<Punto> puntos, Color c, int w, int h, int m) {
         
         // Mirar si hay almenos 2 puntos
         if (puntos == null || puntos.size() < 2) {
             return;
         }
+        
         g2.setColor(c);
         g2.setStroke(new BasicStroke(2f));
 
         for (int i = 0; i < puntos.size() - 1; i++) {
-            Punto pActual = puntos.get(i);
-            Punto pSiguiente = puntos.get(i + 1);
+            Punto p1 = puntos.get(i);
+            Punto p2 = puntos.get(i + 1);
 
             // Obtenemos coordenadas de los puntos
-            int x1 = m + (int) (pActual.getN() * (w - 2 * m) / maxN);
-            int y1 = (h - m) - (int) (pActual.getTiempo() * (h - 2 * m) / maxT);
+            int x1 = m + (int) (p1.getN() * (w - 2 * m) / maxN);
+            int y1 = (h - m) - (int) (p1.getTiempo() * (h - 2 * m) / maxT);
 
-            int x2 = m + (int) (pSiguiente.getN() * (w - 2 * m) / maxN);
-            int y2 = (h - m) - (int) (pSiguiente.getTiempo() * (h - 2 * m) / maxT);
+            int x2 = m + (int) (p2.getN() * (w - 2 * m) / maxN);
+            int y2 = (h - m) - (int) (p2.getTiempo() * (h - 2 * m) / maxT);
 
             // Dibujamos linea entre dos puntos y dibujamos los puntos
             g2.drawLine(x1, y1, x2, y2);
-            g2.drawOval(x2-2, y2-2, 4, 4);
+            g2.fillOval(x2-2, y2-2, 4, 4);
         }
     }
 }

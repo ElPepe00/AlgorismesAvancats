@@ -1,9 +1,8 @@
-
-
 package vista;
 
 import javax.swing.*;
 import java.awt.*;
+import controlador.Controlador;
 
 /**
  *
@@ -13,17 +12,21 @@ import java.awt.*;
  */
 public class Vista extends JFrame {
 
+    private PanelGrafico panelGrafico;
+    private Controlador controlador;
+
     private JMenuItem itemSalir, itemIniciar, itemParar;
     private JRadioButtonMenuItem optN, optNlogN, optN2, optN3, optTots;
     private JButton btnIniciar, btnParar;
-    private PanelGrafico panelGrafico;
 
     /**
      * Constructor de la interficie
+     *
      * @param titulo nombre de la ventana
      */
-    public Vista(String titulo) {
+    public Vista(String titulo, Controlador c) {
         super(titulo);
+        this.controlador = c;
         configVentana();
         crearMenus();
         inicialitzarComponents();
@@ -53,6 +56,9 @@ public class Vista extends JFrame {
         menuArxiu.add(itemParar);
         itemSalir = new JMenuItem("Sortir");
         menuArxiu.add(itemSalir);
+        
+        itemIniciar.addActionListener(e -> controlador.notificar("iniciar"));
+        itemParar.addActionListener(e -> controlador.notificar("parar"));
 
         // Menú Complejidad (RadioButtons para seleccionar solo uno)
         JMenu menuComp = new JMenu("Algorismes");
@@ -80,7 +86,7 @@ public class Vista extends JFrame {
      */
     private void inicialitzarComponents() {
         //panel grafico
-        panelGrafico = new PanelGrafico();
+        panelGrafico = new PanelGrafico(controlador);
         add(panelGrafico, BorderLayout.CENTER);
 
         //panel boton iniciar simulacion
@@ -90,49 +96,12 @@ public class Vista extends JFrame {
         btnParar = new JButton("Aturar Simulació");
         pnlSud.add(btnParar);
         add(pnlSud, BorderLayout.SOUTH);
-    }
-    
-    /**
-     * Retorna el nombre del algoritmo seleccionado en el menú
-     */
-    public String getSeleccion() {
-        if (optN.isSelected()) {
-            return "O(n)";
-        }
-        if (optNlogN.isSelected()) {
-            return "O(n log n)";
-        }
-        if (optN2.isSelected()) {
-            return "O(n^2)";
-        }
-        if (optN3.isSelected()) {
-            return "O(n^3)";
-        }
-        return "Tots";
+        
+        btnIniciar.addActionListener(e -> controlador.notificar("iniciar"));
+        btnParar.addActionListener(e -> controlador.notificar("parar"));
     }
 
-    // Getters para el controlador
-    public JMenuItem getItemSortir() {
-        return itemSalir;
-    }
-
-    public JButton getBtnIniciar() {
-        return btnIniciar;
-    }
-    
-    public JButton getBtnParar() {
-        return btnParar;
-    }
-
-    public PanelGrafico getPanelGrafica() {
-        return panelGrafico;
-    }
-
-    public JMenuItem getitemIniciar() {
-        return itemIniciar;
-    }
-
-    public JMenuItem getitemParar() {
-        return itemParar;
+    public void pintar() {
+        panelGrafico.repaint();
     }
 }

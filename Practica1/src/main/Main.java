@@ -1,6 +1,6 @@
 
 
-package practica1;
+package main;
 
 import modelo.Modelo;
 import vista.Vista;
@@ -12,7 +12,7 @@ import controlador.Controlador;
  * @date 19 feb 2026
  * @name Practica 1
  */
-public class Practica1 {
+public class Main {
 
     /**
      * Static Main
@@ -20,11 +20,14 @@ public class Practica1 {
     public static void main(String[] args) {
         
         String tituloVentana = "Practica 1 - Complexitat Algorítmica";
+        int N_MAX = 1000;
         
         Modelo modelo = new Modelo();
-        Vista vista = new Vista(tituloVentana);
         
-        new Controlador(modelo, vista);
+        Vista vista = new Vista(tituloVentana);
+        vista.getPanelGrafica().setMaxN(N_MAX);
+        
+        new Controlador(modelo, vista, N_MAX);
         
         vista.setVisible(true);
     }
