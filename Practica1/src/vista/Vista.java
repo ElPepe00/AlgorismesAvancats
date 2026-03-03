@@ -1,5 +1,3 @@
-
-
 package vista;
 
 import javax.swing.*;
@@ -15,11 +13,13 @@ public class Vista extends JFrame {
 
     private JMenuItem itemSalir, itemIniciar, itemParar;
     private JRadioButtonMenuItem optN, optNlogN, optN2, optN3, optTots;
+    private JLabel lblTiempoN, lblTiempoNlogN, lblTiempoN2, lblTiempoN3;
     private JButton btnIniciar, btnParar;
     private PanelGrafico panelGrafico;
 
     /**
      * Constructor de la interficie
+     *
      * @param titulo nombre de la ventana
      */
     public Vista(String titulo) {
@@ -83,6 +83,33 @@ public class Vista extends JFrame {
         panelGrafico = new PanelGrafico();
         add(panelGrafico, BorderLayout.CENTER);
 
+        //panel lateral derecho con etiquetas de tiempo de cada algoritmo
+        JPanel pnlInfo = new JPanel();
+        pnlInfo.setLayout(new BoxLayout(pnlInfo, BoxLayout.Y_AXIS));
+        pnlInfo.setBorder(BorderFactory.createTitledBorder("Temps real (ns)"));
+        pnlInfo.setPreferredSize(new Dimension(200, 0));
+
+        lblTiempoN = new JLabel("O(n):       -");
+        lblTiempoNlogN = new JLabel("O(n log n): -");
+        lblTiempoN2 = new JLabel("O(n²):      -");
+        lblTiempoN3 = new JLabel("O(n³):      -");
+
+        // Colorear igual que las curvas
+        lblTiempoN.setForeground(Color.BLUE);
+        lblTiempoNlogN.setForeground(new Color(0, 150, 0));
+        lblTiempoN2.setForeground(Color.ORANGE.darker());
+        lblTiempoN3.setForeground(Color.RED);
+
+        pnlInfo.add(Box.createVerticalStrut(20));
+        pnlInfo.add(lblTiempoN);
+        pnlInfo.add(Box.createVerticalStrut(10));
+        pnlInfo.add(lblTiempoNlogN);
+        pnlInfo.add(Box.createVerticalStrut(10));
+        pnlInfo.add(lblTiempoN2);
+        pnlInfo.add(Box.createVerticalStrut(10));
+        pnlInfo.add(lblTiempoN3);
+
+        add(pnlInfo, BorderLayout.EAST);
         //panel boton iniciar simulacion
         JPanel pnlSud = new JPanel();
         btnIniciar = new JButton("Iniciar Simulació");
@@ -91,7 +118,7 @@ public class Vista extends JFrame {
         pnlSud.add(btnParar);
         add(pnlSud, BorderLayout.SOUTH);
     }
-    
+
     /**
      * Retorna el nombre del algoritmo seleccionado en el menú
      */
@@ -111,6 +138,13 @@ public class Vista extends JFrame {
         return "Tots";
     }
 
+    public void actualizarTiempos(long tN, long tNlogN, long tN2, long tN3) {
+        lblTiempoN.setText("O(n):       " + (tN < 0 ? "-" : String.format("%,d ns", tN)));
+        lblTiempoNlogN.setText("O(nlogn): " + (tNlogN < 0 ? "-" : String.format("%,d ns", tNlogN)));
+        lblTiempoN2.setText("O(n^2):      " + (tN2 < 0 ? "-" : String.format("%,d ns", tN2)));
+        lblTiempoN3.setText("O(n^3):      " + (tN3 < 0 ? "-" : String.format("%,d ns", tN3)));
+    }
+
     // Getters para el controlador
     public JMenuItem getItemSortir() {
         return itemSalir;
@@ -119,7 +153,7 @@ public class Vista extends JFrame {
     public JButton getBtnIniciar() {
         return btnIniciar;
     }
-    
+
     public JButton getBtnParar() {
         return btnParar;
     }
@@ -135,4 +169,21 @@ public class Vista extends JFrame {
     public JMenuItem getitemParar() {
         return itemParar;
     }
+
+    public JLabel getLblTiempoN() {
+        return lblTiempoN;
+    }
+
+    public JLabel getLblTiempoNlogN() {
+        return lblTiempoNlogN;
+    }
+
+    public JLabel getLblTiempoN2() {
+        return lblTiempoN2;
+    }
+
+    public JLabel getLblTiempoN3() {
+        return lblTiempoN3;
+    }
+
 }
