@@ -19,7 +19,7 @@ public class Controlador {
     private int N_MAX;
     private int puntoActual = 1;
 
-    private static final int NUM_PASOS = 100;
+    private static final int NUM_PASOS = 30;
 
     /**
      * Constructor del Controlador
@@ -116,10 +116,10 @@ public class Controlador {
                 long tN2 = modelo.simular(nCalculo, "O(n^2)");
                 long tN3 = modelo.simular(nCalculo, "O(n^3)");
 
-                modelo.getDN().add(new Punto(nCalculo, modelo.simular(nCalculo, "O(n)")));
-                modelo.getDNlogN().add(new Punto(nCalculo, modelo.simular(nCalculo, "O(n log n)")));
-                modelo.getDN2().add(new Punto(nCalculo, modelo.simular(nCalculo, "O(n^2)")));
-                modelo.getDN3().add(new Punto(nCalculo, modelo.simular(nCalculo, "O(n^3)")));
+                modelo.getDN().add(new Punto(nCalculo, tN));
+                modelo.getDNlogN().add(new Punto(nCalculo, tNlogN));
+                modelo.getDN2().add(new Punto(nCalculo, tN2));
+                modelo.getDN3().add(new Punto(nCalculo, tN3));
                 
                 vista.actualizarTiempos(tN, tNlogN, tN2, tN3);
                 break;

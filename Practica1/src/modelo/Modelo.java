@@ -21,30 +21,42 @@ public class Modelo {
     public long simular(int n, String tipo) {
         long inicio = System.nanoTime();
         double d = 0;
+        int repeticiones = 1;
+
         switch (tipo) {
             case "O(n)" -> {
-                for (int i = 0; i < n; i++) {
-                    d += i;
+                repeticiones = 10000;
+                for (int r = 0; r < repeticiones; r++) {
+                    for (int i = 0; i < n; i++) {
+                        d += i;
+                    }
                 }
             }
 
             case "O(n log n)" -> {
-                for (int i = 0; i < n; i++) {
-                    for (int j = 1; j < n; j *= 2) {
-                        d += i + j;
+                repeticiones = 1000;
+                for (int r = 0; r < repeticiones; r++) {
+                    for (int i = 0; i < n; i++) {
+                        for (int j = 1; j < n; j *= 2) {
+                            d += i + j;
+                        }
                     }
                 }
             }
 
             case "O(n^2)" -> {
-                for (int i = 0; i < n; i++) {
-                    for (int j = 0; j < n; j++) {
-                        d += i + j;
+                repeticiones = 10;
+                for (int r = 0; r < repeticiones; r++) {
+                    for (int i = 0; i < n; i++) {
+                        for (int j = 0; j < n; j++) {
+                            d += i + j;
+                        }
                     }
                 }
             }
 
             case "O(n^3)" -> {
+                repeticiones = 1;
                 for (int i = 0; i < n; i++) {
                     for (int j = 0; j < n; j++) {
                         for (int k = 0; k < n; k++) {
@@ -54,8 +66,34 @@ public class Modelo {
                 }
             }
         }
-        
-        return System.nanoTime() - inicio;
+
+        return (System.nanoTime() - inicio)/repeticiones;
+    }
+
+    /**
+     * Método que realiza una simulacion teorica de la curva que tiene que
+     * realizar la gráfica
+     *
+     * @param n
+     * @param tipo
+     * @return
+     */
+    public long simulacionTeorica(int n, String tipo) {
+        if (n <= 0) {
+            return 0;
+        }
+        return switch (tipo) {
+            case "O(n)" ->
+                (long) n;
+            case "O(n log n)" ->
+                (long) (n * Math.log(n));
+            case "O(n^2)" ->
+                (long) n * n;
+            case "O(n^3)" ->
+                (long) n * n * n;
+            default ->
+                0L;
+        };
     }
 
     /**
