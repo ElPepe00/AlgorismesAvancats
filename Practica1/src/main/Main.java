@@ -20,7 +20,8 @@ public class Main {
     public static void main(String[] args) {
         
         String tituloVentana = "Practica 1 - Complexitat Algorítmica";
-        int N_MAX = 1000;
+        
+        int N_MAX = 2000; // Valor máximo de 'n'
         
         Modelo modelo = new Modelo();
         

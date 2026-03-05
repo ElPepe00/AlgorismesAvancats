@@ -1,3 +1,5 @@
+
+
 package controlador;
 
 import modelo.Modelo;
@@ -16,10 +18,10 @@ public class Controlador {
     private Modelo modelo;
     private Vista vista;
     private Timer timer;
-    private int N_MAX;
+    private final int N_MAX;
     private int puntoActual = 1;
 
-    private static final int NUM_PASOS = 30;
+    private static final int NUM_PASOS = 20;
 
     /**
      * Constructor del Controlador
@@ -34,7 +36,7 @@ public class Controlador {
         this.vista = vista;
         this.N_MAX = N_MAX;
 
-        this.timer = new Timer(30, e -> ejecutarPaso());
+        this.timer = new Timer(50, e -> ejecutarPaso());
         asignarEvento();
     }
 
