@@ -16,10 +16,8 @@ public class Modelo {
     private ArrayList<Punto> datosN3 = new ArrayList<>();
 
     public Modelo() {
-        // WARM-UP (Calentamiento de la JVM)
-        // Ejecutamos simulaciones en segundo plano al arrancar la app.
-        // Esto fuerza a Java a compilar y optimizar los bucles (JIT) 
-        // ANTES de que el usuario pulse el botón, evitando saltos bruscos iniciales.
+        
+        // WARM-UP DEL JIT
         simular(500, "O(n)");
         simular(500, "O(n log n)");
         simular(100, "O(n^2)");
