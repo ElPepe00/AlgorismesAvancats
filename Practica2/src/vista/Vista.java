@@ -1,129 +1,293 @@
 package vista;
 
-import datos.Pieza;
+import datos.Peca;
+import controlador.MotorCerca;
+
 import javax.swing.*;
+import javax.swing.border.*;
 import java.awt.*;
+import java.net.URL;
+import java.util.*;
 
 /**
- *
- * @author Josep Oliver i Hugo Valls
- * @date 19 feb 2026
- * @name Vista
+ * Classe principal de la Interfície d'Usuari (GUI).
  */
 public class Vista extends JFrame {
 
-    private JMenuItem itemSalir;
-    private JPanel panelCentral;
-    private JButton btnEjecutar;
-
-    private JComboBox<String> cbPieza1;
-    private JComboBox<String> cbPieza2;
-    private JSpinner spDimension;
     private JButton btnIniciar;
-    private JButton btnParar;
-    private JLabel lblEstado;
-    private JSlider slVelocidad;
+    private JButton btnAturar;
+    private JSpinner spDimensio;
+    private JButton btnActualitzarTauler;
 
-    private Tablero panelTablero;
-    //private MotorCerca filCerca;
-    private int[][] tablero;
+    private JRadioButton rbPeca1;
+    private JRadioButton rbPeca2;
+    private String nomPeca1 = "Cavall"; //Peça1 per defecte
+    private String nomPeca2 = "Reina";  //Peça2 per defecte
 
-    /**
-     * Constructor de la interficie
-     *
-     * @param titol texto que aparece en la barra de título de la ventana
-     */
-    public Vista(String titol) {
-        super(titol);
-        configurarVentana();
-        inicializarComponentes();
-    }
+    private Map<String, JButton> botonsPeces;
+    private Map<String, Image> imatgesOriginals;
 
-    /**
-     * Configuración de las propiedades básicas de la ventana
-     */
-    private void configurarVentana() {
-        setSize(800, 700);
-        setMinimumSize(new Dimension(500, 400));
+    private JLabel lblEstat;
+    private JSlider slVelocitat;
+
+    private Tablero panelTauler;
+    private MotorCerca filCerca;
+    private int[][] tauler;
+
+    // Colors globals
+    private final Color COLOR_FONS_MENU = new Color(240, 244, 248);
+    private final Color COLOR_P1 = new Color(46, 204, 113);
+    private final Color COLOR_P2 = new Color(52, 152, 219);
+    private final Font FONT_TITOLS = new Font("Segoe UI", Font.BOLD, 14);
+
+    public Vista() {
+        setTitle("Pràctica 2 - Variant del Recorregut d'Escacs");
+        setSize(980, 750);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
+        getContentPane().setBackground(Color.WHITE);
+
+        botonsPeces = new HashMap<>();
+        imatgesOriginals = new HashMap<>();
+        inicialitzarComponents();
     }
 
-    /**
-     * Método que instancia i posiciona los componentes de la ventana
-     */
-    private void inicializarComponentes() {
+    private void inicialitzarComponents() {
 
-        // Panel superior
-        JPanel panelSuperior = new JPanel();
-        panelSuperior.setBorder(BorderFactory.createTitledBorder("Configuració"));
+        // PANELL LATERAL ESQUERRE
+        JPanel pnlLateral = new JPanel();
+        pnlLateral.setLayout(new BoxLayout(pnlLateral, BoxLayout.Y_AXIS));
+        pnlLateral.setBackground(COLOR_FONS_MENU);
+        pnlLateral.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createMatteBorder(0, 0, 0, 2, new Color(220, 225, 230)),
+                BorderFactory.createEmptyBorder(20, 20, 20, 20)
+        ));
+        pnlLateral.setPreferredSize(new Dimension(320, 0));
 
-        String[] nombrePiezas = {"Cavall", "Torre", "Òrfil", "Reina", "Cangur (Inv)", "Assassí (Inv)"};
-        cbPieza1 = new JComboBox<>(nombrePiezas);
-        cbPieza2 = new JComboBox<>(nombrePiezas);
-        cbPieza2.setSelectedIndex(1);
+        JLabel lblTitolMenu = new JLabel("Configuració");
+        lblTitolMenu.setFont(new Font("Segoe UI", Font.BOLD, 22));
+        lblTitolMenu.setForeground(new Color(44, 62, 80));
+        lblTitolMenu.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        spDimension = new JSpinner(new SpinnerNumberModel(5, 3, 12, 1));
-        btnIniciar = new JButton("Iniciar / Cercar");
-        btnParar = new JButton("Aturar");
-        btnParar.setEnabled(false);
+        btnIniciar = crearBotoAccion("Iniciar partida", COLOR_P1);
+        btnAturar = crearBotoAccion("Aturar", new Color(231, 76, 60));
+        btnAturar.setEnabled(false);
 
-        panelSuperior.add(new JLabel("Dimensió:"));
-        panelSuperior.add(spDimension);
-        panelSuperior.add(new JLabel("Peça 1 (Imp):"));
-        panelSuperior.add(cbPieza1);
-        panelSuperior.add(new JLabel("Peça 2 (Par):"));
-        panelSuperior.add(cbPieza2);
-        panelSuperior.add(btnIniciar);
-        panelSuperior.add(btnParar);
+        // -- Mida del tauler --
+        JPanel pnlMida = crearTargeta("1. Mida del tauler");
+        pnlMida.setLayout(new FlowLayout(FlowLayout.CENTER));
 
-        // Panel inferior para controles
-        JPanel panelEstado = new JPanel(new BorderLayout());
-        lblEstado = new JLabel("Preparat. Configura les peces i prem Iniciar.");
-        lblEstado.setFont(new Font("Arial", Font.BOLD, 14));
-        lblEstado.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+        spDimensio = new JSpinner(new SpinnerNumberModel(8, 3, 12, 1));
+        spDimensio.setFont(new Font("Segoe UI", Font.BOLD, 16));
 
-        slVelocidad = new JSlider(JSlider.HORIZONTAL, 0, 500, 50);
-        slVelocidad.setToolTipText("Velocitat d'animació (ms)");
-        slVelocidad.setBorder(BorderFactory.createTitledBorder("Retard per pas (ms)"));
+        btnActualitzarTauler = new JButton("Aplicar");
+        btnActualitzarTauler.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        btnActualitzarTauler.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnActualitzarTauler.setBackground(Color.WHITE);
+        btnActualitzarTauler.setFocusPainted(false);
 
-        panelEstado.add(lblEstado, BorderLayout.CENTER);
-        panelEstado.add(slVelocidad, BorderLayout.EAST);
+        pnlMida.add(new JLabel("Dimensió: "));
+        pnlMida.add(spDimensio);
+        pnlMida.add(btnActualitzarTauler);
 
-        // Panel central que sera el TABLERO
-        panelTablero = new Tablero();
+        // -- Selector de Peça 1 o 2 --
+        JPanel pnlRadios = crearTargeta("2. Tria la Peça");
+        pnlRadios.setLayout(new GridLayout(2, 1, 5, 5));
 
-        add(panelSuperior, BorderLayout.NORTH);
-        add(panelTablero, BorderLayout.CENTER);
-        add(panelEstado, BorderLayout.SOUTH);
+        rbPeca1 = new JRadioButton("Peça 1: " + nomPeca1, true);
+        rbPeca2 = new JRadioButton("Peça 2: " + nomPeca2);
+        rbPeca1.setFont(FONT_TITOLS);
+        rbPeca2.setFont(FONT_TITOLS);
+        rbPeca1.setBackground(Color.WHITE);
+        rbPeca2.setBackground(Color.WHITE);
+        rbPeca1.setForeground(COLOR_P1);
+        rbPeca2.setForeground(COLOR_P2);
 
-        // EVENTOS
-        btnIniciar.addActionListener(e -> iniciarJuego());
-        btnParar.addActionListener(e -> aturarJuego());
+        ButtonGroup bgPeces = new ButtonGroup();
+        bgPeces.add(rbPeca1);
+        bgPeces.add(rbPeca2);
+
+        pnlRadios.add(rbPeca1);
+        pnlRadios.add(rbPeca2);
+
+        // -- Graella de les Peces --
+        JPanel pnlGraellaContenidor = crearTargeta("3. Assigna la peça");
+        JPanel pnlGraella = new JPanel(new GridLayout(3, 2, 8, 8));
+        pnlGraella.setBackground(Color.WHITE);
+
+        crearBotoPeca("Òrfil", "alfil.png", pnlGraella);
+        crearBotoPeca("Cavall", "caballo.png", pnlGraella);
+        crearBotoPeca("Torre", "torre.png", pnlGraella);
+        crearBotoPeca("Reina", "reina.png", pnlGraella);
+        crearBotoPeca("Assassí", "asesino.png", pnlGraella);
+        crearBotoPeca("Cangur", "canguro.png", pnlGraella);
+
+        pnlGraellaContenidor.add(pnlGraella);
+
+        actualitzarVoresBotons();
+
+        pnlLateral.add(lblTitolMenu);
+        pnlLateral.add(Box.createRigidArea(new Dimension(0, 20)));
+        pnlLateral.add(btnIniciar);
+        pnlLateral.add(Box.createRigidArea(new Dimension(0, 10)));
+        pnlLateral.add(btnAturar);
+        pnlLateral.add(Box.createRigidArea(new Dimension(0, 25)));
+        pnlLateral.add(pnlMida);
+        pnlLateral.add(Box.createRigidArea(new Dimension(0, 15)));
+        pnlLateral.add(pnlRadios);
+        pnlLateral.add(Box.createRigidArea(new Dimension(0, 15)));
+        pnlLateral.add(pnlGraellaContenidor);
+
+        // ==========================================
+        // 2. PANELL SUD
+        // ==========================================
+        JPanel pnlEstat = new JPanel(new BorderLayout());
+        pnlEstat.setBackground(COLOR_FONS_MENU);
+        pnlEstat.setBorder(BorderFactory.createMatteBorder(2, 0, 0, 0, new Color(220, 225, 230)));
+
+        lblEstat = new JLabel(" Preparat. Tria quina peça assignar a cada jugador i prem Iniciar.");
+        lblEstat.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        lblEstat.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        slVelocitat = new JSlider(JSlider.HORIZONTAL, 0, 500, 10);
+        slVelocitat.setBackground(COLOR_FONS_MENU);
+        TitledBorder voraSlider = BorderFactory.createTitledBorder("Retard de visualització (ms)");
+        voraSlider.setTitleFont(new Font("Segoe UI", Font.PLAIN, 12));
+        slVelocitat.setBorder(voraSlider);
+
+        pnlEstat.add(lblEstat, BorderLayout.CENTER);
+        pnlEstat.add(slVelocitat, BorderLayout.EAST);
+
+        // ==========================================
+        // 3. PANELL CENTRE
+        // ==========================================
+        panelTauler = new Tablero();
+        panelTauler.setBackground(Color.WHITE);
+        panelTauler.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        add(pnlLateral, BorderLayout.WEST);
+        add(panelTauler, BorderLayout.CENTER);
+        add(pnlEstat, BorderLayout.SOUTH);
+
+        // EVENTS (Lísteners)
+        btnIniciar.addActionListener(e -> iniciarJoc());
+        btnAturar.addActionListener(e -> aturarJoc());
+
+        // ESDEVENIMENT DEL NOU BOTÓ (Actualitzar tauler buit)
+        btnActualitzarTauler.addActionListener(e -> {
+            int novaDim = (int) spDimensio.getValue();
+            panelTauler.setDimensioBuit(novaDim);
+        });
     }
 
-    private void iniciarJuego() {
-        int dim = (int) spDimension.getValue();
-        tablero = new int[dim][dim];
+    private JButton crearBotoAccion(String text, Color colorFons) {
+        JButton btn = new JButton(text);
+        btn.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        btn.setBackground(colorFons);
+        btn.setForeground(Color.WHITE);
+        btn.setFocusPainted(false);
+        btn.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+        btn.setMaximumSize(new Dimension(250, 45));
+        btn.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        return btn;
+    }
 
-        // Utilitzem el mètode Factoria de la classe Peca
-        Pieza p1 = Pieza.crearPeca((String) cbPieza1.getSelectedItem(), 1);
-        Pieza p2 = Pieza.crearPeca((String) cbPieza2.getSelectedItem(), 2);
+    private JPanel crearTargeta(String titol) {
+        JPanel panel = new JPanel();
+        panel.setBackground(Color.WHITE);
+        TitledBorder vora = BorderFactory.createTitledBorder(
+                BorderFactory.createLineBorder(new Color(200, 200, 200), 1),
+                titol
+        );
+        vora.setTitleFont(FONT_TITOLS);
+        vora.setTitleColor(new Color(100, 100, 100));
+        panel.setBorder(vora);
+        panel.setMaximumSize(new Dimension(280, 1000));
+        return panel;
+    }
 
-        panelTablero.setEstat(tablero);
+    private void crearBotoPeca(String nomPeca, String nomFitxer, JPanel panell) {
+        JButton btn = new JButton();
+        btn.setToolTipText(nomPeca);
+        btn.setBackground(Color.WHITE);
+        btn.setFocusPainted(false);
+        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
-        // Bloqueig de la interfície
+        URL imgURL = getClass().getResource("/imagenes/" + nomFitxer);
+
+        if (imgURL != null) {
+            ImageIcon icon = new ImageIcon(imgURL);
+            Image imgOriginal = icon.getImage();
+
+            imatgesOriginals.put(nomPeca, imgOriginal);
+
+            Image imgEscalada = imgOriginal.getScaledInstance(55, 55, Image.SCALE_SMOOTH);
+            btn.setIcon(new ImageIcon(imgEscalada));
+
+            btn.addActionListener(e -> {
+                if (rbPeca1.isSelected()) {
+                    nomPeca1 = nomPeca;
+                    rbPeca1.setText("Peça 1: " + nomPeca);
+                } else {
+                    nomPeca2 = nomPeca;
+                    rbPeca2.setText("Peça 2: " + nomPeca);
+                }
+                actualitzarVoresBotons();
+            });
+
+            botonsPeces.put(nomPeca, btn);
+            panell.add(btn);
+        }
+    }
+
+    private void actualitzarVoresBotons() {
+        Border voraDefecte = BorderFactory.createLineBorder(new Color(230, 230, 230), 1);
+        Border voraP1 = BorderFactory.createLineBorder(COLOR_P1, 4);
+        Border voraP2 = BorderFactory.createLineBorder(COLOR_P2, 4);
+        Border voraDoble = BorderFactory.createCompoundBorder(voraP1, voraP2);
+
+        for (Map.Entry<String, JButton> entry : botonsPeces.entrySet()) {
+            String nom = entry.getKey();
+            JButton btn = entry.getValue();
+
+            if (nom.equals(nomPeca1) && nom.equals(nomPeca2)) {
+                btn.setBorder(voraDoble);
+            } else if (nom.equals(nomPeca1)) {
+                btn.setBorder(voraP1);
+            } else if (nom.equals(nomPeca2)) {
+                btn.setBorder(voraP2);
+            } else {
+                btn.setBorder(voraDefecte);
+            }
+        }
+    }
+
+    private void iniciarJoc() {
+        int dimensio = (int) spDimensio.getValue();
+        tauler = new int[dimensio][dimensio];
+
+        Peca p1 = Peca.crearPeca(nomPeca1, 1);
+        Peca p2 = Peca.crearPeca(nomPeca2, 2);
+
+        Image img1 = imatgesOriginals.get(nomPeca1);
+        Image img2 = imatgesOriginals.get(nomPeca2);
+        panelTauler.setEstat(tauler, img1, img2);
+
         btnIniciar.setEnabled(false);
-        cbPieza1.setEnabled(false);
-        cbPieza2.setEnabled(false);
-        spDimension.setEnabled(false);
-        btnParar.setEnabled(true);
+        btnIniciar.setBackground(Color.GRAY);
+        spDimensio.setEnabled(false);
+        btnActualitzarTauler.setEnabled(false); // Bloquegem el botó d'actualitzar també
+        rbPeca1.setEnabled(false);
+        rbPeca2.setEnabled(false);
 
-        lblEstado.setText("Calculant solució...");
-        lblEstado.setForeground(Color.BLUE);
+        btnAturar.setEnabled(true);
+        btnAturar.setBackground(new Color(231, 76, 60));
 
-        // Llancem el Motor de Cerca en un Thread separat passant 'this' per poder actualitzar la UI
+        lblEstat.setText("Cercant una solució... Aquest procés pot tardar en funció del tauler.");
+        lblEstat.setForeground(new Color(41, 128, 185));
+
         filCerca = new MotorCerca(tauler, p1, p2, dimensio, slVelocitat.getValue(), this);
         filCerca.start();
     }
@@ -134,49 +298,33 @@ public class Vista extends JFrame {
         }
     }
 
-    /**
-     * Mètode cridat des del MotorCerca per refrescar el dibuix
-     */
     public void repintarTauler() {
         SwingUtilities.invokeLater(() -> panelTauler.repaint());
     }
 
-    /**
-     * Mètode cridat pel MotorCerca quan acaba o s'atura
-     */
     public void fiCerca(boolean aturat, boolean trobat, long tempsTotal) {
         SwingUtilities.invokeLater(() -> {
             btnIniciar.setEnabled(true);
-            cbPeca1.setEnabled(true);
-            cbPeca2.setEnabled(true);
+            btnIniciar.setBackground(COLOR_P1);
             spDimensio.setEnabled(true);
+            btnActualitzarTauler.setEnabled(true); // Desbloquegem el botó
+            rbPeca1.setEnabled(true);
+            rbPeca2.setEnabled(true);
+
             btnAturar.setEnabled(false);
+            btnAturar.setBackground(Color.GRAY);
 
             if (aturat) {
-                lblEstat.setText("Aturat per l'usuari. Temps utilitzat: " + tempsTotal + " ms.");
-                lblEstat.setForeground(Color.RED);
+                lblEstat.setText("Cerca aturada per l'usuari. Temps consumit: " + tempsTotal + " ms.");
+                lblEstat.setForeground(new Color(192, 57, 43));
             } else if (trobat) {
-                lblEstat.setText("SOLUCIÓ TROBADA en " + tempsTotal + " ms!");
-                lblEstat.setForeground(new Color(0, 150, 0));
+                lblEstat.setText("SOLUCIÓ TROBADA! Temps total: " + tempsTotal + " ms.");
+                lblEstat.setForeground(new Color(39, 174, 96));
             } else {
-                lblEstat.setText("Cap solució possible trobada (" + tempsTotal + " ms).");
-                lblEstat.setForeground(Color.RED);
+                lblEstat.setText("Sense solució possible. (" + tempsTotal + " ms).");
+                lblEstat.setForeground(new Color(192, 57, 43));
             }
             panelTauler.repaint();
         });
     }
-
-    // -- Getters para que el Controlador pueda acceder
-    public JMenuItem getItemSortir() {
-        return itemSalir;
-    }
-
-    public JButton getBtnExecutar() {
-        return btnEjecutar;
-    }
-
-    public JPanel getPanellCentral() {
-        return panelCentral;
-    }
-
 }

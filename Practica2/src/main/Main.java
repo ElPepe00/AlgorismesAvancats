@@ -2,9 +2,7 @@
 
 package main;
 
-//import modelo.Modelo;
 import vista.Vista;
-//import controlador.Controlador;
 import javax.swing.SwingUtilities;
 
 /**
@@ -20,19 +18,10 @@ public class Main {
      */
     public static void main(String[] args) {
         
-        String tituloVentana = "Practica 2 - Tauler d'Escacs";
-        
-        //Modelo modelo = new Modelo();
-        
         // Garantim que la vista es crea de forma segura
         SwingUtilities.invokeLater(() -> {
-            Vista vista = new Vista(tituloVentana);
+            Vista vista = new Vista();
             vista.setVisible(true);
         });
-        
-        
-        //new Controlador(modelo, vista);
-        
-        
     }
 }
