@@ -80,7 +80,12 @@ public class Tablero extends JPanel {
                         g.drawImage(imgActual, c * casellaAmplada + 2, f * casellaAlcada + 2, casellaAmplada - 4, casellaAlcada - 4, this);
 
                         // Dibuixar el número de la passa
-                        g.setColor(Color.GREEN);
+                        if (passa % 2 != 0) {
+                            g.setColor(Color.GREEN);
+                        } else {
+                             g.setColor(Color.BLUE);
+                        }
+                        
                         g.setFont(new Font("Segoe UI", Font.BOLD, 14));
                         g.drawString(String.valueOf(passa), (c * casellaAmplada) + 4, (f * casellaAlcada) + 14);
                     }

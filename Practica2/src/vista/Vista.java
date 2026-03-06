@@ -38,6 +38,8 @@ public class Vista extends JFrame {
     private final Color COLOR_FONS_MENU = new Color(240, 244, 248);
     private final Color COLOR_P1 = new Color(46, 204, 113);
     private final Color COLOR_P2 = new Color(52, 152, 219);
+    private final Color COLOR_VERD = new Color(39, 174, 96);
+    private final Color COLOR_VERMELL = new Color(192, 57, 43);
     private final Font FONT_TITOLS = new Font("Segoe UI", Font.BOLD, 14);
 
     public Vista() {
@@ -70,8 +72,8 @@ public class Vista extends JFrame {
         lblTitolMenu.setForeground(new Color(44, 62, 80));
         lblTitolMenu.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        btnIniciar = crearBotoAccion("Iniciar partida", COLOR_P1);
-        btnAturar = crearBotoAccion("Aturar", new Color(231, 76, 60));
+        btnIniciar = crearBotoAccion("Iniciar partida", COLOR_VERD);
+        btnAturar = crearBotoAccion("Aturar", COLOR_VERMELL);
         btnAturar.setEnabled(false);
 
         // -- Mida del tauler --
@@ -146,11 +148,12 @@ public class Vista extends JFrame {
         pnlEstat.setBackground(COLOR_FONS_MENU);
         pnlEstat.setBorder(BorderFactory.createMatteBorder(2, 0, 0, 0, new Color(220, 225, 230)));
 
-        lblEstat = new JLabel(" Preparat. Tria quina peça assignar a cada jugador i prem Iniciar.");
+        lblEstat = new JLabel("Selecciona la Peça (1 o 2) i assignali el tipus de peça. A continuació inicia la partida.");
+        lblEstat.setForeground(Color.DARK_GRAY);
         lblEstat.setFont(new Font("Segoe UI", Font.BOLD, 14));
         lblEstat.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        slVelocitat = new JSlider(JSlider.HORIZONTAL, 0, 500, 10);
+        slVelocitat = new JSlider(JSlider.HORIZONTAL, 0, 100, 0);
         slVelocitat.setBackground(COLOR_FONS_MENU);
         TitledBorder voraSlider = BorderFactory.createTitledBorder("Retard de visualització (ms)");
         voraSlider.setTitleFont(new Font("Segoe UI", Font.PLAIN, 12));
@@ -177,7 +180,13 @@ public class Vista extends JFrame {
         // ESDEVENIMENT DEL NOU BOTÓ (Actualitzar tauler buit)
         btnActualitzarTauler.addActionListener(e -> {
             int novaDim = (int) spDimensio.getValue();
+            // Esborrem qualsevol matriu que hi hagués de la partida anterior
+            panelTauler.setEstat(null, null, null); 
+            // Li diem que dibuixi el fons buit amb la nova dimensió
             panelTauler.setDimensioBuit(novaDim);
+            
+            lblEstat.setText("Tauler actualitzat a " + novaDim + "x" + novaDim + ".");
+            lblEstat.setForeground(Color.DARK_GRAY);
         });
     }
 
@@ -285,8 +294,8 @@ public class Vista extends JFrame {
         btnAturar.setEnabled(true);
         btnAturar.setBackground(new Color(231, 76, 60));
 
-        lblEstat.setText("Cercant una solució... Aquest procés pot tardar en funció del tauler.");
-        lblEstat.setForeground(new Color(41, 128, 185));
+        lblEstat.setText("Cercant una solució... Aquest procés pot tardar en funció del tauler i les peces.");
+        lblEstat.setForeground(Color.DARK_GRAY);
 
         filCerca = new MotorCerca(tauler, p1, p2, dimensio, slVelocitat.getValue(), this);
         filCerca.start();
@@ -305,7 +314,7 @@ public class Vista extends JFrame {
     public void fiCerca(boolean aturat, boolean trobat, long tempsTotal) {
         SwingUtilities.invokeLater(() -> {
             btnIniciar.setEnabled(true);
-            btnIniciar.setBackground(COLOR_P1);
+            btnIniciar.setBackground(COLOR_VERD);
             spDimensio.setEnabled(true);
             btnActualitzarTauler.setEnabled(true); // Desbloquegem el botó
             rbPeca1.setEnabled(true);
@@ -315,14 +324,14 @@ public class Vista extends JFrame {
             btnAturar.setBackground(Color.GRAY);
 
             if (aturat) {
-                lblEstat.setText("Cerca aturada per l'usuari. Temps consumit: " + tempsTotal + " ms.");
-                lblEstat.setForeground(new Color(192, 57, 43));
+                lblEstat.setText("Cerca aturada per l'usuari. (" + tempsTotal + " ms) ");
+                lblEstat.setForeground(COLOR_VERMELL);
             } else if (trobat) {
                 lblEstat.setText("SOLUCIÓ TROBADA! Temps total: " + tempsTotal + " ms.");
-                lblEstat.setForeground(new Color(39, 174, 96));
+                lblEstat.setForeground(COLOR_VERD);
             } else {
-                lblEstat.setText("Sense solució possible. (" + tempsTotal + " ms).");
-                lblEstat.setForeground(new Color(192, 57, 43));
+                lblEstat.setText("Sense solució possible. (" + tempsTotal + " ms)");
+                lblEstat.setForeground(COLOR_VERMELL);
             }
             panelTauler.repaint();
         });
