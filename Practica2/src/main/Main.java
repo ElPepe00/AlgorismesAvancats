@@ -11,7 +11,7 @@ import javax.swing.SwingUtilities;
  * @date 5 mar 2026
  * @name Practica 2
  */
-public class Main {
+public class main {
 
     /**
      * Static Main
