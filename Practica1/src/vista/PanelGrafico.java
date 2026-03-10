@@ -15,7 +15,7 @@ import java.util.*;
 import modelo.Punto;
 
 /**
- * Componente JPanel para dibujar las graficas
+ * PanelGrafico es un componente JPanel para dibujar las graficas
  */
 public class PanelGrafico extends JPanel {
 

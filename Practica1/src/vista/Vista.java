@@ -138,6 +138,9 @@ public class Vista extends JFrame {
         return "Tots";
     }
 
+    /**
+     * Método que actualiza las etiquetas de los tiempos
+     */
     public void actualizarTiempos(long tN, long tNlogN, long tN2, long tN3) {
         lblTiempoN.setText("O(n):       " + (tN < 0 ? "-" : String.format("%,d ns", tN)));
         lblTiempoNlogN.setText("O(nlogn): " + (tNlogN < 0 ? "-" : String.format("%,d ns", tNlogN)));

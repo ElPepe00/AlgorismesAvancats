@@ -1,3 +1,5 @@
+
+
 package modelo;
 
 import java.util.*;
@@ -15,6 +17,10 @@ public class Modelo {
     private ArrayList<Punto> datosN2 = new ArrayList<>();
     private ArrayList<Punto> datosN3 = new ArrayList<>();
 
+    /**
+     * Método Constructor
+     * Simulamos para n, nlogn y n^2 para calentar el JIT de Java
+     */
     public Modelo() {
         
         // WARM-UP DEL JIT
@@ -25,6 +31,7 @@ public class Modelo {
     
     /**
      * Método que simula la carga de trabajo según el tipo de complejidad.
+     * Usamos una variable 'repeticiones' para afinar la curva
      */
     public long simular(int n, String tipo) {
         long inicio = System.nanoTime();
@@ -82,8 +89,8 @@ public class Modelo {
      * Método que realiza una simulacion teorica de la curva que tiene que
      * realizar la gráfica
      *
-     * @param n
-     * @param tipo
+     * @param n elemento
+     * @param tipo tipo de complejidad
      * @return
      */
     public long simulacionTeorica(int n, String tipo) {
