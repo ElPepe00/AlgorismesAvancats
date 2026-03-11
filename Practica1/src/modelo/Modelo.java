@@ -86,32 +86,6 @@ public class Modelo {
     }
 
     /**
-     * Método que realiza una simulacion teorica de la curva que tiene que
-     * realizar la gráfica
-     *
-     * @param n elemento
-     * @param tipo tipo de complejidad
-     * @return
-     */
-    public long simulacionTeorica(int n, String tipo) {
-        if (n <= 0) {
-            return 0;
-        }
-        return switch (tipo) {
-            case "O(n)" ->
-                (long) n;
-            case "O(n log n)" ->
-                (long) (n * Math.log(n));
-            case "O(n^2)" ->
-                (long) n * n;
-            case "O(n^3)" ->
-                (long) n * n * n;
-            default ->
-                0L;
-        };
-    }
-
-    /**
      * Método que limpia las listas
      */
     public void limpiar() {
