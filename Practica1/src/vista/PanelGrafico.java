@@ -21,7 +21,7 @@ public class PanelGrafico extends JPanel {
 
     private ArrayList<Punto> dN, dNlogN, dN2, dN3;
     private double maxT = 1.0;
-    private double maxN = 1000.0;
+    private double maxN = 2000.0;
 
     /**
      * Método que actualiza el valor maximo de N
@@ -54,7 +54,7 @@ public class PanelGrafico extends JPanel {
         // Repintar
         repaint();
     }
-
+    
     /**
      * Método que actualiza el valor de maxT para buscar el tiempo máximo y asi
      * poder escalar la gráfica
