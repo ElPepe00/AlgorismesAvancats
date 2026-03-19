@@ -16,7 +16,7 @@ public class Modelo {
     private ArrayList<Punto> datosNlogN = new ArrayList<>();
     private ArrayList<Punto> datosN2 = new ArrayList<>();
     private ArrayList<Punto> datosN3 = new ArrayList<>();
-
+    private double d = 0;
     /**
      * Método Constructor
      * Simulamos para n, nlogn y n^2 para calentar el JIT de Java
@@ -35,7 +35,6 @@ public class Modelo {
      */
     public long simular(int n, String tipo) {
         long inicio = System.nanoTime();
-        double d = 0;
         int repeticiones = 1;
 
         switch (tipo) {

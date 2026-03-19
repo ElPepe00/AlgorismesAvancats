@@ -1,5 +1,6 @@
 package vista;
 
+import datos.Tablero;
 import datos.Peca;
 import controlador.MotorCerca;
 
