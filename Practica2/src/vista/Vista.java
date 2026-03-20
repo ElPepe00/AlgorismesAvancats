@@ -1,3 +1,5 @@
+
+
 package vista;
 
 import datos.Tablero;
@@ -9,6 +11,13 @@ import javax.swing.border.*;
 import java.awt.*;
 import java.net.URL;
 import java.util.*;
+
+/**
+ *
+ * @author Josep Oliver i Hugo Valls
+ * @date 6 mar 2026
+ * @name Tablero
+ */
 
 /**
  * Classe principal de la Interfície d'Usuari (GUI).

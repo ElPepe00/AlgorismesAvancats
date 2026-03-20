@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 /**
  *
- * @author Josep Oliver
+ * @author Josep Oliver i Hugo Valls
  * @date 6 mar 2026
  * @name Cangur
  */

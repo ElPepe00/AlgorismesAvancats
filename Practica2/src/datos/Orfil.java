@@ -1,11 +1,12 @@
+
+
 package datos;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  *
- * @author Josep Oliver
+ * @author Josep Oliver i Hugo Valls
  * @date 6 mar 2026
  * @name Orfil
  */
