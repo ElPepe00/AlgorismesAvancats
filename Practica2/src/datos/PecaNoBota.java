@@ -12,7 +12,7 @@ import java.util.ArrayList;
  */
 
 /**
- * Classe intermèdia per agrupar la lògica de les peces que "rellisquen"
+ * Classe intermèdia per agrupar la lògica de les peces que "patinen"
  * i es bloquegen quan troben un obstacle (Torre, Òrfil, Reina).
  */
 public class PecaNoBota extends Peca {

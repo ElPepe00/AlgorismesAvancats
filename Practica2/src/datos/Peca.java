@@ -8,7 +8,7 @@ import java.util.ArrayList;
  *
  * @author Josep Oliver i Hugo Valls
  * @date 5 mar 2026
- * @name Practica 2
+ * @name Peça
  */
 /**
  * Classe base abstracta de la que hereten totes les peces. Conté la factoria

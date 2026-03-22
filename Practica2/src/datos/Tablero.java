@@ -20,7 +20,7 @@ public class Tablero extends JPanel {
     private int[][] dadesTauler;
     private Image imatgeP1;
     private Image imatgeP2;
-    private int dimensioBuit = 8; // Dimensió per defecte abans d'iniciar
+    private int dimensio = 8; // Dimensió per defecte abans d'iniciar
 
     /**
      * Actualitza l'estat del tauler i rep les imatges exactes a dibuixar.
@@ -31,7 +31,7 @@ public class Tablero extends JPanel {
     public void setEstat(int[][] tauler, Image img1, Image img2) {
         this.dadesTauler = tauler;
         if (tauler != null) {
-            this.dimensioBuit = tauler.length; // Actualitzem la dimensió si canvia
+            this.dimensio = tauler.length; // Actualitzem la dimensió si canvia
         }
         this.imatgeP1 = img1;
         this.imatgeP2 = img2;
@@ -43,7 +43,7 @@ public class Tablero extends JPanel {
      * abans de començar la partida.
      */
     public void setDimensioBuit(int dim) {
-        this.dimensioBuit = dim;
+        this.dimensio = dim;
         repaint();
     }
 
@@ -52,7 +52,7 @@ public class Tablero extends JPanel {
         super.paintComponent(g);
         
         // Si no hi ha tauler iniciat, agafem la dimensió per defecte per pintar el fons
-        int dim = (dadesTauler != null) ? dadesTauler.length : dimensioBuit;
+        int dim = (dadesTauler != null) ? dadesTauler.length : dimensio;
         
         int casellaAmplada = getWidth() / dim;
         int casellaAlcada = getHeight() / dim;

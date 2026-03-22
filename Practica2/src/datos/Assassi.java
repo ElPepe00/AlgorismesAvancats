@@ -12,7 +12,7 @@ import java.util.ArrayList;
  */
 public class Assassi extends Peca {
     
-    // Es mou 1 casella en recta o salta 3 en diagonal
+    // Es mou 1 casella en recta o bota 3 en diagonal
     private final int[][] dirs = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}, {3, 3}, {-3, -3}, {3, -3}, {-3, 3}};
 
     public Assassi(int id) {

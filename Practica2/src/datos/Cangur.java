@@ -12,7 +12,7 @@ import java.util.ArrayList;
  */
 public class Cangur extends Peca {
 
-    // Salta exactament 2 caselles en qualsevol direcció
+    // Bota exactament 2 caselles en qualsevol direcció
     private final int[][] dirs = {{2, 0}, {-2, 0}, {0, 2}, {0, -2}, {2, 2}, {-2, -2}, {2, -2}, {-2, 2}};
     
     public Cangur(int id) { 
