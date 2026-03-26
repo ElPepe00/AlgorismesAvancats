@@ -3,6 +3,7 @@ package vista;
 import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
 
 /**
  * @author Josep Oliver i Hugo Valls
@@ -22,7 +23,7 @@ public class Vista extends JFrame {
     private ButtonGroup grupAlgoritme;
 
     private JLabel lblEstat;
-    private JPanel panelPunts; 
+    private PanelPunts panelPunts;
 
     private final Color COLOR_FONS_MENU = new Color(240, 244, 248);
     private final Color COLOR_VERD = new Color(39, 174, 96);
@@ -44,6 +45,7 @@ public class Vista extends JFrame {
         // ==========================================
         // 1. PANELL LATERAL ESQUERRE
         // ==========================================
+        
         JPanel pnlLateral = new JPanel();
         pnlLateral.setLayout(new BoxLayout(pnlLateral, BoxLayout.Y_AXIS));
         pnlLateral.setBackground(COLOR_FONS_MENU);
@@ -120,6 +122,7 @@ public class Vista extends JFrame {
         // ==========================================
         // 2. RESTA DE PANELLS (SUD I CENTRE)
         // ==========================================
+        panelPunts = new PanelPunts();
         JPanel pnlEstat = new JPanel(new BorderLayout());
         pnlEstat.setBackground(COLOR_FONS_MENU);
         pnlEstat.setBorder(BorderFactory.createMatteBorder(2, 0, 0, 0, new Color(220, 225, 230)));
@@ -128,15 +131,10 @@ public class Vista extends JFrame {
         lblEstat.setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15));
         pnlEstat.add(lblEstat, BorderLayout.CENTER);
 
-        panelPunts = new JPanel();
-        panelPunts.setBackground(Color.WHITE);
-
         add(pnlLateral, BorderLayout.WEST);
         add(panelPunts, BorderLayout.CENTER);
         add(pnlEstat, BorderLayout.SOUTH);
 
-        btnGenerar.addActionListener(e -> accioGenerarPunts());
-        btnCalcular.addActionListener(e -> accioCalcular());
     }
 
     // Mètode auxiliar per estalviar codi i assegurar alineació
@@ -174,16 +172,22 @@ public class Vista extends JFrame {
         return panel;
     }
 
-    private void accioGenerarPunts() {
-        int n = (int) spNumPunts.getValue();
-        String dist = rbUniforme.isSelected() ? "Uniforme" : "Gaussiana";
-        lblEstat.setText("S'han generat " + n + " punts (" + dist + ").");
-        btnCalcular.setEnabled(true);
+        public void setControladorGenerar(ActionListener listener) {
+        btnGenerar.addActionListener(listener);
     }
 
-    private void accioCalcular() {
-        lblEstat.setText("Calculant...");
-        btnCalcular.setEnabled(false);
-        btnGenerar.setEnabled(false);
+    public void setControladorCalcular(ActionListener listener) {
+        btnCalcular.addActionListener(listener);
     }
+        public int getNumPunts() {
+        return (int) spNumPunts.getValue();
+    }
+
+    public String getDistribucio() {
+        return rbUniforme.isSelected() ? "uniforme" : "gaussiana";
+    }
+
+    public void mostrarPunts(java.util.List<modelo.Punt> punts) {
+    panelPunts.setPunts(punts);
+}
 }

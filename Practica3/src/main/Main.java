@@ -1,6 +1,7 @@
 package main;
 
 import vista.Vista;
+import controlador.controlador;
 
 /**
  *
@@ -15,7 +16,8 @@ public class Main {
      */
     public static void main(String[] args) {
         
-        Vista vista = new Vista();
-        vista.setVisible(true);
+        Vista v = new Vista();
+        new controlador(v);
+        v.setVisible(true);
     }
 }
