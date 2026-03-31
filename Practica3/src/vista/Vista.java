@@ -66,7 +66,7 @@ public class Vista extends JFrame {
         JLabel lblN = new JLabel("Núm. Punts (N):");
         lblN.setAlignmentX(Component.LEFT_ALIGNMENT);
         
-        spNumPunts = new JSpinner(new SpinnerNumberModel(1000, 10, 100000, 100));
+        spNumPunts = new JSpinner(new SpinnerNumberModel(10000, 10, 1000000, 1000));
         spNumPunts.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
         spNumPunts.setAlignmentX(Component.LEFT_ALIGNMENT);
 

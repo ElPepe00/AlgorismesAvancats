@@ -12,8 +12,8 @@ public class GeneradorPunts {
             double x, y;
 
             if (tipus.equals("gaussiana")) {
-                x = r.nextGaussian();
-                y = r.nextGaussian();
+                x = (r.nextGaussian()/6.0) + 0.5;
+                y = (r.nextGaussian()/6.0) + 0.5;
             } else {
                 x = r.nextDouble();
                 y = r.nextDouble();
