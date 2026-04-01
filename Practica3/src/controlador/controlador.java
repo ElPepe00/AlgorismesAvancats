@@ -41,6 +41,7 @@ public class controlador {
         }
 
         String alg = vista.getAlgoritme();
+        System.out.println("Algoritmo seleccionado: " + alg);
         Resultat res;
 
         long start = System.nanoTime();
@@ -50,16 +51,16 @@ public class controlador {
         } else if (alg.equals("llunyana")) {
             res = algoritmes.mesLlunyana(punts);
         } else {
-            System.out.println("Falta implementar O(n log n)");
-            return;
+            res = algoritmes.mesProperaDivideParallel(punts);
         }
 
         long end = System.nanoTime();
+        double tempsMs = (end - start) / 1e6;
 
-        vista.mostrarResultat(res); // 🔥 DIBUJA + TEXTO
+        vista.mostrarResultat(res, tempsMs); 
 
         System.out.println("Distancia: " + res.distancia);
-        System.out.println("Tiempo: " + (end - start) / 1e6 + " ms");
+        System.out.println("Tiempo: " + tempsMs + " ms");
     }
 
     

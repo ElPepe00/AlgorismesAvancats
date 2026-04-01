@@ -197,13 +197,14 @@ public class Vista extends JFrame {
         return "llunyana";
     }
 
-    public void mostrarResultat(modelo.Resultat r) {
+    public void mostrarResultat(modelo.Resultat r, double temps) {
         panelPunts.setResultat(r.p1, r.p2);
 
         lblEstat.setText(
             "P1: (" + r.p1.x + ", " + r.p1.y + ")  " +
             "P2: (" + r.p2.x + ", " + r.p2.y + ")  " +
-            "Dist: " + r.distancia
+            "Dist: " + r.distancia +
+            "  Temps: " + String.format("%.3f", temps) + " ms"
         );
     }
 }

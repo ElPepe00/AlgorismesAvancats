@@ -16,7 +16,11 @@ public class PanelPunts extends JPanel {
 
     public void setPunts(List<Punt> punts) {
         this.punts = punts;
-        repaint(); 
+
+        this.p1 = null;  // 🔥 limpiar línea
+        this.p2 = null;
+
+        repaint();
     }
 
     @Override
