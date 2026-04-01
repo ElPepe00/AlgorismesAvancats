@@ -106,7 +106,7 @@ public class Vista extends JFrame {
         }
 
         btnCalcular = crearBotoAccion("Calcular Parella", COLOR_VERD);
-        btnCalcular.setEnabled(false);
+        btnCalcular.setEnabled(true);
 
         pnlAlgoritme.add(Box.createVerticalStrut(15));
         pnlAlgoritme.add(btnCalcular);
@@ -190,4 +190,20 @@ public class Vista extends JFrame {
     public void mostrarPunts(java.util.List<modelo.Punt> punts) {
     panelPunts.setPunts(punts);
 }
+
+    public String getAlgoritme() {
+        if (rbN2.isSelected()) return "n2";
+        if (rbNLogN.isSelected()) return "nlogn";
+        return "llunyana";
+    }
+
+    public void mostrarResultat(modelo.Resultat r) {
+        panelPunts.setResultat(r.p1, r.p2);
+
+        lblEstat.setText(
+            "P1: (" + r.p1.x + ", " + r.p1.y + ")  " +
+            "P2: (" + r.p2.x + ", " + r.p2.y + ")  " +
+            "Dist: " + r.distancia
+        );
+    }
 }
