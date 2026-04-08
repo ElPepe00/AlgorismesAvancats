@@ -45,19 +45,31 @@ public class controlador {
         Resultat res;
 
         long start = System.nanoTime();
+        
 
         if (alg.equals("n2")) {
             res = algoritmes.mesProperaBrut(punts);
         } else if (alg.equals("llunyana")) {
             res = algoritmes.mesLlunyana(punts);
+        } else if (alg.equals("nlogn")) {
+
+            if (punts.size() > 5000) {
+                System.out.println("Usando bucket optimization");
+                res = algoritmes.bucketClosest(punts); 
+            } else {
+                res = algoritmes.mesProperaDivideParallel(punts);
+            }
+
         } else {
-            res = algoritmes.mesProperaDivideParallel(punts);
+            res = algoritmes.mesLlunyana(punts);
         }
 
         long end = System.nanoTime();
         double tempsMs = (end - start) / 1e6;
 
-        vista.mostrarResultat(res, tempsMs); 
+        boolean esMesPropera = alg.equals("n2") || alg.equals("nlogn");
+
+        vista.mostrarResultat(res, tempsMs, esMesPropera);
 
         System.out.println("Distancia: " + res.distancia);
         System.out.println("Tiempo: " + tempsMs + " ms");

@@ -2,6 +2,9 @@ package vista;
 
 import javax.swing.*;
 import javax.swing.border.*;
+
+import modelo.Resultat;
+
 import java.awt.*;
 import java.awt.event.ActionListener;
 
@@ -197,8 +200,8 @@ public class Vista extends JFrame {
         return "llunyana";
     }
 
-    public void mostrarResultat(modelo.Resultat r, double temps) {
-        panelPunts.setResultat(r.p1, r.p2);
+    public void mostrarResultat(Resultat r, double temps, boolean esMesPropera) {
+        panelPunts.setResultat(r.p1, r.p2, esMesPropera);
 
         lblEstat.setText(
             "P1: (" + r.p1.x + ", " + r.p1.y + ")  " +
