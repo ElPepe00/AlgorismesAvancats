@@ -18,8 +18,8 @@ public class Vista extends JFrame {
     private JButton btnGenerar;
     private JButton btnCalcular;
     private JSpinner spNumPunts;
-    
-    private JRadioButton rbUniforme, rbGaussiana;
+
+    private JRadioButton rbUniforme, rbGaussiana, rbExponencial;
     private ButtonGroup grupDistribucio;
 
     private JRadioButton rbN2, rbNLogN, rbLlunyana;
@@ -48,7 +48,7 @@ public class Vista extends JFrame {
         // ==========================================
         // 1. PANELL LATERAL ESQUERRE
         // ==========================================
-        
+
         JPanel pnlLateral = new JPanel();
         pnlLateral.setLayout(new BoxLayout(pnlLateral, BoxLayout.Y_AXIS));
         pnlLateral.setBackground(COLOR_FONS_MENU);
@@ -65,22 +65,25 @@ public class Vista extends JFrame {
 
         // -- Targeta 1: Generació de Punts --
         JPanel pnlGeneracio = crearTargeta("1. Generació de Punts");
-        
+
         JLabel lblN = new JLabel("Núm. Punts (N):");
         lblN.setAlignmentX(Component.LEFT_ALIGNMENT);
-        
+
         spNumPunts = new JSpinner(new SpinnerNumberModel(10000, 10, 1000000, 1000));
         spNumPunts.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
         spNumPunts.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         rbUniforme = new JRadioButton("Uniforme", true);
         rbGaussiana = new JRadioButton("Gaussiana");
+        rbExponencial = new JRadioButton("Exponencial");
         configurarRB(rbUniforme);
         configurarRB(rbGaussiana);
-        
+        configurarRB(rbExponencial);
+
         grupDistribucio = new ButtonGroup();
         grupDistribucio.add(rbUniforme);
         grupDistribucio.add(rbGaussiana);
+        grupDistribucio.add(rbExponencial);
 
         btnGenerar = crearBotoAccion("Generar Punts", COLOR_BLAU);
 
@@ -90,6 +93,7 @@ public class Vista extends JFrame {
         pnlGeneracio.add(Box.createVerticalStrut(10));
         pnlGeneracio.add(rbUniforme);
         pnlGeneracio.add(rbGaussiana);
+        pnlGeneracio.add(rbExponencial);
         pnlGeneracio.add(Box.createVerticalStrut(15));
         pnlGeneracio.add(btnGenerar);
 
@@ -99,7 +103,7 @@ public class Vista extends JFrame {
         rbN2 = new JRadioButton("Més propera O(n²)", true);
         rbNLogN = new JRadioButton("Més propera O(n·log n)");
         rbLlunyana = new JRadioButton("Més llunyana");
-        
+
         grupAlgoritme = new ButtonGroup();
         JRadioButton[] algos = {rbN2, rbNLogN, rbLlunyana};
         for (JRadioButton rb : algos) {
@@ -175,39 +179,57 @@ public class Vista extends JFrame {
         return panel;
     }
 
-        public void setControladorGenerar(ActionListener listener) {
+    public void setControladorGenerar(ActionListener listener) {
         btnGenerar.addActionListener(listener);
     }
 
     public void setControladorCalcular(ActionListener listener) {
         btnCalcular.addActionListener(listener);
     }
-        public int getNumPunts() {
+
+    public int getNumPunts() {
         return (int) spNumPunts.getValue();
     }
 
     public String getDistribucio() {
-        return rbUniforme.isSelected() ? "uniforme" : "gaussiana";
+        if (rbUniforme.isSelected()) {
+            return "Uniforme";
+        } else if (rbGaussiana.isSelected()) {
+            return "Gaussiana";
+        } else if (rbExponencial.isSelected()) {
+            return "Exponencial";
+        }
+
+        //por defecto
+        return "Uniforme";
     }
 
     public void mostrarPunts(java.util.List<modelo.Punt> punts) {
-    panelPunts.setPunts(punts);
-}
+        panelPunts.setPunts(punts);
+    }
 
     public String getAlgoritme() {
-        if (rbN2.isSelected()) return "n2";
-        if (rbNLogN.isSelected()) return "nlogn";
+        if (rbN2.isSelected()) {
+            return "n2";
+        }
+        if (rbNLogN.isSelected()) {
+            return "nlogn";
+        }
         return "llunyana";
+    }
+
+    public void setEstat(String text) {
+        lblEstat.setText(text);
     }
 
     public void mostrarResultat(Resultat r, double temps, boolean esMesPropera) {
         panelPunts.setResultat(r.p1, r.p2, esMesPropera);
 
         lblEstat.setText(
-            "P1: (" + r.p1.x + ", " + r.p1.y + ")  " +
-            "P2: (" + r.p2.x + ", " + r.p2.y + ")  " +
-            "Dist: " + r.distancia +
-            "  Temps: " + String.format("%.3f", temps) + " ms"
+                "P1: (" + r.p1.x + ", " + r.p1.y + ")  "
+                + "P2: (" + r.p2.x + ", " + r.p2.y + ")  "
+                + "Dist: " + r.distancia
+                + "  Temps: " + String.format("%.3f", temps) + " ms"
         );
     }
 }

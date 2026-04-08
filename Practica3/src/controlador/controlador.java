@@ -6,14 +6,14 @@ import modelo.*;
 
 import java.util.List;
 
-public class controlador {
+public class Controlador {
 
     private Vista vista;
     private GeneradorPunts generador;
     private List<Punt> punts;
     private Algoritmes algoritmes;
 
-    public controlador(Vista vista) {
+    public Controlador(Vista vista) {
         this.vista = vista;
         this.generador = new GeneradorPunts();
         this.algoritmes = new Algoritmes();
@@ -30,6 +30,7 @@ public class controlador {
 
     vista.mostrarPunts(punts); 
 
+    vista.setEstat("Punts generats amb distribució " + vista.getDistribucio() +". Selecciona l'algorisme de càlcul.");
     System.out.println("Generados " + n + " puntos (" + tipus + ")");
 }
 
