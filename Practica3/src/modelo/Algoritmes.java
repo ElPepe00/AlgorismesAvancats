@@ -48,52 +48,7 @@ public class Algoritmes {
 
         return closestRecParallel(ordenats);
     }
-    private Resultat closestRecParallel2(List<Punt> punts) {
-
-        if (punts.size() <= 5000){
-            return mesProperaBrut(punts); // base
-        }
-
-        int mid = punts.size() / 2;
-        Punt midPunt = punts.get(mid);
-
-        List<Punt> esquerra = new ArrayList<>(punts.subList(0, mid));
-        List<Punt> dreta = new ArrayList<>(punts.subList(mid, punts.size()));
-
-        final Resultat[] resEsq = new Resultat[1];
-        final Resultat[] resDre = new Resultat[1];
-
-        Thread t1 = new Thread(() -> {
-            resEsq[0] = closestRecParallel(esquerra);
-        });
-
-        Thread t2 = new Thread(() -> {
-            resDre[0] = closestRecParallel(dreta);
-        });
-
-        t1.start();
-        t2.start();
-
-        try {
-            t1.join();
-            t2.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        Resultat millor = (resEsq[0].distancia < resDre[0].distancia)
-                ? resEsq[0] : resDre[0];
-
-        List<Punt> strip = new ArrayList<>();
-
-        for (Punt p : punts) {
-            if (Math.abs(p.x - midPunt.x) < millor.distancia) {
-                strip.add(p);
-            }
-        }
-
-        return millorStrip(strip, millor);
-    }
+   
 
     private Resultat closestRecParallel(List<Punt> punts) {
 
