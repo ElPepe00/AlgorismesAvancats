@@ -37,6 +37,12 @@ public class Controlador {
 
         vista.mostrarPunts(punts);
 
+        // Pasar número de puntos al panel para el escalado de la cuadrícula
+        vista.getPanelPunts().setNumPunts(punts.size());
+
+        // Al generar puntos no se deben mostrar celdas
+        vista.getPanelPunts().setCellSize(-1);
+
         vista.setEstat("Punts generats amb distribució " + vista.getDistribucio() + ". Selecciona l'algorisme de càlcul.");
         System.out.println("Generados " + n + " puntos (" + tipus + ")");
     }
@@ -70,17 +76,38 @@ public class Controlador {
 
             if (alg.equals("n2")) {
                 res = algoritmes.mesProperaBrut(punts);
+
+                // No se muestran celdas en este algoritmo
+                vista.getPanelPunts().setCellSize(-1);
+
             } else if (alg.equals("llunyana")) {
                 res = algoritmes.mesLlunyana(punts);
+
+                // No se muestran celdas en este algoritmo
+                vista.getPanelPunts().setCellSize(-1);
+
             } else if (alg.equals("nlogn")) {
+
                 if (punts.size() > 5000) {
                     System.out.println("Usando bucket optimization");
                     res = algoritmes.bucketClosest(punts);
+
+                    // Solo en bucket se dibuja la cuadrícula
+                    double cellSize = algoritmes.getLastCellSize();
+                    vista.getPanelPunts().setCellSize(cellSize);
+
                 } else {
                     res = algoritmes.mesProperaDivideParallel(punts);
+
+                    // En divide y vencerás no se muestran celdas
+                    vista.getPanelPunts().setCellSize(-1);
                 }
+
             } else {
                 res = algoritmes.mesLlunyana(punts);
+
+                // Seguridad: no mostrar celdas
+                vista.getPanelPunts().setCellSize(-1);
             }
 
             long end = System.nanoTime();

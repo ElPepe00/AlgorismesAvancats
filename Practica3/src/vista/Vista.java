@@ -252,4 +252,8 @@ public class Vista extends JFrame {
                 + "  Temps: " + String.format("%.3f", temps) + " ms"
         );
     }
+
+    public PanelPunts getPanelPunts() {
+        return panelPunts;
+    }
 }

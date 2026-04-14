@@ -18,6 +18,9 @@ public class PanelPunts extends JPanel {
     private Punt p1, p2;
     private boolean esMesPropera;
 
+    private double cellSize = -1;
+    private int numPunts = 0;
+
     public PanelPunts() {
         setBackground(Color.WHITE);
     }
@@ -31,7 +34,16 @@ public class PanelPunts extends JPanel {
         repaint();
     }
 
-        @Override
+    public void setNumPunts(int numPunts) {
+        this.numPunts = numPunts;
+    }
+
+    public void setCellSize(double cellSize) {
+        this.cellSize = cellSize;
+        repaint();
+    }
+
+    @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
@@ -42,6 +54,7 @@ public class PanelPunts extends JPanel {
         int width = getWidth();
         int height = getHeight();
 
+        // ---------------- DIBUJO DE PUNTOS ----------------
         g2.setColor(Color.BLUE);
         for (Punt p : punts) {
             double px = Math.max(0, Math.min(1, p.x));
@@ -54,6 +67,7 @@ public class PanelPunts extends JPanel {
             g2.fillOval(x - size/2, y - size/2, size, size);
         }
 
+        // ---------------- DIBUJO DE RESULTADO ----------------
         if (p1 != null && p2 != null) {
             g2.setColor(Color.RED);
             g2.setStroke(new BasicStroke(2));
@@ -65,7 +79,8 @@ public class PanelPunts extends JPanel {
             int y2 = (int) (Math.max(0, Math.min(1, p2.y)) * height);
 
             g2.drawLine(x1, y1, x2, y2);
-            if(esMesPropera){
+
+            if (esMesPropera) {
                 int centerX = (x1 + x2) / 2;
                 int centerY = (y1 + y2) / 2;
 
@@ -87,6 +102,31 @@ public class PanelPunts extends JPanel {
                 g2.drawOval(-majorAxis / 2, -minorAxis / 2, majorAxis, minorAxis);
 
                 g2.setTransform(old);
+            }
+        }
+
+        // ---------------- DIBUJO DE CELDAS (SOLO BUCKET) ----------------
+        if (cellSize > 0 && numPunts > 0) {
+
+            // Escalado progresivo según número de puntos
+            double factor = Math.log10(numPunts);
+            double t = (factor - 4) / (6 - 4); // normaliza entre 10^4 y 10^6
+            t = Math.max(0, Math.min(1, t));
+
+            int maxCells = (int)(4 + t * (60 - 4));
+
+            double step = 1.0 / maxCells;
+
+            g2.setColor(new Color(200, 200, 200));
+
+            for (int i = 0; i <= maxCells; i++) {
+                int x = (int)(i * step * width);
+                g2.drawLine(x, 0, x, height);
+            }
+
+            for (int j = 0; j <= maxCells; j++) {
+                int y = (int)(j * step * height);
+                g2.drawLine(0, y, width, y);
             }
         }
     }

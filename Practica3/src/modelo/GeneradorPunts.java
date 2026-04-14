@@ -12,7 +12,7 @@ public class GeneradorPunts {
 
     public List<Punt> generar(int n, String tipus) {
         Random r = new Random();
-        List<Punt> punts = new ArrayList<>();
+        List<Punt> punts = new ArrayList<>(n); // mejora de rendimiento
 
         for (int i = 0; i < n; i++) {
             double x, y;
@@ -22,14 +22,18 @@ public class GeneradorPunts {
                     x = r.nextDouble();
                     y = r.nextDouble();
                     break;
+
                 case "Gaussiana":
                     x = (r.nextGaussian() / 8.0) + 0.5;
                     y = (r.nextGaussian() / 8.0) + 0.5;
                     break;
+
                 case "Exponencial":
-                    x = r.nextExponential() / 5.0;
-                    y = r.nextExponential() / 5.0;
+                    // Aproximación usando distribución exponencial
+                    x = -Math.log(1 - r.nextDouble()) / 5.0;
+                    y = -Math.log(1 - r.nextDouble()) / 5.0;
                     break;
+
                 default:
                     throw new AssertionError();
             }
@@ -48,7 +52,7 @@ public class GeneradorPunts {
                 y = 1.0;
             }
             // ------------
-            
+
             punts.add(new Punt(x, y));
         }
 

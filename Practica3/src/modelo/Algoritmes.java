@@ -16,6 +16,13 @@ public class Algoritmes {
     // Flag para controlar la interrupción del hilo
     private volatile boolean cancelado = false;
 
+    // Tamaño de celda utilizado en bucket
+    private double lastCellSize = -1;
+
+    public double getLastCellSize() {
+        return lastCellSize;
+    }
+
     /**
      * Activa el flag de cancelación para detener los bucles.
      */
@@ -28,6 +35,7 @@ public class Algoritmes {
      */
     public void preparar() {
         this.cancelado = false;
+        this.lastCellSize = -1;
     }
 
     public Resultat mesProperaBrut(List<Punt> punts) {
@@ -161,6 +169,7 @@ public class Algoritmes {
         if (punts.size() < 2) return null;
 
         double d = Double.MAX_VALUE;
+
         int limit = Math.min(100, punts.size());
         for (int i = 0; i < limit; i++) {
             for (int j = i + 1; j < limit; j++) {
@@ -170,8 +179,12 @@ public class Algoritmes {
         }
 
         if (d == 0) d = 0.0001;
+
         Map<String, List<Punt>> grid = new HashMap<>();
         double cellSize = d;
+
+        // Guardar cellSize para la vista
+        lastCellSize = cellSize;
 
         for (Punt p : punts) {
             if (cancelado) return null; // Comprobación en la creación de buckets
