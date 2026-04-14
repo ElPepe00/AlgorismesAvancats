@@ -77,8 +77,8 @@ public class Controlador {
         // Tiempo inicial
         long start = System.nanoTime();
 
-        // Timer que actualiza cada 100ms
-        timer = new Timer(100, e -> {
+        // Timer que actualiza cada 500ms
+        timer = new Timer(500, e -> {
             double temps = (System.nanoTime() - start) / 1e6;
             vista.mostrarTempsActual(temps);
         });
