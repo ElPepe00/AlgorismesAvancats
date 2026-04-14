@@ -17,6 +17,7 @@ public class Vista extends JFrame {
 
     private JButton btnGenerar;
     private JButton btnCalcular;
+    private JButton btnParar;
     private JSpinner spNumPunts;
 
     private JRadioButton rbUniforme, rbGaussiana, rbExponencial;
@@ -31,6 +32,7 @@ public class Vista extends JFrame {
     private final Color COLOR_FONS_MENU = new Color(240, 244, 248);
     private final Color COLOR_VERD = new Color(39, 174, 96);
     private final Color COLOR_BLAU = new Color(52, 152, 219);
+    private final Color COLOR_VERMELL = new Color(192, 57, 43);
     private final Font FONT_TITOLS = new Font("Segoe UI", Font.BOLD, 14);
 
     public Vista() {
@@ -115,8 +117,13 @@ public class Vista extends JFrame {
         btnCalcular = crearBotoAccion("Calcular Parella", COLOR_VERD);
         btnCalcular.setEnabled(true);
 
+        btnParar = crearBotoAccion("Aturar", COLOR_VERMELL);
+        btnParar.setEnabled(false);
+        
         pnlAlgoritme.add(Box.createVerticalStrut(15));
         pnlAlgoritme.add(btnCalcular);
+        pnlAlgoritme.add(Box.createVerticalStrut(10));
+        pnlAlgoritme.add(btnParar);
 
         // Afegir elements al lateral
         pnlLateral.add(lblTitolMenu);
@@ -185,6 +192,19 @@ public class Vista extends JFrame {
 
     public void setControladorCalcular(ActionListener listener) {
         btnCalcular.addActionListener(listener);
+    }
+    
+    public void setControladorParar(ActionListener listener) {
+        btnParar.addActionListener(listener);
+    }
+    
+    public void setModoCalculando(boolean calculando) {
+        btnCalcular.setEnabled(!calculando);
+        btnGenerar.setEnabled(!calculando);
+        btnParar.setEnabled(calculando);
+        if (calculando) {
+            lblEstat.setText("Calculant... Prem 'Aturar' per cancel·lar.");
+        }
     }
 
     public int getNumPunts() {
