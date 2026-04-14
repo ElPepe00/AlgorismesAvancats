@@ -4,6 +4,7 @@ import vista.*;
 import modelo.*;
 import java.util.List;
 import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 
 /**
  *
@@ -17,6 +18,9 @@ public class Controlador {
     private GeneradorPunts generador;
     private List<Punt> punts;
     private Algoritmes algoritmes;
+
+    // Timer para actualizar el tiempo en pantalla
+    private Timer timer;
 
     public Controlador(Vista vista) {
         this.vista = vista;
@@ -50,6 +54,10 @@ public class Controlador {
     private void parar() {
         // Llama al método del modelo para activar el flag de cancelación
         algoritmes.cancelar();
+
+        // Detener el timer si está activo
+        if (timer != null) timer.stop();
+
         vista.setEstat("Càlcul cancel·lat per l'usuari.");
     }
 
@@ -66,9 +74,20 @@ public class Controlador {
         // Bloquea botones de generación/cálculo y habilita el botón de parar
         vista.setModoCalculando(true);
 
+        // Tiempo inicial
+        long start = System.nanoTime();
+
+        // Timer que actualiza cada 100ms
+        timer = new Timer(100, e -> {
+            double temps = (System.nanoTime() - start) / 1e6;
+            vista.mostrarTempsActual(temps);
+        });
+
+        timer.start();
+
         // Ejecuta el cálculo en un hilo independiente para evitar que la interfaz se congele
         new Thread(() -> {
-            long start = System.nanoTime();
+
             Resultat res;
 
             // Asegurar que el flag de cancelación esté desactivado antes de empezar
@@ -115,6 +134,10 @@ public class Controlador {
 
             // Vuelve al hilo de despacho de eventos (EDT) para actualizar la interfaz
             SwingUtilities.invokeLater(() -> {
+
+                // Detener el timer al finalizar
+                if (timer != null) timer.stop();
+
                 if (res != null) { // Si el resultado no es null, el cálculo terminó correctamente
                     boolean esMesPropera = alg.equals("n2") || alg.equals("nlogn");
                     vista.mostrarResultat(res, tempsMs, esMesPropera);

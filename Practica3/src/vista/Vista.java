@@ -256,4 +256,8 @@ public class Vista extends JFrame {
     public PanelPunts getPanelPunts() {
         return panelPunts;
     }
+
+    public void mostrarTempsActual(double tempsMs) {
+        lblEstat.setText("Calculant... Temps: " + String.format("%.1f", tempsMs) + " ms");
+    }
 }
