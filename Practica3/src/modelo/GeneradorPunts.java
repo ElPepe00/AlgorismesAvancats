@@ -2,6 +2,12 @@ package modelo;
 
 import java.util.*;
 
+/**
+ *
+ * @author Josep Oliver i Hugo Valls
+ * @date 4 abr 2026
+ * @name GeneradorPunts
+ */
 public class GeneradorPunts {
 
     public List<Punt> generar(int n, String tipus) {

@@ -5,6 +5,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ *
+ * @author Josep Oliver i Hugo Valls
+ * @date 4 abr 2026
+ * @name Algoritmes
+ */
 public class Algoritmes {
 
     public Resultat mesProperaBrut(List<Punt> punts) {

@@ -2,10 +2,14 @@ package controlador;
 
 import vista.*;
 import modelo.*;
-
-
 import java.util.List;
 
+/**
+ *
+ * @author Josep Oliver i Hugo Valls
+ * @date 4 abr 2026
+ * @name Controlador
+ */
 public class Controlador {
 
     private Vista vista;

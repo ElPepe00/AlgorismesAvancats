@@ -1,6 +1,13 @@
 package modelo;
 
+/**
+ *
+ * @author Josep Oliver i Hugo Valls
+ * @date 4 abr 2026
+ * @name Punt
+ */
 public class Punt {
+    
     public double x, y;
 
     public Punt(double x, double y) {

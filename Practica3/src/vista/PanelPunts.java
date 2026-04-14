@@ -6,6 +6,12 @@ import java.util.List;
 import modelo.Punt;
 import java.awt.geom.AffineTransform; //para hacer la forma de elipse en el circulo de mas cercanos
 
+/**
+ *
+ * @author Josep Oliver i Hugo Valls
+ * @date 24 mar 2026
+ * @name PanelPunts
+ */
 public class PanelPunts extends JPanel {
 
     private List<Punt> punts;
@@ -19,7 +25,7 @@ public class PanelPunts extends JPanel {
     public void setPunts(List<Punt> punts) {
         this.punts = punts;
 
-        this.p1 = null;  // 🔥 limpiar línea
+        this.p1 = null;  //limpiar línea
         this.p2 = null;
 
         repaint();

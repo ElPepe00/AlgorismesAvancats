@@ -1,6 +1,13 @@
 package modelo;
 
+/**
+ *
+ * @author Josep Oliver i Hugo Valls
+ * @date 4 abr 2026
+ * @name Resultat
+ */
 public class Resultat {
+    
     public Punt p1, p2;
     public double distancia;
 

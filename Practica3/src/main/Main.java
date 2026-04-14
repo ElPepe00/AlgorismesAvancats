@@ -6,7 +6,7 @@ import controlador.Controlador;
 /**
  *
  * @author Josep Oliver i Hugo Valls
- * @date 24 mar 2026
+ * @date 4 abr 2026
  * @name Practica 3
  */
 public class Main {
