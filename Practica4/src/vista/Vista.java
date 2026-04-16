@@ -1,0 +1,306 @@
+package vista;
+
+import javax.swing.*;
+import javax.swing.border.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+import java.awt.event.ActionListener;
+import java.io.File;
+
+/**
+ * @author Josep Oliver i Hugo Valls
+ * @date 16 abr 2026
+ * @name Vista
+ */
+public class Vista extends JFrame {
+
+    // Botons d'accions principals
+    private JButton btnCarregar;
+    private JButton btnComprimir;
+    private JButton btnDescomprimir;
+    private JButton btnGuardar;
+    
+    // Elements d'informació del fitxer
+    private JLabel lblFitxerSeleccionat;
+    private File fitxerActual;
+
+    // Configuració (Opcional avaluada positivament)
+    private JRadioButton rbBinaryHeap, rbFibonacci, rbLlistaOrd, rbLlistaDico;
+    private ButtonGroup grupEstructures;
+    private JSpinner spPassades;
+
+    // Elements d'estat i progrés (Panell Sud)
+    private JLabel lblEstat;
+    private JProgressBar pbProgres;
+    private JLabel lblTempsRestant;
+
+    // Estadístiques (Panell Central)
+    private JLabel lblPercentatgeComp;
+    private JLabel lblTempsExecucio;
+    private JLabel lblLongitudMitjana;
+    
+    // Visualització
+    private JPanel panelArbre; // Aquí dibuixarem l'arbre
+    private JTable taulaFrequencies;
+    private DefaultTableModel modelTaula;
+
+    // Colors i Fonts globals (Mantenint l'estil de les P2 i P3)
+    private final Color COLOR_FONS_MENU = new Color(240, 244, 248);
+    private final Color COLOR_VERD = new Color(39, 174, 96);
+    private final Color COLOR_BLAU = new Color(52, 152, 219);
+    private final Color COLOR_VERMELL = new Color(192, 57, 43);
+    private final Color COLOR_TARONJA = new Color(230, 126, 34);
+    private final Font FONT_TITOLS = new Font("Segoe UI", Font.BOLD, 14);
+
+    public Vista() {
+        setTitle("Pràctica 4 - Compressor d'arxius basat en Huffman");
+        setSize(1200, 800);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+        setLayout(new BorderLayout());
+        getContentPane().setBackground(Color.WHITE);
+
+        inicialitzarComponents();
+    }
+
+    private void inicialitzarComponents() {
+        // ==========================================
+        // 1. PANELL LATERAL ESQUERRE (Configuració)
+        // ==========================================
+        JPanel pnlLateral = new JPanel();
+        pnlLateral.setLayout(new BoxLayout(pnlLateral, BoxLayout.Y_AXIS));
+        pnlLateral.setBackground(COLOR_FONS_MENU);
+        pnlLateral.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createMatteBorder(0, 0, 0, 2, new Color(220, 225, 230)),
+                BorderFactory.createEmptyBorder(20, 20, 20, 20)
+        ));
+        pnlLateral.setPreferredSize(new Dimension(240, 0));
+
+        JLabel lblTitolMenu = new JLabel("Panell de Control");
+        lblTitolMenu.setFont(new Font("Segoe UI", Font.BOLD, 22));
+        lblTitolMenu.setForeground(new Color(44, 62, 80));
+        lblTitolMenu.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        // -- Targeta 1: Fitxer --
+        JPanel pnlFitxer = crearTargeta("1. Gestió de Fitxers");
+        btnCarregar = crearBotoAccion("Carregar Arxiu", COLOR_BLAU);
+        lblFitxerSeleccionat = new JLabel("Cap arxiu seleccionat.");
+        lblFitxerSeleccionat.setFont(new Font("Segoe UI", Font.ITALIC, 12));
+        lblFitxerSeleccionat.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        pnlFitxer.add(btnCarregar);
+        pnlFitxer.add(Box.createVerticalStrut(10));
+        pnlFitxer.add(lblFitxerSeleccionat);
+
+        // -- Targeta 2: Estructura de Dades (Opcional) --
+        JPanel pnlEstructura = crearTargeta("2. Cua de Prioritats");
+        
+        rbBinaryHeap = new JRadioButton("Binary Heap", true);
+        rbFibonacci = new JRadioButton("Fibonacci Heap");
+        rbLlistaOrd = new JRadioButton("Llista Ordenada");
+        rbLlistaDico = new JRadioButton("Llista Dicotòmica");
+        
+        grupEstructures = new ButtonGroup();
+        JRadioButton[] rbArray = {rbBinaryHeap, rbFibonacci, rbLlistaOrd, rbLlistaDico};
+        for(JRadioButton rb : rbArray) {
+            configurarRB(rb);
+            grupEstructures.add(rb);
+            pnlEstructura.add(rb);
+        }
+        
+        pnlEstructura.add(Box.createVerticalStrut(10));
+        pnlEstructura.add(new JLabel("Núm. Passades:"));
+        spPassades = new JSpinner(new SpinnerNumberModel(1, 1, 5, 1));
+        spPassades.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
+        spPassades.setAlignmentX(Component.LEFT_ALIGNMENT);
+        pnlEstructura.add(spPassades);
+
+        // -- Targeta 3: Accions --
+        JPanel pnlAccions = crearTargeta("3. Execució");
+        btnComprimir = crearBotoAccion("Comprimir", COLOR_VERD);
+        btnDescomprimir = crearBotoAccion("Descomprimir", COLOR_TARONJA);
+        btnGuardar = crearBotoAccion("Guardar Resultat", COLOR_BLAU);
+        btnComprimir.setEnabled(false);
+        btnDescomprimir.setEnabled(false);
+        btnGuardar.setEnabled(false);
+
+        pnlAccions.add(btnComprimir);
+        pnlAccions.add(Box.createVerticalStrut(10));
+        pnlAccions.add(btnDescomprimir);
+        pnlAccions.add(Box.createVerticalStrut(10));
+        pnlAccions.add(btnGuardar);
+
+        // Muntar el lateral
+        pnlLateral.add(lblTitolMenu);
+        pnlLateral.add(Box.createVerticalStrut(20));
+        pnlLateral.add(pnlFitxer);
+        pnlLateral.add(Box.createVerticalStrut(15));
+        pnlLateral.add(pnlEstructura);
+        pnlLateral.add(Box.createVerticalStrut(15));
+        pnlLateral.add(pnlAccions);
+        pnlLateral.add(Box.createVerticalGlue());
+
+        // ==========================================
+        // 2. PANELL CENTRAL (Visualització i Stats)
+        // ==========================================
+        JPanel pnlCentral = new JPanel(new BorderLayout());
+        pnlCentral.setBackground(Color.WHITE);
+        
+        // 2.1 Arbre de Huffman (Pots crear una classe PanelArbre més endavant)
+        panelArbre = new JPanel();
+        panelArbre.setBackground(Color.WHITE);
+        panelArbre.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY), "Visualització Arbre de Huffman", TitledBorder.LEFT, TitledBorder.TOP, FONT_TITOLS));
+        // Aquí afegiràs la lògica de dibuix amb Graphics o GraphStream
+        JLabel lblPlaceholderArbre = new JLabel("L'arbre es dibuixarà aquí...", SwingConstants.CENTER);
+        panelArbre.setLayout(new BorderLayout());
+        panelArbre.add(lblPlaceholderArbre, BorderLayout.CENTER);
+
+        // 2.2 Estadístiques i Taula
+        JPanel pnlDades = new JPanel(new BorderLayout(10, 10));
+        pnlDades.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        pnlDades.setBackground(Color.WHITE);
+        pnlDades.setPreferredSize(new Dimension(350, 0));
+        
+        JPanel pnlStats = crearTargeta("Estadístiques");
+        lblPercentatgeComp = new JLabel("Taxa de compressió: - %");
+        lblTempsExecucio = new JLabel("Temps d'execució: - ms");
+        lblLongitudMitjana = new JLabel("Longitud mitjana: - bits/símbol");
+        pnlStats.add(lblPercentatgeComp);
+        pnlStats.add(Box.createVerticalStrut(5));
+        pnlStats.add(lblTempsExecucio);
+        pnlStats.add(Box.createVerticalStrut(5));
+        pnlStats.add(lblLongitudMitjana);
+
+        // Taula per mostrar Símbol | Freqüència | Codi
+        String[] columnes = {"Símbol", "Freqüència", "Codi Huffman"};
+        modelTaula = new DefaultTableModel(columnes, 0);
+        taulaFrequencies = new JTable(modelTaula);
+        JScrollPane scrollTaula = new JScrollPane(taulaFrequencies);
+        scrollTaula.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY), "Diccionari / Entropia"));
+
+        pnlDades.add(pnlStats, BorderLayout.NORTH);
+        pnlDades.add(scrollTaula, BorderLayout.CENTER);
+
+        // JSplitPane per permetre redimensionar l'arbre vs taula
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, panelArbre, pnlDades);
+        splitPane.setResizeWeight(0.7); // 70% espai per l'arbre
+        splitPane.setDividerSize(5);
+        splitPane.setBorder(null);
+        splitPane.setDividerLocation(650);
+
+        pnlCentral.add(splitPane, BorderLayout.CENTER);
+
+        // ==========================================
+        // 3. PANELL SUD (Estat i Progrés)
+        // ==========================================
+        JPanel pnlEstat = new JPanel(new BorderLayout(15, 0));
+        pnlEstat.setBackground(COLOR_FONS_MENU);
+        pnlEstat.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createMatteBorder(2, 0, 0, 0, new Color(220, 225, 230)),
+            BorderFactory.createEmptyBorder(10, 15, 10, 15)
+        ));
+
+        lblEstat = new JLabel("Esperant fitxer...");
+        lblEstat.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        
+        JPanel pnlProgres = new JPanel(new BorderLayout(10, 0));
+        pnlProgres.setBackground(COLOR_FONS_MENU);
+        pbProgres = new JProgressBar(0, 100);
+        pbProgres.setStringPainted(true);
+        lblTempsRestant = new JLabel("Temps restant: --:--");
+        lblTempsRestant.setFont(new Font("Segoe UI", Font.ITALIC, 12));
+        
+        pnlProgres.add(pbProgres, BorderLayout.CENTER);
+        pnlProgres.add(lblTempsRestant, BorderLayout.EAST);
+        pnlProgres.setPreferredSize(new Dimension(400, 25));
+
+        pnlEstat.add(lblEstat, BorderLayout.WEST);
+        pnlEstat.add(pnlProgres, BorderLayout.EAST);
+
+        // Afegir tot a la finestra
+        add(pnlLateral, BorderLayout.WEST);
+        add(pnlCentral, BorderLayout.CENTER);
+        add(pnlEstat, BorderLayout.SOUTH);
+    }
+
+    // ==========================================
+    // MÈTODES AUXILIARS (Reutilitzats P2/P3)
+    // ==========================================
+    private void configurarRB(JRadioButton rb) {
+        rb.setBackground(Color.WHITE);
+        rb.setAlignmentX(Component.LEFT_ALIGNMENT);
+        rb.setFocusPainted(false);
+        rb.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+    }
+
+    private JButton crearBotoAccion(String text, Color colorFons) {
+        JButton btn = new JButton(text);
+        btn.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        btn.setBackground(colorFons);
+        btn.setForeground(Color.WHITE);
+        btn.setFocusPainted(false);
+        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btn.setAlignmentX(Component.LEFT_ALIGNMENT);
+        btn.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
+        return btn;
+    }
+
+    private JPanel crearTargeta(String titol) {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setBackground(Color.WHITE);
+        TitledBorder vora = BorderFactory.createTitledBorder(
+                BorderFactory.createLineBorder(new Color(200, 200, 200), 1), titol
+        );
+        vora.setTitleFont(FONT_TITOLS);
+        panel.setBorder(BorderFactory.createCompoundBorder(vora, BorderFactory.createEmptyBorder(15, 15, 15, 15)));
+        panel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        panel.setMaximumSize(new Dimension(230, 300));
+        return panel;
+    }
+
+    // ==========================================
+    // GETTERS, SETTERS I LISTENERS (Pel Controlador)
+    // ==========================================
+    public void setControladorCarregar(ActionListener listener) { btnCarregar.addActionListener(listener); }
+    public void setControladorComprimir(ActionListener listener) { btnComprimir.addActionListener(listener); }
+    public void setControladorDescomprimir(ActionListener listener) { btnDescomprimir.addActionListener(listener); }
+    public void setControladorGuardar(ActionListener listener) { btnGuardar.addActionListener(listener); }
+
+    public void setFitxerActual(File fitxer) {
+        this.fitxerActual = fitxer;
+        if(fitxer != null) {
+            lblFitxerSeleccionat.setText(fitxer.getName());
+            btnComprimir.setEnabled(true);
+            btnDescomprimir.setEnabled(true);
+        }
+    }
+
+    public void actualitzarProgres(int percentatge, String tempsRestant) {
+        pbProgres.setValue(percentatge);
+        lblTempsRestant.setText("Temps restant: " + tempsRestant);
+    }
+
+    public void mostrarEstadistiques(double taxa, long tempsMs, double longMitjana) {
+        lblPercentatgeComp.setText(String.format("Taxa de compressió: %.2f %%", taxa));
+        lblTempsExecucio.setText("Temps d'execució: " + tempsMs + " ms");
+        lblLongitudMitjana.setText(String.format("Longitud mitjana: %.2f bits/símbol", longMitjana));
+    }
+
+    public void afegirFilaTaula(String simbol, int frequencia, String codi) {
+        modelTaula.addRow(new Object[]{simbol, frequencia, codi});
+    }
+
+    public void netejarTaula() {
+        modelTaula.setRowCount(0);
+    }
+
+    public void setEstat(String text, Color color) {
+        lblEstat.setText(text);
+        lblEstat.setForeground(color);
+    }
+
+    public void habilitarGuardar(boolean habilitat) {
+        btnGuardar.setEnabled(habilitat);
+    }
+}
