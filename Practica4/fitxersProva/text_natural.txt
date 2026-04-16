@@ -1,0 +1,81 @@
+L'algorisme de Huffman és un mètode de compressió de dades que utilitza un enfocament àvid o de curta mira. 
+En lloc de mirar tota la seqüència globalment per decidir els codis, l'algorisme pren decisions òptimes locals a cada pas: 
+ajunta els dos nodes amb menor freqüència. Aquesta simplicitat és la seva força, ja que garanteix un codi prefix òptim 
+per a una distribució de freqüències donada. El dissenyador de programari ha de tenir en compte que, en un sistema real, 
+la gestió de la memòria és vital: no podem carregar un fitxer d'un gigabyte sencer a la RAM; l'hem de processar byte a byte.L'algorisme de Huffman és un mètode de compressió de dades que utilitza un enfocament àvid o de curta mira. 
+En lloc de mirar tota la seqüència globalment per decidir els codis, l'algorisme pren decisions òptimes locals a cada pas: 
+ajunta els dos nodes amb menor freqüència. Aquesta simplicitat és la seva força, ja que garanteix un codi prefix òptim 
+per a una distribució de freqüències donada. El dissenyador de programari ha de tenir en compte que, en un sistema real, 
+la gestió de la memòria és vital: no podem carregar un fitxer d'un gigabyte sencer a la RAM; l'hem de processar byte a byte.L'algorisme de Huffman és un mètode de compressió de dades que utilitza un enfocament àvid o de curta mira. 
+En lloc de mirar tota la seqüència globalment per decidir els codis, l'algorisme pren decisions òptimes locals a cada pas: 
+ajunta els dos nodes amb menor freqüència. Aquesta simplicitat és la seva força, ja que garanteix un codi prefix òptim 
+per a una distribució de freqüències donada. El dissenyador de programari ha de tenir en compte que, en un sistema real, 
+la gestió de la memòria és vital: no podem carregar un fitxer d'un gigabyte sencer a la RAM; l'hem de processar byte a byte.L'algorisme de Huffman és un mètode de compressió de dades que utilitza un enfocament àvid o de curta mira. 
+En lloc de mirar tota la seqüència globalment per decidir els codis, l'algorisme pren decisions òptimes locals a cada pas: 
+ajunta els dos nodes amb menor freqüència. Aquesta simplicitat és la seva força, ja que garanteix un codi prefix òptim 
+per a una distribució de freqüències donada. El dissenyador de programari ha de tenir en compte que, en un sistema real, 
+la gestió de la memòria és vital: no podem carregar un fitxer d'un gigabyte sencer a la RAM; l'hem de processar byte a byte.L'algorisme de Huffman és un mètode de compressió de dades que utilitza un enfocament àvid o de curta mira. 
+En lloc de mirar tota la seqüència globalment per decidir els codis, l'algorisme pren decisions òptimes locals a cada pas: 
+ajunta els dos nodes amb menor freqüència. Aquesta simplicitat és la seva força, ja que garanteix un codi prefix òptim 
+per a una distribució de freqüències donada. El dissenyador de programari ha de tenir en compte que, en un sistema real, 
+la gestió de la memòria és vital: no podem carregar un fitxer d'un gigabyte sencer a la RAM; l'hem de processar byte a byte.L'algorisme de Huffman és un mètode de compressió de dades que utilitza un enfocament àvid o de curta mira. 
+En lloc de mirar tota la seqüència globalment per decidir els codis, l'algorisme pren decisions òptimes locals a cada pas: 
+ajunta els dos nodes amb menor freqüència. Aquesta simplicitat és la seva força, ja que garanteix un codi prefix òptim 
+per a una distribució de freqüències donada. El dissenyador de programari ha de tenir en compte que, en un sistema real, 
+la gestió de la memòria és vital: no podem carregar un fitxer d'un gigabyte sencer a la RAM; l'hem de processar byte a byte.L'algorisme de Huffman és un mètode de compressió de dades que utilitza un enfocament àvid o de curta mira. 
+En lloc de mirar tota la seqüència globalment per decidir els codis, l'algorisme pren decisions òptimes locals a cada pas: 
+ajunta els dos nodes amb menor freqüència. Aquesta simplicitat és la seva força, ja que garanteix un codi prefix òptim 
+per a una distribució de freqüències donada. El dissenyador de programari ha de tenir en compte que, en un sistema real, 
+la gestió de la memòria és vital: no podem carregar un fitxer d'un gigabyte sencer a la RAM; l'hem de processar byte a byte.L'algorisme de Huffman és un mètode de compressió de dades que utilitza un enfocament àvid o de curta mira. 
+En lloc de mirar tota la seqüència globalment per decidir els codis, l'algorisme pren decisions òptimes locals a cada pas: 
+ajunta els dos nodes amb menor freqüència. Aquesta simplicitat és la seva força, ja que garanteix un codi prefix òptim 
+per a una distribució de freqüències donada. El dissenyador de programari ha de tenir en compte que, en un sistema real, 
+la gestió de la memòria és vital: no podem carregar un fitxer d'un gigabyte sencer a la RAM; l'hem de processar byte a byte.L'algorisme de Huffman és un mètode de compressió de dades que utilitza un enfocament àvid o de curta mira. 
+En lloc de mirar tota la seqüència globalment per decidir els codis, l'algorisme pren decisions òptimes locals a cada pas: 
+ajunta els dos nodes amb menor freqüència. Aquesta simplicitat és la seva força, ja que garanteix un codi prefix òptim 
+per a una distribució de freqüències donada. El dissenyador de programari ha de tenir en compte que, en un sistema real, 
+la gestió de la memòria és vital: no podem carregar un fitxer d'un gigabyte sencer a la RAM; l'hem de processar byte a byte.L'algorisme de Huffman és un mètode de compressió de dades que utilitza un enfocament àvid o de curta mira. 
+En lloc de mirar tota la seqüència globalment per decidir els codis, l'algorisme pren decisions òptimes locals a cada pas: 
+ajunta els dos nodes amb menor freqüència. Aquesta simplicitat és la seva força, ja que garanteix un codi prefix òptim 
+per a una distribució de freqüències donada. El dissenyador de programari ha de tenir en compte que, en un sistema real, 
+la gestió de la memòria és vital: no podem carregar un fitxer d'un gigabyte sencer a la RAM; l'hem de processar byte a byte.L'algorisme de Huffman és un mètode de compressió de dades que utilitza un enfocament àvid o de curta mira. 
+En lloc de mirar tota la seqüència globalment per decidir els codis, l'algorisme pren decisions òptimes locals a cada pas: 
+ajunta els dos nodes amb menor freqüència. Aquesta simplicitat és la seva força, ja que garanteix un codi prefix òptim 
+per a una distribució de freqüències donada. El dissenyador de programari ha de tenir en compte que, en un sistema real, 
+la gestió de la memòria és vital: no podem carregar un fitxer d'un gigabyte sencer a la RAM; l'hem de processar byte a byte.L'algorisme de Huffman és un mètode de compressió de dades que utilitza un enfocament àvid o de curta mira. 
+En lloc de mirar tota la seqüència globalment per decidir els codis, l'algorisme pren decisions òptimes locals a cada pas: 
+ajunta els dos nodes amb menor freqüència. Aquesta simplicitat és la seva força, ja que garanteix un codi prefix òptim 
+per a una distribució de freqüències donada. El dissenyador de programari ha de tenir en compte que, en un sistema real, 
+la gestió de la memòria és vital: no podem carregar un fitxer d'un gigabyte sencer a la RAM; l'hem de processar byte a byte.L'algorisme de Huffman és un mètode de compressió de dades que utilitza un enfocament àvid o de curta mira. 
+En lloc de mirar tota la seqüència globalment per decidir els codis, l'algorisme pren decisions òptimes locals a cada pas: 
+ajunta els dos nodes amb menor freqüència. Aquesta simplicitat és la seva força, ja que garanteix un codi prefix òptim 
+per a una distribució de freqüències donada. El dissenyador de programari ha de tenir en compte que, en un sistema real, 
+la gestió de la memòria és vital: no podem carregar un fitxer d'un gigabyte sencer a la RAM; l'hem de processar byte a byte.L'algorisme de Huffman és un mètode de compressió de dades que utilitza un enfocament àvid o de curta mira. 
+En lloc de mirar tota la seqüència globalment per decidir els codis, l'algorisme pren decisions òptimes locals a cada pas: 
+ajunta els dos nodes amb menor freqüència. Aquesta simplicitat és la seva força, ja que garanteix un codi prefix òptim 
+per a una distribució de freqüències donada. El dissenyador de programari ha de tenir en compte que, en un sistema real, 
+la gestió de la memòria és vital: no podem carregar un fitxer d'un gigabyte sencer a la RAM; l'hem de processar byte a byte.L'algorisme de Huffman és un mètode de compressió de dades que utilitza un enfocament àvid o de curta mira. 
+En lloc de mirar tota la seqüència globalment per decidir els codis, l'algorisme pren decisions òptimes locals a cada pas: 
+ajunta els dos nodes amb menor freqüència. Aquesta simplicitat és la seva força, ja que garanteix un codi prefix òptim 
+per a una distribució de freqüències donada. El dissenyador de programari ha de tenir en compte que, en un sistema real, 
+la gestió de la memòria és vital: no podem carregar un fitxer d'un gigabyte sencer a la RAM; l'hem de processar byte a byte.L'algorisme de Huffman és un mètode de compressió de dades que utilitza un enfocament àvid o de curta mira. 
+En lloc de mirar tota la seqüència globalment per decidir els codis, l'algorisme pren decisions òptimes locals a cada pas: 
+ajunta els dos nodes amb menor freqüència. Aquesta simplicitat és la seva força, ja que garanteix un codi prefix òptim 
+per a una distribució de freqüències donada. El dissenyador de programari ha de tenir en compte que, en un sistema real, 
+la gestió de la memòria és vital: no podem carregar un fitxer d'un gigabyte sencer a la RAM; l'hem de processar byte a byte.L'algorisme de Huffman és un mètode de compressió de dades que utilitza un enfocament àvid o de curta mira. 
+En lloc de mirar tota la seqüència globalment per decidir els codis, l'algorisme pren decisions òptimes locals a cada pas: 
+ajunta els dos nodes amb menor freqüència. Aquesta simplicitat és la seva força, ja que garanteix un codi prefix òptim 
+per a una distribució de freqüències donada. El dissenyador de programari ha de tenir en compte que, en un sistema real, 
+la gestió de la memòria és vital: no podem carregar un fitxer d'un gigabyte sencer a la RAM; l'hem de processar byte a byte.L'algorisme de Huffman és un mètode de compressió de dades que utilitza un enfocament àvid o de curta mira. 
+En lloc de mirar tota la seqüència globalment per decidir els codis, l'algorisme pren decisions òptimes locals a cada pas: 
+ajunta els dos nodes amb menor freqüència. Aquesta simplicitat és la seva força, ja que garanteix un codi prefix òptim 
+per a una distribució de freqüències donada. El dissenyador de programari ha de tenir en compte que, en un sistema real, 
+la gestió de la memòria és vital: no podem carregar un fitxer d'un gigabyte sencer a la RAM; l'hem de processar byte a byte.L'algorisme de Huffman és un mètode de compressió de dades que utilitza un enfocament àvid o de curta mira. 
+En lloc de mirar tota la seqüència globalment per decidir els codis, l'algorisme pren decisions òptimes locals a cada pas: 
+ajunta els dos nodes amb menor freqüència. Aquesta simplicitat és la seva força, ja que garanteix un codi prefix òptim 
+per a una distribució de freqüències donada. El dissenyador de programari ha de tenir en compte que, en un sistema real, 
+la gestió de la memòria és vital: no podem carregar un fitxer d'un gigabyte sencer a la RAM; l'hem de processar byte a byte.L'algorisme de Huffman és un mètode de compressió de dades que utilitza un enfocament àvid o de curta mira. 
+En lloc de mirar tota la seqüència globalment per decidir els codis, l'algorisme pren decisions òptimes locals a cada pas: 
+ajunta els dos nodes amb menor freqüència. Aquesta simplicitat és la seva força, ja que garanteix un codi prefix òptim 
+per a una distribució de freqüències donada. El dissenyador de programari ha de tenir en compte que, en un sistema real, 
+la gestió de la memòria és vital: no podem carregar un fitxer d'un gigabyte sencer a la RAM; l'hem de processar byte a byte.
