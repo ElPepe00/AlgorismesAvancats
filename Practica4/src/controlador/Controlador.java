@@ -6,17 +6,16 @@ import vista.Vista;
 import javax.swing.*;
 import java.awt.Color;
 import java.io.File;
+import java.util.Map;
 
 /**
  * @author Josep Oliver i Hugo Valls
- * @date 16 abr 2026
  * @name Controlador
  */
 public class Controlador {
 
-    private Vista vista;
-    private Modelo modelo;
-    private File fitxerActual;
+    private final Vista vista;
+    private final Modelo modelo;
 
     public Controlador(Vista vista, Modelo modelo) {
         this.vista = vista;
@@ -24,73 +23,132 @@ public class Controlador {
         inicialitzarControladors();
     }
 
+    /**
+     * Enllaça els botons de la Vista amb les funcions del Controlador.
+     */
     private void inicialitzarControladors() {
-        // Enllacem els botons de la vista amb els mètodes del controlador
         vista.setControladorCarregar(e -> obrirCercadorFitxers());
-
-        // Deixem preparats els altres botons per a les properes fases
-        vista.setControladorComprimir(e -> comprimirFitxer());
-        vista.setControladorDescomprimir(e -> descomprimirFitxer());
-        vista.setControladorGuardar(e -> guardarFitxer());
+        vista.setControladorComprimir(e -> iniciarProcesCompressio());
+        
+        // Deixem el listener preparat per a la fase de descompressió
+        vista.setControladorDescomprimir(e -> {
+            vista.setEstat("Funció de descompressió en desenvolupament...", Color.ORANGE);
+        });
     }
 
     /**
-     * Obre un JFileChooser perquè l'usuari seleccioni l'arxiu a processar.
+     * Gestiona la càrrega del fitxer original mitjançant JFileChooser.
      */
     private void obrirCercadorFitxers() {
         JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setDialogTitle("Selecciona l'arxiu per comprimir/descomprimir");
-
-        // Obre el selector a la carpeta arrel del projecte per comoditat
+        fileChooser.setDialogTitle("Selecciona l'arxiu original");
         fileChooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
 
-        // Mostra la finestra de diàleg
-        int seleccio = fileChooser.showOpenDialog(vista);
-
-        if (seleccio == JFileChooser.APPROVE_OPTION) {
-            fitxerActual = fileChooser.getSelectedFile();
-
-            // 1. Actualitzem la Vista (això canviarà l'etiqueta i activarà els botons)
-            vista.setFitxerActual(fitxerActual);
-            vista.setEstat("Arxiu '" + fitxerActual.getName() + "' carregat amb èxit. Llest per processar.", new Color(39, 174, 96)); // Verd
-
-            // 2. Passem l'arxiu al Model
-            modelo.setFitxerActual(fitxerActual);
-
-        } else {
-            vista.setEstat("S'ha cancel·lat la selecció de l'arxiu.", new Color(192, 57, 43)); // Vermell
+        if (fileChooser.showOpenDialog(vista) == JFileChooser.APPROVE_OPTION) {
+            File fitxerSeleccionat = fileChooser.getSelectedFile();
+            modelo.setFitxerActual(fitxerSeleccionat);
+            vista.setFitxerActual(fitxerSeleccionat);
+            vista.setEstat("Arxiu carregat: " + fitxerSeleccionat.getName(), new Color(39, 174, 96));
         }
     }
 
-    private void comprimirFitxer() {
-        vista.setEstat("Iniciant anàlisi i compressió...", new Color(52, 152, 219)); // Blau
+    /**
+     * Executa el procés de compressió.
+     * Inclou la gestió de la interfície i el càlcul de les estadístiques.
+     */
+    private void iniciarProcesCompressio() {
+        // 1. Selecció de la ruta de destí
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Guardar arxiu comprimit (.huff)");
+        fileChooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
+        
+        File arxiuOriginal = modelo.getFitxerActual();
+        fileChooser.setSelectedFile(new File(arxiuOriginal.getName() + ".huff"));
 
-        // 1. Bloquegem la interfície perquè no es pugui tocar res més
+        if (fileChooser.showSaveDialog(vista) != JFileChooser.APPROVE_OPTION) {
+            return; 
+        }
+        
+        File fitxerDesti = fileChooser.getSelectedFile();
+
+        // 2. Preparació de la UI
         vista.setProcessant(true);
+        vista.setEstat("Comprimint... si us plau, espera.", new Color(52, 152, 219));
+        vista.netejarTaula();
 
-        // Aquí és on, en el futur, cridarem al Model (en un fil secundari):
-        // modelo.iniciarCompressio(...);
-        // --- SIMULACIÓ TEMPORAL ---
-        // Simulem que triga 2 segons i després desbloqueja la UI
+        // 3. Fil d'execució secundari per no congelar la Vista
         new Thread(() -> {
             try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-            }
+                long tempsInici = System.currentTimeMillis();
 
-            javax.swing.SwingUtilities.invokeLater(() -> {
-                vista.setEstat("Compressió finalitzada.", new Color(39, 174, 96)); // Verd
-                vista.setProcessant(false); // 2. Alliberem la interfície
-            });
+                // FASE 1: Anàlisi (Frequencies, Arbre i Codis)
+                modelo.analitzarFitxer();
+                
+                // FASE 2: Escriptura física del fitxer .huff (a nivell de bits)
+                long pesNou = modelo.comprimir(fitxerDesti);
+                
+                long tempsFi = System.currentTimeMillis();
+                long tempsTotal = tempsFi - tempsInici;
+
+                // FASE 3: Càlcul de mètriques de rendiment
+                long pesOriginal = arxiuOriginal.length();
+                double taxaCompressio = 0.0;
+                
+                if (pesOriginal > 0) {
+                    // La taxa representa el percentatge d'espai estalviat
+                    taxaCompressio = (1.0 - ((double) pesNou / pesOriginal)) * 100.0;
+                }
+                
+                double longMitjana = modelo.calcularLongitudMitjana();
+                final double tc = taxaCompressio;
+                
+                // FASE 4: Sincronització amb el fil de la UI (EDT)
+                SwingUtilities.invokeLater(() -> {
+                    omplirTaulaVista();
+                    vista.mostrarEstadistiques(tc, tempsTotal, longMitjana);
+                    vista.setEstat("Procés finalitzat: " + fitxerDesti.getName(), new Color(39, 174, 96));
+                    vista.setProcessant(false);
+                });
+
+            } catch (Exception ex) {
+                SwingUtilities.invokeLater(() -> {
+                    vista.setEstat("Error crític: " + ex.getMessage(), Color.RED);
+                    vista.setProcessant(false);
+                });
+                ex.printStackTrace();
+            }
         }).start();
     }
 
-    private void descomprimirFitxer() {
-        vista.setEstat("Iniciant descompressió...", new Color(230, 126, 34)); // Taronja
-        // Aquí cridarem al model per llegir l'arxiu .huff i reconstruir-lo
-    }
+    /**
+     * Bolca el diccionari de Huffman i les freqüències a la taula de la Vista.
+     */
+    private void omplirTaulaVista() {
+        Map<Integer, String> codis = modelo.getCodisHuffman();
+        long[] frequencies = modelo.getFrequencies();
 
-    private void guardarFitxer() {
-        // Aquí implementarem un altre JFileChooser (showSaveDialog) per desar el resultat
+        if (codis == null || frequencies == null) return;
+
+        for (Map.Entry<Integer, String> entrada : codis.entrySet()) {
+            int byteValor = entrada.getKey();
+            String codiBinari = entrada.getValue();
+            long freq = frequencies[byteValor];
+
+            // Formatem el símbol per fer-lo entenedor a la taula
+            String simbolLlegible;
+            if (byteValor >= 32 && byteValor <= 126) {
+                simbolLlegible = "'" + (char) byteValor + "'"; 
+            } else if (byteValor == 10) {
+                simbolLlegible = "[LF] Salt Línia";
+            } else if (byteValor == 13) {
+                simbolLlegible = "[CR] Retorn Carro";
+            } else if (byteValor == 9) {
+                simbolLlegible = "[TAB] Tabulació";
+            } else {
+                simbolLlegible = "0x" + String.format("%02X", byteValor);
+            }
+
+            vista.afegirFilaTaula(simbolLlegible, (int) freq, codiBinari);
+        }
     }
 }
