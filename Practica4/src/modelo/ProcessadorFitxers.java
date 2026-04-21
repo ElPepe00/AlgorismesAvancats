@@ -8,7 +8,7 @@ import java.util.Map;
  * @date 20 abr 2026
  * @name GestorIO
  */
-public class GestorIO {
+public class ProcessadorFitxers {
 
     /**
      * Llegeix l'arxiu i retorna les freqüències i el total de bytes. Retorna un

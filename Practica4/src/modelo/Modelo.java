@@ -14,7 +14,7 @@ public class Modelo {
     private File fitxerActual;
     private long[] frequencies;
     private long totalBytesLlegits;
-    private GeneradorHuffman generadorHuffman;
+    private AlgorismeHuffman generadorHuffman;
 
     public void setFitxerActual(File fitxerActual) {
         this.fitxerActual = fitxerActual;
@@ -29,12 +29,12 @@ public class Modelo {
      */
     public void analitzarFitxer() throws IOException {
         // 1. Deleguem la I/O
-        ResultatLector res = GestorIO.calcularFrequencies(fitxerActual);
+        ResultatLector res = ProcessadorFitxers.calcularFrequencies(fitxerActual);
         this.frequencies = res.frequencies;
         this.totalBytesLlegits = res.totalBytes;
 
         // 2. Deleguem l'algorisme pur
-        this.generadorHuffman = new GeneradorHuffman(frequencies);
+        this.generadorHuffman = new AlgorismeHuffman(frequencies);
     }
 
     public double calcularLongitudMitjana() {
@@ -57,7 +57,7 @@ public class Modelo {
         if (generadorHuffman == null || frequencies == null) {
             throw new IllegalStateException("Cal analitzar el fitxer abans de comprimir-lo.");
         }
-        return GestorIO.generarArxiuComprimit(fitxerActual, fitxerDesti, frequencies, generadorHuffman.getCodisHuffman());
+        return ProcessadorFitxers.generarArxiuComprimit(fitxerActual, fitxerDesti, frequencies, generadorHuffman.getCodisHuffman());
     }
 
     public long[] getFrequencies() {

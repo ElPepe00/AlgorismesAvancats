@@ -7,14 +7,14 @@ import java.util.PriorityQueue;
 /**
  * @author Josep Oliver i Hugo Valls
  * @date 20 abr 2026
- * @name Generador Huffman
+ * @name Algorisme de Huffman
  */
-public class GeneradorHuffman {
+public class AlgorismeHuffman {
 
     private Node arrelArbre;
     private Map<Integer, String> codisHuffman;
 
-    public GeneradorHuffman(long[] frequencies) {
+    public AlgorismeHuffman(long[] frequencies) {
         this.codisHuffman = new HashMap<>();
         construirArbre(frequencies);
         generarCodisRecursiu(arrelArbre, "");
