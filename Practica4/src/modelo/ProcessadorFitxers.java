@@ -6,7 +6,7 @@ import java.util.Map;
 /**
  * @author Josep Oliver i Hugo Valls
  * @date 20 abr 2026
- * @name GestorIO
+ * @name Processador de Fitxers
  */
 public class ProcessadorFitxers {
 
