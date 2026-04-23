@@ -23,6 +23,14 @@ public class Modelo {
     public File getFitxerActual() {
         return fitxerActual;
     }
+    
+    // AFEGEIX A MODELO.JAVA (Si no ho tenies)
+    public Node getArrelArbre() {
+        if (generadorHuffman != null) {
+            return generadorHuffman.getArrel();
+        }
+        return null;
+    }
 
     /**
      * Orquestra la fase 1: Llegir i preparar diccionaris

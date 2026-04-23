@@ -55,7 +55,7 @@ public class AlgorismeHuffman {
         generarCodisRecursiu(node.getFillDret(), codiActual + "1");
     }
 
-    public Node getArrelArbre() {
+    public Node getArrel() {
         return arrelArbre;
     }
 

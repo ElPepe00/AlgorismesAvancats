@@ -6,6 +6,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.io.File;
+import modelo.Node;
 
 /**
  * @author Josep Oliver i Hugo Valls
@@ -27,7 +28,6 @@ public class Vista extends JFrame {
     // Configuració (Opcional avaluada positivament)
     private JRadioButton rbBinaryHeap, rbFibonacci, rbLlistaOrd, rbLlistaDico;
     private ButtonGroup grupEstructures;
-    private JSpinner spPassades;
 
     // Elements d'estat i progrés (Panell Sud)
     private JLabel lblEstat;
@@ -40,7 +40,7 @@ public class Vista extends JFrame {
     private JLabel lblLongitudMitjana;
 
     // Visualització
-    private JPanel panelArbre; // Aquí dibuixarem l'arbre
+    private PanelArbreHuffman panelArbre; // Aquí dibuixarem l'arbre
     private JTable taulaFrequencies;
     private DefaultTableModel modelTaula;
 
@@ -108,13 +108,6 @@ public class Vista extends JFrame {
             pnlEstructura.add(rb);
         }
 
-        pnlEstructura.add(Box.createVerticalStrut(10));
-        pnlEstructura.add(new JLabel("Núm. Passades:"));
-        spPassades = new JSpinner(new SpinnerNumberModel(1, 1, 5, 1));
-        spPassades.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
-        spPassades.setAlignmentX(Component.LEFT_ALIGNMENT);
-        pnlEstructura.add(spPassades);
-
         // -- Targeta 3: Accions --
         JPanel pnlAccions = crearTargeta("3. Execució");
         btnComprimir = crearBotoAccion("Comprimir", COLOR_VERD);
@@ -145,15 +138,17 @@ public class Vista extends JFrame {
         // ==========================================
         JPanel pnlCentral = new JPanel(new BorderLayout());
         pnlCentral.setBackground(Color.WHITE);
+        
+        // 2.1 Arbre de Huffman (Embolicat en un JScrollPane)
+        panelArbre = new PanelArbreHuffman();
+        JScrollPane scrollArbre = new JScrollPane(panelArbre);
 
-        // 2.1 Arbre de Huffman (Pots crear una classe PanelArbre més endavant)
-        panelArbre = new JPanel();
-        panelArbre.setBackground(Color.WHITE);
-        panelArbre.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY), "Visualització Arbre de Huffman", TitledBorder.LEFT, TitledBorder.TOP, FONT_TITOLS));
-        // Aquí afegiràs la lògica de dibuix amb Graphics o GraphStream
-        JLabel lblPlaceholderArbre = new JLabel("L'arbre es dibuixarà aquí...", SwingConstants.CENTER);
-        panelArbre.setLayout(new BorderLayout());
-        panelArbre.add(lblPlaceholderArbre, BorderLayout.CENTER);
+        // Fem que l'scroll es mogui de forma suau (més ràpid que per defecte)
+        scrollArbre.getVerticalScrollBar().setUnitIncrement(16);
+        scrollArbre.getHorizontalScrollBar().setUnitIncrement(16);
+        
+        // Llevem la vora per estètica
+        scrollArbre.setBorder(null); 
 
         // 2.2 Estadístiques i Taula
         JPanel pnlDades = new JPanel(new BorderLayout(10, 10));
@@ -182,7 +177,7 @@ public class Vista extends JFrame {
         pnlDades.add(scrollTaula, BorderLayout.CENTER);
 
         // JSplitPane per permetre redimensionar l'arbre vs taula
-        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, panelArbre, pnlDades);
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, scrollArbre, pnlDades);
         splitPane.setResizeWeight(0.7); // 70% espai per l'arbre
         splitPane.setDividerSize(5);
         splitPane.setBorder(null);
@@ -344,7 +339,6 @@ public class Vista extends JFrame {
     public void setProcessant(boolean processant) {
         // Bloquegem o desbloquegem accions generals
         btnCarregar.setEnabled(!processant);
-        spPassades.setEnabled(!processant);
         
         // Els botons d'acció de l'arxiu només s'activen si NO estem processant 
         // I a més a més hi ha un fitxer carregat.
@@ -363,6 +357,15 @@ public class Vista extends JFrame {
             setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         } else {
             setCursor(Cursor.getDefaultCursor());
+        }
+    }
+    
+    /**
+     * Passa l'arrel de l'arbre generat al panell gràfic perquè el dibuixi.
+     */
+    public void mostrarArbreHuffman(Node arrel) {
+        if (panelArbre != null) {
+            panelArbre.setArrelArbre(arrel);
         }
     }
 }
