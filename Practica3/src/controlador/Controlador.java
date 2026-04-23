@@ -18,6 +18,7 @@ public class Controlador {
     private GeneradorPunts generador;
     private List<Punt> punts;
     private Algoritmes algoritmes;
+    private String tipusDist;
 
     public Controlador(Vista vista) {
         this.vista = vista;
@@ -31,17 +32,17 @@ public class Controlador {
 
     private void generar() {
         int n = vista.getNumPunts();
-        String tipus = vista.getDistribucio();
+        tipusDist = vista.getDistribucio();
 
-        punts = generador.generar(n, tipus);
+        punts = generador.generar(n, tipusDist);
 
         vista.mostrarPunts(punts);
 
         vista.getPanelPunts().setNumPunts(punts.size());
         vista.getPanelPunts().setCellSize(-1);
 
-        vista.setEstat("Punts generats amb distribució " + tipus + ". Selecciona l'algorisme de càlcul.");
-        System.out.println("Generados " + n + " puntos (" + tipus + ")");
+        vista.setEstat("Punts generats amb distribució " + tipusDist + ". Selecciona l'algorisme de càlcul.");
+        System.out.println("Generados " + n + " puntos (" + tipusDist + ")");
     }
 
     private void parar() {
@@ -82,7 +83,7 @@ public class Controlador {
                 vista.getPanelPunts().setCellSize(-1);
 
             } else if (alg.equals("llunyana")) {
-                res = algoritmes.mesLlunyana(punts);
+                res = algoritmes.mesLlunyana2(punts, tipusDist);
                 vista.getPanelPunts().setCellSize(-1);
 
             } else if (alg.equals("nlogn")) {
