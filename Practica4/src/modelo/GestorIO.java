@@ -1,6 +1,5 @@
 package modelo;
 
-import controlador.IProgresListener;
 import java.io.*;
 import java.util.Map;
 import java.util.function.BooleanSupplier;

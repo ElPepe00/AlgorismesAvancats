@@ -1,6 +1,5 @@
 package modelo;
 
-import controlador.IProgresListener;
 import java.io.File;
 import java.util.Map;
 

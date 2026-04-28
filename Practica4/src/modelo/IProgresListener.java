@@ -1,4 +1,4 @@
-package controlador;
+package modelo;
 
 /**
  * Interfície per comunicar el progrés des del Model fins a la Vista.

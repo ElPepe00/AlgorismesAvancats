@@ -1,5 +1,6 @@
 package controlador;
 
+import modelo.IProgresListener;
 import modelo.Modelo;
 import vista.Vista;
 
