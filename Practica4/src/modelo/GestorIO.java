@@ -102,4 +102,57 @@ public class GestorIO {
         
         return desti.length();
     }
+
+    public static void descomprimir(File origen, File desti) throws Exception {
+
+        try (DataInputStream dis = new DataInputStream(
+                new BufferedInputStream(new FileInputStream(origen)));
+            BufferedOutputStream bos = new BufferedOutputStream(
+                new FileOutputStream(desti))) {
+
+            // =========================
+            // 1. LEER CABECERA
+            // =========================
+            long[] frequencies = new long[256];
+
+            for (int i = 0; i < 256; i++) {
+                frequencies[i] = dis.readLong();
+            }
+
+            long midaOriginal = dis.readLong();
+
+            // =========================
+            // 2. RECONSTRUIR ÁRBOL
+            // =========================
+            AlgorismeHuffman huffman = new AlgorismeHuffman(frequencies);
+            huffman.construirArbre();
+            Node arrel = huffman.getArrel();
+
+            // =========================
+            // 3. DECODIFICAR BITS
+            // =========================
+            LectorBits lector = new LectorBits(dis);
+
+            Node actual = arrel;
+            long escrits = 0;
+
+            while (escrits < midaOriginal) {
+                int bit = lector.llegirBit();
+
+                if (bit == -1) break; // seguridad extra
+
+                if (bit == 0) {
+                    actual = actual.getFillEsquerre();
+                } else {
+                    actual = actual.getFillDret();
+                }
+
+                if (actual.esFulla()) {
+                    bos.write(actual.getSimbol());
+                    actual = arrel;
+                    escrits++;
+                }
+            }
+        }
+    }
 }

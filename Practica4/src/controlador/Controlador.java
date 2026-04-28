@@ -39,7 +39,8 @@ public class Controlador {
         
         vista.setControladorGuardar(e -> guardarCom());
         
-        vista.setControladorDescomprimir(e -> vista.setEstat("Funció de descompressió pendent d'implementar...", Color.ORANGE));
+        vista.setControladorDescomprimir(e -> iniciarProcesDescompressio());
+        
     }
 
     private void obrirCercadorFitxers() {
@@ -179,4 +180,61 @@ public class Controlador {
             vista.afegirFilaTaula(simbolLlegible, (int) frequencies[byteValor], entrada.getValue());
         }
     }
+    private void iniciarProcesDescompressio() {
+
+    File arxiuOrigen = modelo.getFitxerActual();
+
+    if (arxiuOrigen == null) {
+        vista.setEstat("Cap arxiu seleccionat.", Color.RED);
+        return;
+    }
+
+    // Carpeta donde está el .huff (normalmente "comprimits")
+    File carpetaComprimits = arxiuOrigen.getParentFile();
+
+    // Carpeta padre (la que contiene "comprimits")
+    File carpetaPare = carpetaComprimits.getParentFile();
+
+    // Nueva carpeta "decomprimits"
+    File carpetaDesti = new File(carpetaPare, "decomprimits");
+
+    // Crear carpeta si no existe
+    if (!carpetaDesti.exists()) {
+        carpetaDesti.mkdirs();
+    }
+
+    // Nombre del archivo de salida
+    String nom = arxiuOrigen.getName();
+    String nomSortida;
+
+    if (nom.endsWith(".huff")) {
+        nomSortida = nom.substring(0, nom.length() - 5);
+    } else {
+        nomSortida = nom + "_descomprimit";
+    }
+
+    // Archivo destino final
+    File desti = new File(carpetaDesti, nomSortida);
+
+    vista.setProcessant(true);
+    vista.setEstat("Descomprimint...", new Color(52, 152, 219));
+
+    new Thread(() -> {
+        try {
+            modelo.descomprimir(arxiuOrigen, desti);
+
+            SwingUtilities.invokeLater(() -> {
+                vista.setEstat("Descompressió completada: " + desti.getAbsolutePath(),
+                        new Color(39, 174, 96));
+                vista.setProcessant(false);
+            });
+
+        } catch (Exception ex) {
+            SwingUtilities.invokeLater(() -> {
+                vista.setEstat("Error en descompressió: " + ex.getMessage(), Color.RED);
+                vista.setProcessant(false);
+            });
+        }
+    }).start();
+}
 }

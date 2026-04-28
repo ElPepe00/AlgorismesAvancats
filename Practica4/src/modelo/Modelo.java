@@ -62,6 +62,10 @@ public class Modelo {
         return GestorIO.generarArxiuComprimit(fitxerActual, fitxerDesti, frequencies, codis, listener, this::isCancelat);
     }
 
+    public void descomprimir(File origen, File desti) throws Exception {
+        GestorIO.descomprimir(origen, desti);
+    }
+
     public double calcularLongitudMitjana() {
         if (algorismeHuffman == null) return 0.0;
         
@@ -98,4 +102,6 @@ public class Modelo {
     public long[] getFrequencies() {
         return frequencies;
     }
+
+    
 }
