@@ -1,44 +1,42 @@
 package modelo;
 
 /**
- * @author Josep Oliver i Hugo Valls
- * @date 16 abr 2026
+ * Representa un node de l'arbre binari de Huffman.
+ * * @author Josep Oliver i Hugo Valls
  * @name Node
  */
-public class Node implements Comparable<Node> {
+public class Node {
 
-    private final Integer simbol; // Integer permet null (necessari pels nodes interns de l'arbre)
-    private final long frequencia; // long evita overflows en fitxers multimegabyte/gigabyte
+    // Utilitzem 'int' en lloc de 'byte' perquè a Java els bytes són des de -128 a 127.
+    // L'int ens permet guardar còmodament valors de 0 a 255 per a símbols reals, 
+    // i utilitzar el -1 per als nodes interns (que no contenen lletres).
+    private final int simbol;
+    private final long frequencia;
+    
     private final Node fillEsquerre;
     private final Node fillDret;
 
     /**
-     * Constructor per als nodes fulla (els que contenen un símbol real de
-     * l'arxiu).
+     * Constructor per crear tant fulles com nodes interns.
      */
-    public Node(Integer simbol, long frequencia) {
+    public Node(int simbol, long frequencia, Node fillEsquerre, Node fillDret) {
         this.simbol = simbol;
         this.frequencia = frequencia;
-        this.fillEsquerre = null;
-        this.fillDret = null;
+        this.fillEsquerre = fillEsquerre;
+        this.fillDret = fillDret;
     }
 
     /**
-     * Constructor per als nodes interns (creat per l'algorisme àvid al fusionar
-     * dos subarbres). El símbol és null perquè només actua com a pont.
+     * Comprova matemàticament si aquest node és el final d'una branca.
+     * En un arbre de Huffman estricte, un node o té 2 fills, o no en té cap.
      */
-    public Node(Node esquerre, Node dret) {
-        this.simbol = null;
-        this.frequencia = esquerre.getFrequencia() + dret.getFrequencia();
-        this.fillEsquerre = esquerre;
-        this.fillDret = dret;
-    }
-
     public boolean esFulla() {
         return (this.fillEsquerre == null && this.fillDret == null);
     }
 
-    public Integer getSimbol() {
+    // --- GETTERS ---
+
+    public int getSimbol() {
         return simbol;
     }
 
@@ -52,24 +50,5 @@ public class Node implements Comparable<Node> {
 
     public Node getFillDret() {
         return fillDret;
-    }
-
-    /**
-     * Criteri de l'Algorisme Àvid: Volem sempre els elements de MENOR
-     * freqüència primer.
-     */
-    @Override
-    public int compareTo(Node altre) {
-        return Long.compare(this.frequencia, altre.frequencia);
-    }
-
-    @Override
-    public String toString() {
-        if (esFulla()) {
-            // Mostrar caràcter si és imprimible, o el valor del byte/Integer si no ho és
-            return "Fulla['" + (char) simbol.intValue() + "' (F=" + frequencia + ")]";
-        } else {
-            return "Intern[F=" + frequencia + "]";
-        }
     }
 }

@@ -20,6 +20,7 @@ public class Vista extends JFrame {
     private JButton btnComprimir;
     private JButton btnDescomprimir;
     private JButton btnGuardar;
+    private JButton btnAturar;
 
     // Elements d'informació del fitxer
     private JLabel lblFitxerSeleccionat;
@@ -112,16 +113,20 @@ public class Vista extends JFrame {
         JPanel pnlAccions = crearTargeta("3. Execució");
         btnComprimir = crearBotoAccion("Comprimir", COLOR_VERD);
         btnDescomprimir = crearBotoAccion("Descomprimir", COLOR_TARONJA);
-        btnGuardar = crearBotoAccion("Guardar Resultat", COLOR_BLAU);
+        btnGuardar = crearBotoAccion("Guardar Com...", COLOR_BLAU);
+        btnAturar = crearBotoAccion("Aturar", COLOR_VERMELL);
         btnComprimir.setEnabled(false);
         btnDescomprimir.setEnabled(false);
         btnGuardar.setEnabled(false);
+        btnAturar.setEnabled(false);
 
         pnlAccions.add(btnComprimir);
         pnlAccions.add(Box.createVerticalStrut(10));
         pnlAccions.add(btnDescomprimir);
         pnlAccions.add(Box.createVerticalStrut(10));
         pnlAccions.add(btnGuardar);
+        pnlAccions.add(Box.createVerticalStrut(10));
+        pnlAccions.add(btnAturar);
 
         // Muntar el lateral
         pnlLateral.add(lblTitolMenu);
@@ -138,7 +143,7 @@ public class Vista extends JFrame {
         // ==========================================
         JPanel pnlCentral = new JPanel(new BorderLayout());
         pnlCentral.setBackground(Color.WHITE);
-        
+
         // 2.1 Arbre de Huffman (Embolicat en un JScrollPane)
         panelArbre = new PanelArbreHuffman();
         JScrollPane scrollArbre = new JScrollPane(panelArbre);
@@ -146,9 +151,9 @@ public class Vista extends JFrame {
         // Fem que l'scroll es mogui de forma suau (més ràpid que per defecte)
         scrollArbre.getVerticalScrollBar().setUnitIncrement(16);
         scrollArbre.getHorizontalScrollBar().setUnitIncrement(16);
-        
+
         // Llevem la vora per estètica
-        scrollArbre.setBorder(null); 
+        scrollArbre.setBorder(null);
 
         // 2.2 Estadístiques i Taula
         JPanel pnlDades = new JPanel(new BorderLayout(10, 10));
@@ -202,6 +207,7 @@ public class Vista extends JFrame {
         pnlProgres.setBackground(COLOR_FONS_MENU);
         pbProgres = new JProgressBar(0, 100);
         pbProgres.setStringPainted(true);
+        pbProgres.setForeground(COLOR_VERD);
         lblTempsRestant = new JLabel("Temps restant: --:--");
         lblTempsRestant.setFont(new Font("Segoe UI", Font.ITALIC, 12));
 
@@ -273,6 +279,10 @@ public class Vista extends JFrame {
         btnGuardar.addActionListener(listener);
     }
 
+    public void setControladorAturar(ActionListener listener) {
+        btnAturar.addActionListener(listener);
+    }
+
     public void setFitxerActual(File fitxer) {
         this.fitxerActual = fitxer;
         if (fitxer != null) {
@@ -331,35 +341,31 @@ public class Vista extends JFrame {
     public void habilitarGuardar(boolean habilitat) {
         btnGuardar.setEnabled(habilitat);
     }
-    
+
     /**
      * Bloqueja o desbloqueja la interfície durant un procés llarg.
-     * @param processant true si s'està comprimint/descomprimint, false si està lliure.
+     *
+     * @param processant true si s'està comprimint/descomprimint, false si està
+     * lliure.
      */
     public void setProcessant(boolean processant) {
-        // Bloquegem o desbloquegem accions generals
         btnCarregar.setEnabled(!processant);
-        
-        // Els botons d'acció de l'arxiu només s'activen si NO estem processant 
-        // I a més a més hi ha un fitxer carregat.
-        boolean arxiuLlest = (fitxerActual != null && !processant);
-        btnComprimir.setEnabled(arxiuLlest);
-        btnDescomprimir.setEnabled(arxiuLlest);
-        
-        // Les estructures de dades (RadioButtons) també s'haurien de bloquejar
-        java.util.Enumeration<AbstractButton> botons = grupEstructures.getElements();
-        while (botons.hasMoreElements()) {
-            botons.nextElement().setEnabled(!processant);
-        }
-        
-        // Canviem el cursor per donar feedback visual
+        btnComprimir.setEnabled(!processant && fitxerActual != null);
+        btnDescomprimir.setEnabled(!processant && fitxerActual != null);
+
+        // El botó Aturar NOMÉS s'activa mentre estem treballant
+        btnAturar.setEnabled(processant);
+
+        // El botó Guardar s'activa quan NO estem processant (com a "Guardar com...")
+        btnGuardar.setEnabled(!processant && fitxerActual != null);
+
         if (processant) {
             setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         } else {
             setCursor(Cursor.getDefaultCursor());
         }
     }
-    
+
     /**
      * Passa l'arrel de l'arbre generat al panell gràfic perquè el dibuixi.
      */
