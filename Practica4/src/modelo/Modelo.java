@@ -62,8 +62,8 @@ public class Modelo {
         return GestorIO.generarArxiuComprimit(fitxerActual, fitxerDesti, frequencies, codis, listener, this::isCancelat);
     }
 
-    public void descomprimir(File origen, File desti) throws Exception {
-        GestorIO.descomprimir(origen, desti);
+    public void descomprimir(File origen, File desti, IProgresListener listener) throws Exception {
+        GestorIO.descomprimir(origen, desti, listener, this::isCancelat);
     }
 
     public double calcularLongitudMitjana() {

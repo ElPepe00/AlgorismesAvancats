@@ -103,7 +103,9 @@ public class GestorIO {
         return desti.length();
     }
 
-    public static void descomprimir(File origen, File desti) throws Exception {
+    public static void descomprimir(File origen, File desti,
+            IProgresListener listener,
+            BooleanSupplier comprovarCancelacio) throws Exception {
 
         try (DataInputStream dis = new DataInputStream(
                 new BufferedInputStream(new FileInputStream(origen)));
@@ -136,10 +138,21 @@ public class GestorIO {
             Node actual = arrel;
             long escrits = 0;
 
+            int ultimPercentatge = -1;
+
             while (escrits < midaOriginal) {
+
+                // --- CANCELACIÓN ---
+                if (comprovarCancelacio != null && comprovarCancelacio.getAsBoolean()) {
+                    bos.close();
+                    dis.close();
+                    desti.delete();
+                    throw new Exception("Procés aturat per l'usuari.");
+                }
+
                 int bit = lector.llegirBit();
 
-                if (bit == -1) break; // seguridad extra
+                if (bit == -1) break;
 
                 if (bit == 0) {
                     actual = actual.getFillEsquerre();
@@ -151,6 +164,16 @@ public class GestorIO {
                     bos.write(actual.getSimbol());
                     actual = arrel;
                     escrits++;
+
+                    // --- PROGRESO ---
+                    if (listener != null && midaOriginal > 0) {
+                        int percentatge = (int) ((escrits * 100) / midaOriginal);
+
+                        if (percentatge != ultimPercentatge) {
+                            ultimPercentatge = percentatge;
+                            listener.actualitzar(percentatge, "--:--");
+                        }
+                    }
                 }
             }
         }

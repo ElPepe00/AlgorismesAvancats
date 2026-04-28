@@ -182,59 +182,75 @@ public class Controlador {
     }
     private void iniciarProcesDescompressio() {
 
-    File arxiuOrigen = modelo.getFitxerActual();
+        modelo.reiniciarCancelacio(); 
 
-    if (arxiuOrigen == null) {
-        vista.setEstat("Cap arxiu seleccionat.", Color.RED);
-        return;
-    }
+        File arxiuOrigen = modelo.getFitxerActual();
 
-    // Carpeta donde está el .huff (normalmente "comprimits")
-    File carpetaComprimits = arxiuOrigen.getParentFile();
-
-    // Carpeta padre (la que contiene "comprimits")
-    File carpetaPare = carpetaComprimits.getParentFile();
-
-    // Nueva carpeta "decomprimits"
-    File carpetaDesti = new File(carpetaPare, "decomprimits");
-
-    // Crear carpeta si no existe
-    if (!carpetaDesti.exists()) {
-        carpetaDesti.mkdirs();
-    }
-
-    // Nombre del archivo de salida
-    String nom = arxiuOrigen.getName();
-    String nomSortida;
-
-    if (nom.endsWith(".huff")) {
-        nomSortida = nom.substring(0, nom.length() - 5);
-    } else {
-        nomSortida = nom + "_descomprimit";
-    }
-
-    // Archivo destino final
-    File desti = new File(carpetaDesti, nomSortida);
-
-    vista.setProcessant(true);
-    vista.setEstat("Descomprimint...", new Color(52, 152, 219));
-
-    new Thread(() -> {
-        try {
-            modelo.descomprimir(arxiuOrigen, desti);
-
-            SwingUtilities.invokeLater(() -> {
-                vista.setEstat("Descompressió completada: " + desti.getAbsolutePath(),
-                        new Color(39, 174, 96));
-                vista.setProcessant(false);
-            });
-
-        } catch (Exception ex) {
-            SwingUtilities.invokeLater(() -> {
-                vista.setEstat("Error en descompressió: " + ex.getMessage(), Color.RED);
-                vista.setProcessant(false);
-            });
+        if (arxiuOrigen == null) {
+            vista.setEstat("Cap arxiu seleccionat.", Color.RED);
+            return;
         }
-    }).start();
-}
+
+        
+        File carpetaComprimits = arxiuOrigen.getParentFile();
+
+        
+        File carpetaPare = carpetaComprimits.getParentFile();
+
+        
+        File carpetaDesti = new File(carpetaPare, "decomprimits");
+
+        
+        if (!carpetaDesti.exists()) {
+            carpetaDesti.mkdirs();
+        }
+
+        // Nombre del archivo de salida
+        String nom = arxiuOrigen.getName();
+        String nomSortida;
+
+        if (nom.endsWith(".huff")) {
+            nomSortida = nom.substring(0, nom.length() - 5);
+        } else {
+            nomSortida = nom + "_descomprimit";
+        }
+
+        // Archivo destino final
+        File desti = new File(carpetaDesti, nomSortida);
+
+        // Preparar interfaz
+        vista.setProcessant(true);
+        vista.setEstat("Descomprimint...", new Color(52, 152, 219));
+        vista.actualitzarProgres(0, "--:--");
+
+        // Listener de progreso (igual que en compresión)
+        IProgresListener listenerProgres = (percentatge, tempsRestant) -> {
+            SwingUtilities.invokeLater(() -> vista.actualitzarProgres(percentatge, tempsRestant));
+        };
+
+        new Thread(() -> {
+            try {
+                modelo.descomprimir(arxiuOrigen, desti, listenerProgres);
+
+                SwingUtilities.invokeLater(() -> {
+                    vista.setEstat("Descompressió completada: " + desti.getAbsolutePath(),
+                            new Color(39, 174, 96));
+                    vista.actualitzarProgres(100, "00:00");
+                    vista.setProcessant(false);
+                });
+
+            } catch (Exception ex) {
+                SwingUtilities.invokeLater(() -> {
+                    if (modelo.isCancelat()) {
+                        vista.setEstat("Acció cancel·lada.", Color.RED);
+                    } else {
+                        vista.setEstat("Error en descompressió: " + ex.getMessage(), Color.RED);
+                        ex.printStackTrace();
+                    }
+                    vista.actualitzarProgres(0, "--:--");
+                    vista.setProcessant(false);
+                });
+            }
+        }).start();
+    }
 }
