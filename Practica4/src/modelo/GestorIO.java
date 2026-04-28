@@ -125,7 +125,10 @@ public class GestorIO {
             // =========================
             // 2. RECONSTRUIR ÁRBOL
             // =========================
-            AlgorismeHuffman huffman = new AlgorismeHuffman(frequencies);
+            
+
+            CuaPrioritat cua = new BinaryHeapQueue();
+            AlgorismeHuffman huffman = new AlgorismeHuffman(frequencies, cua);
             huffman.construirArbre();
             Node arrel = huffman.getArrel();
 

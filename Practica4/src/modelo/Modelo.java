@@ -12,6 +12,7 @@ public class Modelo {
     private File fitxerActual;
     private long[] frequencies;
     private AlgorismeHuffman algorismeHuffman; // Aquesta és la teva classe que crea l'arbre
+    private boolean usarFibonacci = false;
     
     // Bandera de cancel·lació (Thread-safe)
     private volatile boolean cancelat = false;
@@ -45,11 +46,20 @@ public class Modelo {
     public void analitzarFitxer() throws Exception {
         // 1. Llegim el fitxer per extreure les freqüències
         this.frequencies = GestorIO.calcularFrequencies(fitxerActual);
-        
+
         if (cancelat) return;
 
-        // 2. Generem l'arbre i els codis amb la classe encarregada
-        this.algorismeHuffman = new AlgorismeHuffman(frequencies);
+        // 2. TRIAR ESTRUCTURA (de moment Binary)
+        CuaPrioritat cua;
+
+        if (usarFibonacci) {
+            cua = new FibonacciHeapQueue();
+        } else {
+            cua = new BinaryHeapQueue();
+        }
+
+        // 3. Generem l'arbre i els codis
+        this.algorismeHuffman = new AlgorismeHuffman(frequencies, cua);
         this.algorismeHuffman.construirArbre();
         this.algorismeHuffman.generarCodis();
     }
@@ -100,6 +110,10 @@ public class Modelo {
 
     public long[] getFrequencies() {
         return frequencies;
+    }
+
+    public void setUsarFibonacci(boolean usarFibonacci) {
+        this.usarFibonacci = usarFibonacci;
     }
 
     

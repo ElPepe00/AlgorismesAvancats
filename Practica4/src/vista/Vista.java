@@ -53,6 +53,9 @@ public class Vista extends JFrame {
     private final Color COLOR_TARONJA = new Color(230, 126, 34);
     private final Font FONT_TITOLS = new Font("Segoe UI", Font.BOLD, 14);
 
+
+    private boolean usarFibonacci = false;
+
     public Vista() {
         setTitle("Pràctica 4 - Compressor d'arxius basat en Huffman");
         setSize(1200, 800);
@@ -374,4 +377,14 @@ public class Vista extends JFrame {
             panelArbre.setArrelArbre(arrel);
         }
     }
+
+    public boolean isFibonacciSeleccionat() {
+        return rbFibonacci.isSelected();
+    }
+
+    public boolean isBinarySeleccionat() {
+        return rbBinaryHeap.isSelected();
+    }
+
+    
 }

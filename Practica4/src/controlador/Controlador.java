@@ -77,7 +77,8 @@ public class Controlador {
             nomSenseExtensio = nomOriginal.substring(0, ultimPunt);
         }
         
-        File fitxerDesti = new File(carpetaDesti, nomSenseExtensio + ".huff");
+        String tipus = vista.isFibonacciSeleccionat() ? "-fibonacci" : "-binary";
+        File fitxerDesti = new File(carpetaDesti, nomSenseExtensio + tipus + ".huff");
         this.fitxerDestiGenerat = fitxerDesti; // Ho guardem per si l'usuari fa "Guardar com..."
 
         // --- 2. PREPARACIÓ DE LA INTERFÍCIE ---
@@ -96,6 +97,7 @@ public class Controlador {
                 long tempsInici = System.currentTimeMillis();
 
                 // Fase d'anàlisi
+                modelo.setUsarFibonacci(vista.isFibonacciSeleccionat());
                 modelo.analitzarFitxer();
                 
                 if (modelo.isCancelat()) throw new Exception("Operació cancel·lada per l'usuari.");
