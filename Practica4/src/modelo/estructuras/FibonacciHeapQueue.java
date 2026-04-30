@@ -1,4 +1,4 @@
-package modelo;
+package modelo.estructuras;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +11,7 @@ public class FibonacciHeapQueue implements CuaPrioritat {
         NodeFib pare;
         List<NodeFib> fills;
 
+        /** Constructor del node intern del Fibonacci Heap. */
         public NodeFib(Node valor) {
             this.valor = valor;
             this.grau = 0;
@@ -23,31 +24,33 @@ public class FibonacciHeapQueue implements CuaPrioritat {
     private NodeFib minim;
     private int mida;
 
+    /** Inicialitza les llistes d'arrels i el comptador. */
     public FibonacciHeapQueue() {
         arrels = new ArrayList<>();
         minim = null;
         mida = 0;
     }
 
+    /** Insereix un nou node a la llista d'arrels. */
     @Override
     public void afegir(Node node) {
         NodeFib nou = new NodeFib(node);
         arrels.add(nou);
 
-        if (minim == null || node.getFrequencia() < minim.valor.getFrequencia()) {
+        if (minim == null || esMenor(node, minim.valor)) {
             minim = nou;
         }
 
         mida++;
     }
 
+    /** Extreu el node mínim i reorganitza l'estructura. */
     @Override
     public Node extreureMinim() {
         if (minim == null) return null;
 
         NodeFib z = minim;
 
-        // Afegir fills a les arrels
         for (NodeFib fill : z.fills) {
             fill.pare = null;
             arrels.add(fill);
@@ -66,6 +69,7 @@ public class FibonacciHeapQueue implements CuaPrioritat {
         return z.valor;
     }
 
+    /** Uneix arbres del mateix grau per optimitzar la cua. */
     private void consolidar() {
         List<NodeFib> nova = new ArrayList<>();
 
@@ -81,13 +85,12 @@ public class FibonacciHeapQueue implements CuaPrioritat {
                     if (y.grau == x.grau) {
                         nova.remove(i);
 
-                        if (x.valor.getFrequencia() > y.valor.getFrequencia()) {
+                        if (esMenor(y.valor, x.valor)) {
                             NodeFib tmp = x;
                             x = y;
                             y = tmp;
                         }
 
-                        // y es fa fill de x
                         y.pare = x;
                         x.fills.add(y);
                         x.grau++;
@@ -107,14 +110,24 @@ public class FibonacciHeapQueue implements CuaPrioritat {
 
         for (NodeFib n : nova) {
             arrels.add(n);
-            if (minim == null || n.valor.getFrequencia() < minim.valor.getFrequencia()) {
+            if (minim == null || esMenor(n.valor, minim.valor)) {
                 minim = n;
             }
         }
     }
 
+    /** Retorna el nombre total de nodes. */
     @Override
     public int mida() {
         return mida;
+    }
+
+    /** Compara dos nodes de forma determinista (freqüència i ID). */
+    private boolean esMenor(Node n1, Node n2) {
+        long f1 = n1.getFrequencia();
+        long f2 = n2.getFrequencia();
+        if (f1 < f2) return true;
+        if (f1 > f2) return false;
+        return n1.getSeqId() < n2.getSeqId();
     }
 }

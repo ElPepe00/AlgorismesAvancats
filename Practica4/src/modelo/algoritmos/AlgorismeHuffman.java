@@ -1,7 +1,10 @@
-package modelo;
+package modelo.algoritmos;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import modelo.estructuras.CuaPrioritat;
+import modelo.estructuras.Node;
 
 /**
  * @author Josep Oliver i Hugo Valls
@@ -17,59 +20,51 @@ public class AlgorismeHuffman {
 
     private static final int MIDA_ALFABET = 256;
 
+    /** Constructor que rep les freqüències i la cua de prioritats a utilitzar. */
     public AlgorismeHuffman(long[] frequencies, CuaPrioritat cua) {
         this.frequencies = frequencies;
         this.codisHuffman = new HashMap<>();
         this.cua = cua;
     }
 
-    /**
-     * Construeix l'arbre de Huffman aplicant l'estratègia àvida.
-     */
+    /** Crea l'arbre de Huffman unint els nodes amb menys freqüència. */
     public void construirArbre() {
-
-        // 1. Crear hojas
+        Node.reiniciarContador();
         for (int i = 0; i < MIDA_ALFABET; i++) {
             if (frequencies[i] > 0) {
                 cua.afegir(new Node(i, frequencies[i], null, null));
             }
         }
 
-        // Cas especial: arxiu buit
         if (cua.mida() == 0) {
             this.arrel = null;
             return;
         }
 
-        // Cas especial: un sol símbol
         if (cua.mida() == 1) {
             Node unicNode = cua.extreureMinim();
             this.arrel = new Node(-1, unicNode.getFrequencia(), unicNode, null);
             return;
         }
 
-        // 2. Construcció de l'arbre
         while (cua.mida() > 1) {
             Node fillEsquerre = cua.extreureMinim();
             Node fillDret = cua.extreureMinim();
-
             long suma = fillEsquerre.getFrequencia() + fillDret.getFrequencia();
             Node pare = new Node(-1, suma, fillEsquerre, fillDret);
-
             cua.afegir(pare);
         }
 
         this.arrel = cua.extreureMinim();
     }
 
-    /**
-     * Inicia el recorregut DFS per generar codis.
-     */
+    /** Genera el codi de bits per a cada símbol recorrent l'arbre. */
     public void generarCodis() {
         if (this.arrel == null) return;
         generarCodisRecursiu(this.arrel, "");
     }
 
+    /** Mètode intern recursiu per assignar 0s i 1s als camins de l'arbre. */
     private void generarCodisRecursiu(Node node, String codiActual) {
         if (node == null) return;
 
@@ -81,10 +76,12 @@ public class AlgorismeHuffman {
         }
     }
 
+    /** Retorna l'arrel de l'arbre generat. */
     public Node getArrel() {
         return arrel;
     }
 
+    /** Retorna el mapa amb els codis resultants. */
     public Map<Integer, String> getCodisHuffman() {
         return codisHuffman;
     }

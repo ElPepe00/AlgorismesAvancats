@@ -24,27 +24,26 @@ public class Controlador {
     private static final String CARPETA_PROVES = "fitxersProva";
     private File fitxerDestiGenerat; // Guardem la referència per al botó "Guardar com..."
 
+    /** Constructor que vincula la vista amb el model i prepara els botons. */
     public Controlador(Vista vista, Modelo modelo) {
         this.vista = vista;
         this.modelo = modelo;
         inicialitzarControladors();
     }
 
+    /** Assigna les accions als botons de la vista. */
     private void inicialitzarControladors() {
         vista.setControladorCarregar(e -> obrirCercadorFitxers());
         vista.setControladorComprimir(e -> iniciarProcesCompressio());
-        
         vista.setControladorAturar(e -> {
             modelo.cancelarOperacio();
             vista.setEstat("Aturant operació de forma segura...", Color.RED);
         });
-        
         vista.setControladorGuardar(e -> guardarCom());
-        
         vista.setControladorDescomprimir(e -> iniciarProcesDescompressio());
-        
     }
 
+    /** Obre un diàleg per triar el fitxer a tractar. */
     private void obrirCercadorFitxers() {
         JFileChooser fileChooser = new JFileChooser(new File(CARPETA_PROVES));
         fileChooser.setDialogTitle("Selecciona l'arxiu original");
@@ -58,46 +57,40 @@ public class Controlador {
         }
     }
 
+    /** Orquestra el procés de compressió en un fil secundari. */
     private void iniciarProcesCompressio() {
-        modelo.reiniciarCancelacio(); // Vital per si venim d'una cancel·lació anterior
-        
+        modelo.reiniciarCancelacio();
         File arxiuOriginal = modelo.getFitxerActual();
-        
-        // --- 1. LÒGICA D'AUTOGUARDAT ---
         File directoriPare = arxiuOriginal.getParentFile();
         File carpetaDesti = new File(directoriPare, "comprimits");
-        
-        if (!carpetaDesti.exists()) {
-            carpetaDesti.mkdirs(); 
-        }
+        if (!carpetaDesti.exists()) carpetaDesti.mkdirs(); 
         
         String nomOriginal = arxiuOriginal.getName();
-        String nomSenseExtensio = nomOriginal;
+        String tipus = vista.isFibonacciSeleccionat() ? "-fibonacci" : "-binary";
+        
+        // Generem el nom mantenint l'extensió: fitxer.txt -> fitxer-binary.txt.huff
+        String nouNom;
         int ultimPunt = nomOriginal.lastIndexOf('.');
         if (ultimPunt > 0) {
-            nomSenseExtensio = nomOriginal.substring(0, ultimPunt);
+            nouNom = nomOriginal.substring(0, ultimPunt) + tipus + nomOriginal.substring(ultimPunt) + ".huff";
+        } else {
+            nouNom = nomOriginal + tipus + ".huff";
         }
         
-        String tipus = vista.isFibonacciSeleccionat() ? "-fibonacci" : "-binary";
-        File fitxerDesti = new File(carpetaDesti, nomSenseExtensio + tipus + ".huff");
-        this.fitxerDestiGenerat = fitxerDesti; // Ho guardem per si l'usuari fa "Guardar com..."
+        File fitxerDesti = new File(carpetaDesti, nouNom);
+        this.fitxerDestiGenerat = fitxerDesti;
 
-        // --- 2. PREPARACIÓ DE LA INTERFÍCIE ---
         vista.setProcessant(true);
         vista.setEstat("Analitzant freqüències...", new Color(52, 152, 219));
         vista.netejarTaula();
 
-        // El receptor del Walkie-Talkie
         IProgresListener listenerProgres = (percentatge, tempsRestant) -> {
             SwingUtilities.invokeLater(() -> vista.actualitzarProgres(percentatge, tempsRestant));
         };
 
-        // --- 3. EXECUCIÓ EN FIL SECUNDARI ---
         new Thread(() -> {
             try {
                 long tempsInici = System.currentTimeMillis();
-
-                // Fase d'anàlisi
                 modelo.setUsarFibonacci(vista.isFibonacciSeleccionat());
                 modelo.analitzarFitxer();
                 
@@ -105,26 +98,17 @@ public class Controlador {
                 
                 SwingUtilities.invokeLater(() -> {
                     vista.mostrarArbreHuffman(modelo.getArrelArbre());
-                    // Guardem la imatge automàticament
-                    ExportadorImatgeArbre.guardarPanellComImatge(
-                        vista.getPanelArbre(), 
-                        "arbre_" + arxiuOriginal.getName()
-                    );
+                    ExportadorImatgeArbre.guardarPanellComImatge(vista.getPanelArbre(), "arbre_" + arxiuOriginal.getName());
                 });
                 
                 SwingUtilities.invokeLater(() -> vista.setEstat("Comprimint i escrivint a disc...", new Color(52, 152, 219)));
-                
-                // Fase de compressió (passem el destí i el listener)
                 long pesNou = modelo.comprimir(fitxerDesti, listenerProgres);
                 
                 long tempsFi = System.currentTimeMillis();
                 long tempsTotal = tempsFi - tempsInici;
-
                 long pesOriginal = arxiuOriginal.length();
-                final double taxaCompressio = (pesOriginal > 0) 
-                        ? (1.0 - ((double) pesNou / pesOriginal)) * 100.0 
-                        : 0.0;
-                final double longMitjana = modelo.calcularLongitudMitjana();
+                double taxaCompressio = (pesOriginal > 0) ? (1.0 - ((double) pesNou / pesOriginal)) * 100.0 : 0.0;
+                double longMitjana = modelo.calcularLongitudMitjana();
 
                 SwingUtilities.invokeLater(() -> {
                     omplirTaulaVista();
@@ -136,12 +120,7 @@ public class Controlador {
 
             } catch (Exception ex) {
                 SwingUtilities.invokeLater(() -> {
-                    if (modelo.isCancelat()) {
-                        vista.setEstat("Acció cancel·lada.", Color.RED);
-                    } else {
-                        vista.setEstat("Error crític: " + ex.getMessage(), Color.RED);
-                        ex.printStackTrace();
-                    }
+                    vista.setEstat(modelo.isCancelat() ? "Acció cancel·lada." : "Error: " + ex.getMessage(), Color.RED);
                     vista.actualitzarProgres(0, "--:--");
                     vista.setProcessant(false);
                 });
@@ -149,6 +128,7 @@ public class Controlador {
         }).start();
     }
 
+    /** Permet a l'usuari triar on copiar el fitxer comprimit generat. */
     private void guardarCom() {
         if (fitxerDestiGenerat == null || !fitxerDestiGenerat.exists()) return;
 
@@ -167,75 +147,44 @@ public class Controlador {
         }
     }
 
+    /** Tradueix els codis de Huffman del model a la taula visual de la vista. */
     private void omplirTaulaVista() {
         Map<Integer, String> codis = modelo.getCodisHuffman();
         long[] frequencies = modelo.getFrequencies();
-
         if (codis == null || frequencies == null) return;
 
         for (Map.Entry<Integer, String> entrada : codis.entrySet()) {
             int byteValor = entrada.getKey();
             String simbolLlegible;
-            
-            if (byteValor >= 32 && byteValor <= 126) {
-                simbolLlegible = "'" + (char) byteValor + "'"; 
-            } else if (byteValor == 10) {
-                simbolLlegible = "[LF] Salt Línia";
-            } else if (byteValor == 13) {
-                simbolLlegible = "[CR] Retorn Carro";
-            } else if (byteValor == 9) {
-                simbolLlegible = "[TAB] Tabulació";
-            } else {
-                simbolLlegible = "0x" + String.format("%02X", byteValor);
-            }
+            if (byteValor >= 32 && byteValor <= 126) simbolLlegible = "'" + (char) byteValor + "'"; 
+            else if (byteValor == 10) simbolLlegible = "[LF] Salt Línia";
+            else if (byteValor == 13) simbolLlegible = "[CR] Retorn Carro";
+            else if (byteValor == 9) simbolLlegible = "[TAB] Tabulació";
+            else simbolLlegible = "0x" + String.format("%02X", byteValor);
 
             vista.afegirFilaTaula(simbolLlegible, (int) frequencies[byteValor], entrada.getValue());
         }
     }
+    /** Orquestra el procés de descompressió en un fil secundari. */
     private void iniciarProcesDescompressio() {
-
         modelo.reiniciarCancelacio(); 
-
         File arxiuOrigen = modelo.getFitxerActual();
+        if (arxiuOrigen == null) return;
 
-        if (arxiuOrigen == null) {
-            vista.setEstat("Cap arxiu seleccionat.", Color.RED);
-            return;
-        }
-
+        // Si el fitxer està dins 'comprimits', pugem un nivell per crear 'decomprimits' al costat
+        File pare = arxiuOrigen.getParentFile();
+        File base = (pare != null && pare.getName().equals("comprimits")) ? pare.getParentFile() : pare;
         
-        File carpetaComprimits = arxiuOrigen.getParentFile();
+        File carpetaDesti = new File(base, "decomprimits");
+        if (!carpetaDesti.exists()) carpetaDesti.mkdirs();
 
-        
-        File carpetaPare = carpetaComprimits.getParentFile();
-
-        
-        File carpetaDesti = new File(carpetaPare, "decomprimits");
-
-        
-        if (!carpetaDesti.exists()) {
-            carpetaDesti.mkdirs();
-        }
-
-        // Nombre del archivo de salida
         String nom = arxiuOrigen.getName();
-        String nomSortida;
-
-        if (nom.endsWith(".huff")) {
-            nomSortida = nom.substring(0, nom.length() - 5);
-        } else {
-            nomSortida = nom + "_descomprimit";
-        }
-
-        // Archivo destino final
+        // Simplement eliminem el ".huff" per recuperar l'extensió original (que hem guardat en comprimir)
+        String nomSortida = nom.endsWith(".huff") ? nom.substring(0, nom.length() - 5) : nom + "_descomprimit";
         File desti = new File(carpetaDesti, nomSortida);
 
-        // Preparar interfaz
         vista.setProcessant(true);
         vista.setEstat("Descomprimint...", new Color(52, 152, 219));
-        vista.actualitzarProgres(0, "--:--");
-
-        // Listener de progreso (igual que en compresión)
         IProgresListener listenerProgres = (percentatge, tempsRestant) -> {
             SwingUtilities.invokeLater(() -> vista.actualitzarProgres(percentatge, tempsRestant));
         };
@@ -243,22 +192,14 @@ public class Controlador {
         new Thread(() -> {
             try {
                 modelo.descomprimir(arxiuOrigen, desti, listenerProgres);
-
                 SwingUtilities.invokeLater(() -> {
-                    vista.setEstat("Descompressió completada: " + desti.getAbsolutePath(),
-                            new Color(39, 174, 96));
+                    vista.setEstat("Completat! Fitxer a: decomprimits/" + desti.getName(), new Color(39, 174, 96));
                     vista.actualitzarProgres(100, "00:00");
                     vista.setProcessant(false);
                 });
-
             } catch (Exception ex) {
                 SwingUtilities.invokeLater(() -> {
-                    if (modelo.isCancelat()) {
-                        vista.setEstat("Acció cancel·lada.", Color.RED);
-                    } else {
-                        vista.setEstat("Error en descompressió: " + ex.getMessage(), Color.RED);
-                        ex.printStackTrace();
-                    }
+                    vista.setEstat(modelo.isCancelat() ? "Acció cancel·lada." : "Error: " + ex.getMessage(), Color.RED);
                     vista.actualitzarProgres(0, "--:--");
                     vista.setProcessant(false);
                 });

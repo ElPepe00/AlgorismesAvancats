@@ -3,10 +3,12 @@ package vista;
 import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.table.DefaultTableModel;
+
+import modelo.estructuras.Node;
+
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.io.File;
-import modelo.Node;
 
 /**
  * @author Josep Oliver i Hugo Valls
@@ -56,6 +58,7 @@ public class Vista extends JFrame {
 
     private boolean usarFibonacci = false;
 
+    /** Crea la finestra principal i inicialitza els components. */
     public Vista() {
         setTitle("Pràctica 4 - Compressor d'arxius basat en Huffman");
         setSize(1200, 800);
@@ -266,39 +269,39 @@ public class Vista extends JFrame {
     // ==========================================
     // GETTERS, SETTERS I LISTENERS (Pel Controlador)
     // ==========================================
+    /** Configura el botó de carregar amb el seu listener. */
     public void setControladorCarregar(ActionListener listener) {
         btnCarregar.addActionListener(listener);
     }
 
+    /** Configura el botó de comprimir amb el seu listener. */
     public void setControladorComprimir(ActionListener listener) {
         btnComprimir.addActionListener(listener);
     }
 
+    /** Configura el botó de descomprimir amb el seu listener. */
     public void setControladorDescomprimir(ActionListener listener) {
         btnDescomprimir.addActionListener(listener);
     }
 
+    /** Configura el botó de guardar amb el seu listener. */
     public void setControladorGuardar(ActionListener listener) {
         btnGuardar.addActionListener(listener);
     }
 
+    /** Configura el botó d'aturar amb el seu listener. */
     public void setControladorAturar(ActionListener listener) {
         btnAturar.addActionListener(listener);
     }
 
+    /** Actualitza la vista amb les dades del fitxer seleccionat. */
     public void setFitxerActual(File fitxer) {
         this.fitxerActual = fitxer;
         if (fitxer != null) {
             String midaFormatada = formatarMidaArxiu(fitxer.length());
-
-            // Utilitzem HTML per permetre el salt de línia (<br/>)
-            // També podem aprofitar per posar el pes en negreta o un color més suau
             lblFitxerSeleccionat.setText("<html>" + fitxer.getName() + "<br/><font color='gray'>Pes: " + midaFormatada + "</font></html>");
-
             btnComprimir.setEnabled(true);
             btnDescomprimir.setEnabled(true);
-
-            // Opcional: Si el text és molt alt, potser cal revalidar el contenidor
             this.revalidate();
             this.repaint();
         }
@@ -317,25 +320,30 @@ public class Vista extends JFrame {
         }
     }
 
+    /** Actualitza la barra de progrés i el text del temps restant. */
     public void actualitzarProgres(int percentatge, String tempsRestant) {
         pbProgres.setValue(percentatge);
         lblTempsRestant.setText("Temps restant: " + tempsRestant);
     }
 
+    /** Mostra els resultats finals de l'operació (taxa, temps i longitud mitjana). */
     public void mostrarEstadistiques(double taxa, long tempsMs, double longMitjana) {
         lblPercentatgeComp.setText(String.format("Taxa de compressió: %.2f %%", taxa));
         lblTempsExecucio.setText("Temps d'execució: " + tempsMs + " ms");
         lblLongitudMitjana.setText(String.format("Longitud mitjana: %.2f bits/símbol", longMitjana));
     }
 
+    /** Afegeix una nova fila a la taula del diccionari de Huffman. */
     public void afegirFilaTaula(String simbol, int frequencia, String codi) {
         modelTaula.addRow(new Object[]{simbol, frequencia, codi});
     }
 
+    /** Esborra totes les files de la taula de freqüències. */
     public void netejarTaula() {
         modelTaula.setRowCount(0);
     }
 
+    /** Canvia el text del missatge d'estat a la part inferior. */
     public void setEstat(String text, Color color) {
         lblEstat.setText(text);
         lblEstat.setForeground(color);
@@ -351,15 +359,12 @@ public class Vista extends JFrame {
      * @param processant true si s'està comprimint/descomprimint, false si està
      * lliure.
      */
+    /** Activa o desactiva els botons mentre hi ha una tasca en execució. */
     public void setProcessant(boolean processant) {
         btnCarregar.setEnabled(!processant);
         btnComprimir.setEnabled(!processant && fitxerActual != null);
         btnDescomprimir.setEnabled(!processant && fitxerActual != null);
-
-        // El botó Aturar NOMÉS s'activa mentre estem treballant
         btnAturar.setEnabled(processant);
-
-        // El botó Guardar s'activa quan NO estem processant (com a "Guardar com...")
         btnGuardar.setEnabled(!processant && fitxerActual != null);
 
         if (processant) {
@@ -372,20 +377,24 @@ public class Vista extends JFrame {
     /**
      * Passa l'arrel de l'arbre generat al panell gràfic perquè el dibuixi.
      */
+    /** Actualitza el dibuix de l'arbre Huffman al panell gràfic. */
     public void mostrarArbreHuffman(Node arrel) {
         if (panelArbre != null) {
             panelArbre.setArrelArbre(arrel);
         }
     }
 
+    /** Indica si l'usuari ha triat Fibonacci Heap. */
     public boolean isFibonacciSeleccionat() {
         return rbFibonacci.isSelected();
     }
 
+    /** Indica si l'usuari ha triat Binary Heap. */
     public boolean isBinarySeleccionat() {
         return rbBinaryHeap.isSelected();
     }
 
+    /** Retorna el panell gràfic on es dibuixa l'arbre. */
     public PanelArbreHuffman getPanelArbre() {
         return panelArbre;
     }

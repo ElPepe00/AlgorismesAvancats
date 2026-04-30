@@ -1,4 +1,4 @@
-package modelo;
+package modelo.estructuras;
 
 /**
  * Interfície comuna per a les estructures de cua de prioritat
@@ -6,12 +6,12 @@ package modelo;
  */
 public interface CuaPrioritat {
 
-    // Afegir un node a la cua
+    /** Afegeix un node a la cua. */
     void afegir(Node node);
 
-    // Extreure el node amb menor freqüència
+    /** Treu i retorna el node amb la freqüència més baixa. */
     Node extreureMinim();
 
-    // Nombre d'elements
+    /** Retorna el nombre de nodes que hi ha a la cua. */
     int mida();
 }

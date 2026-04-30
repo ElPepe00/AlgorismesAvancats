@@ -4,7 +4,8 @@ import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.JPanel;
-import modelo.Node;
+
+import modelo.estructuras.Node;
 
 /**
  * @author Josep Oliver i Hugo Valls
@@ -22,39 +23,30 @@ public class PanelArbreHuffman extends JPanel {
     private final Map<Node, Integer> mapaX = new HashMap<>();
     private int leafCount = 0;
 
+    /** Configura el color de fons del panell. */
     public PanelArbreHuffman() {
-        this.setBackground(new Color(40, 42, 54)); // Estil Dràcula / IDE fosc
+        this.setBackground(new Color(40, 42, 54));
     }
 
-    /**
-     * Rep l'arrel de l'arbre i calcula les coordenades abans de dibuixar.
-     */
+    /** Assigna l'arbre que s'ha de dibuixar i en calcula les dimensions. */
     public void setArrelArbre(Node arrel) {
         this.arrel = arrel;
         this.mapaX.clear();
         this.leafCount = 0;
 
         if (arrel != null) {
-            // 1. Pre-calculem les posicions X basant-nos en l'ordre de les fulles
             precalcularX(arrel);
-
-            // 2. Calculem dimensions necessàries
             int profunditat = calcularProfunditat(arrel);
             int alcadaNecessaria = (profunditat * SEPARACIO_Y) + 100;
-            // L'amplada depèn del nombre de fulles que hem comptat
             int ampladaNecessaria = Math.max(800, (leafCount + 1) * DISTANCIA_H);
 
             this.setPreferredSize(new Dimension(ampladaNecessaria, alcadaNecessaria));
             this.revalidate();
         }
-
         this.repaint();
     }
 
-    /**
-     * Algorisme per assignar una X única a cada node. 
-     * Les fulles tenen X seqüencials, els nodes interns estan al mig dels seus fills.
-     */
+    /** Calcula la posició horitzontal de cada node per evitar solapaments. */
     private int precalcularX(Node node) {
         if (node == null) return -1;
 
@@ -73,12 +65,14 @@ public class PanelArbreHuffman extends JPanel {
         return xPare;
     }
 
+    /** Calcula quants nivells té l'arbre recursivament. */
     private int calcularProfunditat(Node node) {
         if (node == null) return 0;
         return Math.max(calcularProfunditat(node.getFillEsquerre()), 
                         calcularProfunditat(node.getFillDret())) + 1;
     }
 
+    /** Mètode principal de dibuix de Swing. */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -88,17 +82,14 @@ public class PanelArbreHuffman extends JPanel {
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2d.setFont(new Font("Consolas", Font.BOLD, 12));
 
-        // Dibuixem recursivament
         dibuixarNodeRecursiu(g2d, arrel, 1, 50);
     }
 
+    /** Dibuixa un node, les seves línies cap als fills i el seu text. */
     private void dibuixarNodeRecursiu(Graphics2D g2d, Node node, int nivell, int y) {
         if (node == null) return;
 
-        // Obtenim la X precalculada i la mapegem a píxels (amb un marge)
         int x = (mapaX.get(node) + 1) * DISTANCIA_H;
-
-        // 1. Dibuixar línies i bits cap als fills
         g2d.setStroke(new BasicStroke(1.2f));
         
         if (node.getFillEsquerre() != null) {
@@ -119,18 +110,15 @@ public class PanelArbreHuffman extends JPanel {
             dibuixarNodeRecursiu(g2d, node.getFillDret(), nivell + 1, yFill);
         }
 
-        // 2. Dibuixar el cercle del node
         if (node.esFulla()) {
-            g2d.setColor(new Color(46, 204, 113)); // Verd
+            g2d.setColor(new Color(46, 204, 113));
         } else {
-            g2d.setColor(new Color(52, 152, 219)); // Blau
+            g2d.setColor(new Color(52, 152, 219));
         }
         g2d.fillOval(x - RADI_NODE, y - RADI_NODE, RADI_NODE * 2, RADI_NODE * 2);
-        
         g2d.setColor(Color.WHITE);
         g2d.drawOval(x - RADI_NODE, y - RADI_NODE, RADI_NODE * 2, RADI_NODE * 2);
 
-        // 3. Dibuixar el text
         String text;
         if (node.esFulla()) {
             int simbol = node.getSimbol();
@@ -144,10 +132,11 @@ public class PanelArbreHuffman extends JPanel {
         g2d.drawString(text, x - (ampladaText / 2), y + 5);
     }
 
+    /** Pinta el bit (0 o 1) damunt de la branca corresponent. */
     private void dibuixarBit(Graphics2D g2d, int x1, int y1, int x2, int y2, String bit) {
         int xMig = (x1 + x2) / 2;
         int yMig = (y1 + y2) / 2;
-        g2d.setColor(new Color(241, 196, 15)); // Groc/Or per als bits
+        g2d.setColor(new Color(241, 196, 15));
         g2d.drawString(bit, xMig + (bit.equals("0") ? -12 : 5), yMig);
     }
 }
