@@ -1,6 +1,8 @@
 package vista;
 
 import java.awt.*;
+import java.util.HashMap;
+import java.util.Map;
 import javax.swing.JPanel;
 import modelo.Node;
 
@@ -13,126 +15,139 @@ public class PanelArbreHuffman extends JPanel {
 
     private Node arrel;
     private final int RADI_NODE = 15;
-    private final int SEPARACIO_Y = 50; // Distància vertical entre nivells
+    private final int SEPARACIO_Y = 60; // Distància vertical entre nivells
+    private final int DISTANCIA_H = 80; // Espai horitzontal per garantir no-solapament
+
+    // Map per guardar la posició X calculada de cada node
+    private final Map<Node, Integer> mapaX = new HashMap<>();
+    private int leafCount = 0;
 
     public PanelArbreHuffman() {
-        this.setBackground(new Color(40, 42, 54)); // Un color fosc estil IDE
+        this.setBackground(new Color(40, 42, 54)); // Estil Dràcula / IDE fosc
     }
 
     /**
-     * Rep l'arrel de l'arbre acabat de generar pel Model i força un redibuixat.
+     * Rep l'arrel de l'arbre i calcula les coordenades abans de dibuixar.
      */
-    // 1. MODIFICA EL MÈTODE setArrelArbre
     public void setArrelArbre(Node arrel) {
         this.arrel = arrel;
+        this.mapaX.clear();
+        this.leafCount = 0;
 
         if (arrel != null) {
-            // Calculem la profunditat per saber quina alçada necessitem
+            // 1. Pre-calculem les posicions X basant-nos en l'ordre de les fulles
+            precalcularX(arrel);
+
+            // 2. Calculem dimensions necessàries
             int profunditat = calcularProfunditat(arrel);
-
-            // Cada nivell necessita SEPARACIO_Y píxels. Afegim marge.
             int alcadaNecessaria = (profunditat * SEPARACIO_Y) + 100;
+            // L'amplada depèn del nombre de fulles que hem comptat
+            int ampladaNecessaria = Math.max(800, (leafCount + 1) * DISTANCIA_H);
 
-            // L'amplada depèn de quantes branques tingui. Posem una fòrmula generosa.
-            // Si l'arbre és molt profund, demanem més espai horitzontal.
-            int ampladaNecessaria = Math.max(800, profunditat * 120);
-
-            // Avisem al sistema de Swing que necessitem aquest espai real
-            this.setPreferredSize(new java.awt.Dimension(ampladaNecessaria, alcadaNecessaria));
-            this.revalidate(); // Clau: Avisa a l'JScrollPane que s'ha de recalcular
+            this.setPreferredSize(new Dimension(ampladaNecessaria, alcadaNecessaria));
+            this.revalidate();
         }
 
         this.repaint();
     }
 
-    // 2. AFEGEIX AQUEST MÈTODE AUXILIAR AL FINAL DE LA CLASSE
     /**
-     * Calcula el nombre de nivells que té l'arbre de forma recursiva (DFS).
+     * Algorisme per assignar una X única a cada node. 
+     * Les fulles tenen X seqüencials, els nodes interns estan al mig dels seus fills.
      */
-    private int calcularProfunditat(Node node) {
-        if (node == null) {
-            return 0;
-        }
-        int profunditatEsq = calcularProfunditat(node.getFillEsquerre());
-        int profunditatDret = calcularProfunditat(node.getFillDret());
+    private int precalcularX(Node node) {
+        if (node == null) return -1;
 
-        return Math.max(profunditatEsq, profunditatDret) + 1;
+        if (node.esFulla()) {
+            int x = leafCount++;
+            mapaX.put(node, x);
+            return x;
+        }
+
+        int xEsq = precalcularX(node.getFillEsquerre());
+        int xDret = precalcularX(node.getFillDret());
+
+        // El pare es situa exactament a la meitat dels seus dos fills
+        int xPare = (xEsq + xDret) / 2;
+        mapaX.put(node, xPare);
+        return xPare;
+    }
+
+    private int calcularProfunditat(Node node) {
+        if (node == null) return 0;
+        return Math.max(calcularProfunditat(node.getFillEsquerre()), 
+                        calcularProfunditat(node.getFillDret())) + 1;
     }
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+        if (arrel == null || mapaX.isEmpty()) return;
 
-        if (arrel == null) {
-            return;
-        }
-
-        // Graphics2D permet antialiasing perquè les línies i els cercles es vegin suaus i professionals
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2d.setFont(new Font("Consolas", Font.BOLD, 12));
 
-        // Comencem a dibuixar des de la part superior central
-        int xInicial = this.getWidth() / 2;
-        int yInicial = 30;
-
-        // L'espaiat inicial X ha de ser prou gran perquè l'arbre s'obri
-        int espaiXInicial = this.getWidth() / 4;
-
-        dibuixarNodeRecursiu(g2d, arrel, xInicial, yInicial, espaiXInicial);
+        // Dibuixem recursivament
+        dibuixarNodeRecursiu(g2d, arrel, 1, 50);
     }
 
-    /**
-     * Mètode recursiu DFS per dibuixar línies, cercles i textos.
-     */
-    private void dibuixarNodeRecursiu(Graphics2D g2d, Node node, int x, int y, int espaiX) {
-        if (node == null) {
-            return;
-        }
+    private void dibuixarNodeRecursiu(Graphics2D g2d, Node node, int nivell, int y) {
+        if (node == null) return;
 
-        // 1. Dibuixar les línies cap als fills (es fan abans perquè quedin per sota del cercle)
-        g2d.setColor(Color.GRAY);
+        // Obtenim la X precalculada i la mapegem a píxels (amb un marge)
+        int x = (mapaX.get(node) + 1) * DISTANCIA_H;
+
+        // 1. Dibuixar línies i bits cap als fills
+        g2d.setStroke(new BasicStroke(1.2f));
+        
         if (node.getFillEsquerre() != null) {
-            g2d.drawLine(x, y, x - espaiX, y + SEPARACIO_Y);
-            // Crida recursiva cap a l'esquerra reduint l'espai horitzontal a la meitat
-            dibuixarNodeRecursiu(g2d, node.getFillEsquerre(), x - espaiX, y + SEPARACIO_Y, espaiX / 2);
-        }
-        if (node.getFillDret() != null) {
-            g2d.drawLine(x, y, x + espaiX, y + SEPARACIO_Y);
-            // Crida recursiva cap a la dreta
-            dibuixarNodeRecursiu(g2d, node.getFillDret(), x + espaiX, y + SEPARACIO_Y, espaiX / 2);
+            int xFill = (mapaX.get(node.getFillEsquerre()) + 1) * DISTANCIA_H;
+            int yFill = y + SEPARACIO_Y;
+            g2d.setColor(new Color(150, 150, 150));
+            g2d.drawLine(x, y, xFill, yFill);
+            dibuixarBit(g2d, x, y, xFill, yFill, "0");
+            dibuixarNodeRecursiu(g2d, node.getFillEsquerre(), nivell + 1, yFill);
         }
 
-        // 2. Dibuixar el cercle del node actual
+        if (node.getFillDret() != null) {
+            int xFill = (mapaX.get(node.getFillDret()) + 1) * DISTANCIA_H;
+            int yFill = y + SEPARACIO_Y;
+            g2d.setColor(new Color(150, 150, 150));
+            g2d.drawLine(x, y, xFill, yFill);
+            dibuixarBit(g2d, x, y, xFill, yFill, "1");
+            dibuixarNodeRecursiu(g2d, node.getFillDret(), nivell + 1, yFill);
+        }
+
+        // 2. Dibuixar el cercle del node
         if (node.esFulla()) {
-            g2d.setColor(new Color(46, 204, 113)); // Verd per a les fulles
+            g2d.setColor(new Color(46, 204, 113)); // Verd
         } else {
-            g2d.setColor(new Color(52, 152, 219)); // Blau per als nodes interns
+            g2d.setColor(new Color(52, 152, 219)); // Blau
         }
         g2d.fillOval(x - RADI_NODE, y - RADI_NODE, RADI_NODE * 2, RADI_NODE * 2);
-
-        // Vora del cercle
+        
         g2d.setColor(Color.WHITE);
         g2d.drawOval(x - RADI_NODE, y - RADI_NODE, RADI_NODE * 2, RADI_NODE * 2);
 
-        // 3. Dibuixar el text a l'interior del node
+        // 3. Dibuixar el text
         String text;
         if (node.esFulla()) {
-            // Si és un caràcter imprimible normal, el mostrem
             int simbol = node.getSimbol();
-            if (simbol >= 32 && simbol <= 126) {
-                text = String.valueOf((char) simbol);
-            } else {
-                text = String.format("%02X", simbol); // Hexadecimal per caràcters estranys
-            }
+            text = (simbol >= 32 && simbol <= 126) ? String.valueOf((char) simbol) : String.format("%02X", simbol);
         } else {
-            // Si és node intern, mostrem la seva freqüència acumulada
             text = String.valueOf(node.getFrequencia());
         }
 
-        // Calcular el centre exacte del text per estètica
         int ampladaText = g2d.getFontMetrics().stringWidth(text);
         g2d.setColor(Color.WHITE);
-        g2d.drawString(text, x - (ampladaText / 2), y + 4);
+        g2d.drawString(text, x - (ampladaText / 2), y + 5);
+    }
+
+    private void dibuixarBit(Graphics2D g2d, int x1, int y1, int x2, int y2, String bit) {
+        int xMig = (x1 + x2) / 2;
+        int yMig = (y1 + y2) / 2;
+        g2d.setColor(new Color(241, 196, 15)); // Groc/Or per als bits
+        g2d.drawString(bit, xMig + (bit.equals("0") ? -12 : 5), yMig);
     }
 }

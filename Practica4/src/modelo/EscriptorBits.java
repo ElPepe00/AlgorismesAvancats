@@ -7,13 +7,13 @@ import java.io.OutputStream;
  * Classe de baix nivell per empaquetar cadenes de bits ('0' i '1') en Bytes reals
  * i escriure'ls al disc dur.
  */
-public class EmpaquetadorBits {
+public class EscriptorBits {
     
     private OutputStream out;
     private int bufferActual;
     private int bitsAcumulats;
 
-    public EmpaquetadorBits(OutputStream out) {
+    public EscriptorBits(OutputStream out) {
         this.out = out;
         this.bufferActual = 0;
         this.bitsAcumulats = 0;

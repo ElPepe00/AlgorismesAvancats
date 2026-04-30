@@ -3,6 +3,7 @@ package controlador;
 import modelo.IProgresListener;
 import modelo.Modelo;
 import vista.Vista;
+import vista.ExportadorImatgeArbre;
 
 import javax.swing.*;
 import java.awt.Color;
@@ -102,7 +103,15 @@ public class Controlador {
                 
                 if (modelo.isCancelat()) throw new Exception("Operació cancel·lada per l'usuari.");
                 
-                SwingUtilities.invokeLater(() -> vista.mostrarArbreHuffman(modelo.getArrelArbre()));
+                SwingUtilities.invokeLater(() -> {
+                    vista.mostrarArbreHuffman(modelo.getArrelArbre());
+                    // Guardem la imatge automàticament
+                    ExportadorImatgeArbre.guardarPanellComImatge(
+                        vista.getPanelArbre(), 
+                        "arbre_" + arxiuOriginal.getName()
+                    );
+                });
+                
                 SwingUtilities.invokeLater(() -> vista.setEstat("Comprimint i escrivint a disc...", new Color(52, 152, 219)));
                 
                 // Fase de compressió (passem el destí i el listener)

@@ -41,7 +41,7 @@ public class GestorIO {
             dos.writeLong(totalBytesOriginals);
             
             // 2. Cos: Escriptura a nivell de bits
-            EmpaquetadorBits empaquetador = new EmpaquetadorBits(dos);
+            EscriptorBits empaquetador = new EscriptorBits(dos);
             
             try (BufferedInputStream bis = new BufferedInputStream(new FileInputStream(original))) {
                 byte[] buffer = new byte[8192];

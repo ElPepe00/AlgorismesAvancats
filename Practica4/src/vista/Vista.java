@@ -386,5 +386,7 @@ public class Vista extends JFrame {
         return rbBinaryHeap.isSelected();
     }
 
-    
+    public PanelArbreHuffman getPanelArbre() {
+        return panelArbre;
+    }
 }
