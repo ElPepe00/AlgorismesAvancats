@@ -107,8 +107,8 @@ public class Controlador {
                 long tempsFi = System.currentTimeMillis();
                 long tempsTotal = tempsFi - tempsInici;
                 long pesOriginal = arxiuOriginal.length();
-                double taxaCompressio = (pesOriginal > 0) ? (1.0 - ((double) pesNou / pesOriginal)) * 100.0 : 0.0;
                 double longMitjana = modelo.calcularLongitudMitjana();
+                double taxaCompressio = (1.0 - (longMitjana / 8.0)) * 100.0;
 
                 SwingUtilities.invokeLater(() -> {
                     omplirTaulaVista();
