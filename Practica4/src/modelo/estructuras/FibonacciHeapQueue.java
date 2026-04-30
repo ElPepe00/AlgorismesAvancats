@@ -8,14 +8,12 @@ public class FibonacciHeapQueue implements CuaPrioritat {
     private static class NodeFib {
         Node valor;
         int grau;
-        NodeFib pare;
         List<NodeFib> fills;
 
         /** Constructor del node intern del Fibonacci Heap. */
         public NodeFib(Node valor) {
             this.valor = valor;
             this.grau = 0;
-            this.pare = null;
             this.fills = new ArrayList<>();
         }
     }
@@ -52,7 +50,6 @@ public class FibonacciHeapQueue implements CuaPrioritat {
         NodeFib z = minim;
 
         for (NodeFib fill : z.fills) {
-            fill.pare = null;
             arrels.add(fill);
         }
 
@@ -91,7 +88,6 @@ public class FibonacciHeapQueue implements CuaPrioritat {
                             y = tmp;
                         }
 
-                        y.pare = x;
                         x.fills.add(y);
                         x.grau++;
 

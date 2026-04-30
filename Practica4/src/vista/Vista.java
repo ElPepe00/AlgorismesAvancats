@@ -56,8 +56,6 @@ public class Vista extends JFrame {
     private final Font FONT_TITOLS = new Font("Segoe UI", Font.BOLD, 14);
 
 
-    private boolean usarFibonacci = false;
-
     /** Crea la finestra principal i inicialitza els components. */
     public Vista() {
         setTitle("Pràctica 4 - Compressor d'arxius basat en Huffman");
