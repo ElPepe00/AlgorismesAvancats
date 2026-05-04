@@ -5,7 +5,6 @@ package main;
 import vista.Vista;
 
 import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
 
 
 /**
