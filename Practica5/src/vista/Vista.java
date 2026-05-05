@@ -22,9 +22,13 @@ public class Vista extends JFrame {
     private JSpinner spinDarrerNombre;
     private JComboBox<String> comboDimensions;
 
+    // Elements pels jugadors
+    private JSpinner spinNumJugadors;
+    private JLabel lblTornActual;
+
     // Visualització
     private JPanel panelTeclat;
-    private JButton[] botonsTeclat; // Guardem els botons per poder-los pintar
+    private JButton[] botonsTeclat;
     private JLabel lblGuanyador;
 
     // Elements d'estat (Panell Sud)
@@ -40,7 +44,7 @@ public class Vista extends JFrame {
 
     public Vista() {
         setTitle("Pràctica 5 - Joc del 31");
-        setSize(1100, 750);
+        setSize(1000, 750);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
@@ -78,6 +82,11 @@ public class Vista extends JFrame {
         // El límit del darrer nombre s'ajustarà dinàmicament segons el tauler
         spinDarrerNombre = new JSpinner(new SpinnerNumberModel(0, 0, 9, 1));
         afegirCampConfiguracio(pnlConfig, "Darrer Nombre (0=Cap):", spinDarrerNombre);
+        pnlConfig.add(Box.createVerticalStrut(10));
+
+        // Nombre de jugadors de la partida
+        spinNumJugadors = new JSpinner(new SpinnerNumberModel(2, 2, 4, 1)); // Per defecte 2, màxim 4 (per exemple)
+        afegirCampConfiguracio(pnlConfig, "Núm. Jugadors:", spinNumJugadors);
 
         // -- Targeta 2: Dimensions Teclat --
         JPanel pnlDimensions = crearTargeta("2. Tauler");
@@ -118,24 +127,30 @@ public class Vista extends JFrame {
         pnlCentral.setBackground(Color.WHITE);
         pnlCentral.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
 
-        JPanel pnlResultat = new JPanel(new BorderLayout());
+        // MODIFICACIÓ: Panell de resultats amb l'estil "Targeta"
+        JPanel pnlResultat = new JPanel(new GridLayout(2, 1, 10, 10)); // Dues files, espaiades
         pnlResultat.setBackground(Color.WHITE);
-        pnlResultat.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(220, 225, 230), 2, true),
-                BorderFactory.createEmptyBorder(15, 15, 15, 15)
-        ));
 
-        JLabel lblTitolRes = new JLabel("Resultat de la Partida", SwingConstants.CENTER);
-        lblTitolRes.setFont(FONT_TITOLS);
-        lblTitolRes.setForeground(Color.GRAY);
+        // Creem la mateixa vora que als panells laterals
+        TitledBorder voraResultat = BorderFactory.createTitledBorder(
+                BorderFactory.createLineBorder(new Color(200, 200, 200), 1), "Control de Torns i Resultat"
+        );
+        voraResultat.setTitleFont(FONT_TITOLS);
+        pnlResultat.setBorder(BorderFactory.createCompoundBorder(voraResultat, BorderFactory.createEmptyBorder(10, 15, 10, 15)));
+
+        lblTornActual = new JLabel("Torn: Jugador 1", SwingConstants.CENTER);
+        lblTornActual.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        lblTornActual.setForeground(COLOR_BLAU);
 
         lblGuanyador = new JLabel("Pendent de càlcul...", SwingConstants.CENTER);
-        lblGuanyador.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        lblGuanyador.setFont(new Font("Segoe UI", Font.BOLD, 22));
         lblGuanyador.setForeground(new Color(44, 62, 80));
 
-        pnlResultat.add(lblTitolRes, BorderLayout.NORTH);
-        pnlResultat.add(lblGuanyador, BorderLayout.CENTER);
+        // Els afegim al GridLayout
+        pnlResultat.add(lblTornActual);
+        pnlResultat.add(lblGuanyador);
 
+        // Panell del teclat
         panelTeclat = new JPanel();
         panelTeclat.setBackground(Color.WHITE);
         actualitzarTeclat("3x3");
@@ -165,13 +180,8 @@ public class Vista extends JFrame {
         // ==========================================
         // LISTENERS INTERNS
         // ==========================================
-        // Escoltador per canvi de dimensions
         comboDimensions.addActionListener(e -> actualitzarTeclat((String) comboDimensions.getSelectedItem()));
-
-        // Escoltador per ressaltar el número al teclat (Punt 2)
         spinDarrerNombre.addChangeListener(e -> ressaltarNombreSeleccionat());
-
-        // Escoltador per restablir valors (Punt 5)
         btnRestablir.addActionListener(e -> restablirValors());
     }
 
@@ -182,11 +192,10 @@ public class Vista extends JFrame {
         int h = dimensions.charAt(2) - '0';
         int maxNombre = w * h;
 
-        // Punt 1: Ajustem el límit del darrer nombre dinàmicament
         SpinnerNumberModel model = (SpinnerNumberModel) spinDarrerNombre.getModel();
         model.setMaximum(maxNombre);
         if ((int) spinDarrerNombre.getValue() > maxNombre) {
-            spinDarrerNombre.setValue(0); // Reiniciem si s'escapa del rang
+            spinDarrerNombre.setValue(0);
         }
 
         panelTeclat.setLayout(new GridLayout(h, w, 8, 8));
@@ -200,15 +209,13 @@ public class Vista extends JFrame {
                 btn.setBackground(new Color(245, 245, 245));
                 btn.setFocusPainted(false);
                 btn.setEnabled(false);
-
-                // Guardem el botó a l'array (índex basat en el valor del número)
                 botonsTeclat[nombre - 1] = btn;
                 panelTeclat.add(btn);
                 nombre--;
             }
         }
 
-        ressaltarNombreSeleccionat(); // Pintem si ja hi ha un valor seleccionat
+        ressaltarNombreSeleccionat();
         panelTeclat.revalidate();
         panelTeclat.repaint();
     }
@@ -216,14 +223,12 @@ public class Vista extends JFrame {
     private void ressaltarNombreSeleccionat() {
         int seleccionat = (int) spinDarrerNombre.getValue();
 
-        // Primer netegem tots els botons
         for (JButton btn : botonsTeclat) {
             if (btn != null) {
                 btn.setBackground(new Color(245, 245, 245));
             }
         }
 
-        // Si el valor és > 0, pintem el botó corresponent (Punt 2)
         if (seleccionat > 0 && seleccionat <= botonsTeclat.length) {
             botonsTeclat[seleccionat - 1].setBackground(COLOR_RESSALTAT);
         }
@@ -234,6 +239,8 @@ public class Vista extends JFrame {
         spinLimit.setValue(31);
         comboDimensions.setSelectedItem("3x3");
         spinDarrerNombre.setValue(0);
+        spinNumJugadors.setValue(2);
+        lblTornActual.setText("Torn: Jugador 1");
         lblGuanyador.setText("Pendent de càlcul...");
         lblGuanyador.setForeground(new Color(44, 62, 80));
         setEstat("Configuració restablida.", Color.GRAY);
@@ -303,9 +310,17 @@ public class Vista extends JFrame {
         return (String) comboDimensions.getSelectedItem();
     }
 
+    public int getNumJugadors() {
+        return (int) spinNumJugadors.getValue();
+    }
+
     public void mostrarResultat(String guanyador) {
         lblGuanyador.setText(guanyador);
         lblGuanyador.setForeground(COLOR_VERD);
+    }
+
+    public void setTornActual(int numJugador) {
+        lblTornActual.setText("Torn: Jugador " + numJugador);
     }
 
     public void setEstat(String text, Color color) {
@@ -320,6 +335,7 @@ public class Vista extends JFrame {
         spinLimit.setEnabled(!processant);
         spinDarrerNombre.setEnabled(!processant);
         comboDimensions.setEnabled(!processant);
+        spinNumJugadors.setEnabled(!processant);
         setCursor(processant ? Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR) : Cursor.getDefaultCursor());
     }
 }
