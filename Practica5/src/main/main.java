@@ -21,6 +21,7 @@ public class main {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             Vista vista = new Vista();
+            controlador.Controlador controlador = new controlador.Controlador(vista);
             vista.setVisible(true);
         });
     }

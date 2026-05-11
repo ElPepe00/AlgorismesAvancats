@@ -15,6 +15,7 @@ public class Vista extends JFrame {
     // Botons d'accions
     private JButton btnCalcular;
     private JButton btnRestablir;
+    private ActionListener listenerTeclat;
 
     // Elements de configuració
     private JSpinner spinSumaInicial;
@@ -208,7 +209,11 @@ public class Vista extends JFrame {
                 btn.setFont(new Font("Segoe UI", Font.BOLD, 24));
                 btn.setBackground(new Color(245, 245, 245));
                 btn.setFocusPainted(false);
-                btn.setEnabled(false);
+                btn.setEnabled(true);
+                btn.setActionCommand(String.valueOf(nombre));
+                if (listenerTeclat != null) {
+                    btn.addActionListener(listenerTeclat);
+                }
                 botonsTeclat[nombre - 1] = btn;
                 panelTeclat.add(btn);
                 nombre--;
@@ -292,6 +297,44 @@ public class Vista extends JFrame {
     // ==========================================
     public void setControladorCalcular(ActionListener listener) {
         btnCalcular.addActionListener(listener);
+    }
+
+    public void setControladorRestablir(ActionListener listener) {
+        btnRestablir.addActionListener(listener);
+    }
+
+    public void setControladorBotoTeclat(ActionListener listener) {
+        this.listenerTeclat = listener;
+        if (botonsTeclat != null) {
+            for (JButton btn : botonsTeclat) {
+                if (btn != null) {
+                    // Evitem afegir-ho dues vegades si ja ho estava
+                    btn.removeActionListener(listener);
+                    btn.addActionListener(listener);
+                }
+            }
+        }
+    }
+
+    public void habilitarBotonsValids(java.util.List<Integer> valids) {
+        for (JButton btn : botonsTeclat) {
+            if (btn != null) {
+                btn.setEnabled(false);
+            }
+        }
+        for (Integer valid : valids) {
+            if (valid > 0 && valid <= botonsTeclat.length && botonsTeclat[valid - 1] != null) {
+                botonsTeclat[valid - 1].setEnabled(true);
+            }
+        }
+    }
+
+    public void setSumaInicial(int suma) {
+        spinSumaInicial.setValue(suma);
+    }
+
+    public void setDarrerNombre(int darrer) {
+        spinDarrerNombre.setValue(darrer);
     }
 
     public int getSumaInicial() {
