@@ -15,6 +15,7 @@ public class Vista extends JFrame {
     // Botons d'accions
     private JButton btnCalcular;
     private JButton btnRestablir;
+    private JButton btnMesclar;
     private ActionListener listenerTeclat;
 
     // Elements de configuració
@@ -108,6 +109,9 @@ public class Vista extends JFrame {
         btnCalcular = crearBotoAccion("Calcular Guanyador", COLOR_BLAU);
         pnlAccions.add(btnCalcular);
         pnlAccions.add(Box.createVerticalStrut(10));
+        btnMesclar = crearBotoAccion("Mesclar Teclat (Aleatori)", new Color(155, 89, 182));
+        pnlAccions.add(btnMesclar);
+        pnlAccions.add(Box.createVerticalStrut(10));
         btnRestablir = crearBotoAccion("Restablir Valors", Color.GRAY);
         pnlAccions.add(btnRestablir);
 
@@ -154,7 +158,6 @@ public class Vista extends JFrame {
         // Panell del teclat
         panelTeclat = new JPanel();
         panelTeclat.setBackground(Color.WHITE);
-        actualitzarTeclat("3x3");
 
         pnlCentral.add(pnlResultat, BorderLayout.NORTH);
         pnlCentral.add(panelTeclat, BorderLayout.CENTER);
@@ -181,17 +184,12 @@ public class Vista extends JFrame {
         // ==========================================
         // LISTENERS INTERNS
         // ==========================================
-        comboDimensions.addActionListener(e -> actualitzarTeclat((String) comboDimensions.getSelectedItem()));
         spinDarrerNombre.addChangeListener(e -> ressaltarNombreSeleccionat());
         btnRestablir.addActionListener(e -> restablirValors());
     }
 
-    private void actualitzarTeclat(String dimensions) {
+    public void actualitzarTeclat(int[][] grid, int w, int h, int maxNombre) {
         panelTeclat.removeAll();
-
-        int w = dimensions.charAt(0) - '0';
-        int h = dimensions.charAt(2) - '0';
-        int maxNombre = w * h;
 
         SpinnerNumberModel model = (SpinnerNumberModel) spinDarrerNombre.getModel();
         model.setMaximum(maxNombre);
@@ -202,21 +200,20 @@ public class Vista extends JFrame {
         panelTeclat.setLayout(new GridLayout(h, w, 8, 8));
         botonsTeclat = new JButton[maxNombre];
 
-        int nombre = maxNombre;
         for (int i = 0; i < h; i++) {
             for (int j = 0; j < w; j++) {
-                JButton btn = new JButton(String.valueOf(nombre));
+                int val = grid[i][j];
+                JButton btn = new JButton(String.valueOf(val));
                 btn.setFont(new Font("Segoe UI", Font.BOLD, 24));
                 btn.setBackground(new Color(245, 245, 245));
                 btn.setFocusPainted(false);
                 btn.setEnabled(true);
-                btn.setActionCommand(String.valueOf(nombre));
+                btn.setActionCommand(String.valueOf(val));
                 if (listenerTeclat != null) {
                     btn.addActionListener(listenerTeclat);
                 }
-                botonsTeclat[nombre - 1] = btn;
+                botonsTeclat[val - 1] = btn;
                 panelTeclat.add(btn);
-                nombre--;
             }
         }
 
@@ -303,6 +300,14 @@ public class Vista extends JFrame {
         btnRestablir.addActionListener(listener);
     }
 
+    public void setControladorMesclar(ActionListener listener) {
+        btnMesclar.addActionListener(listener);
+    }
+
+    public void setControladorDimensions(ActionListener listener) {
+        comboDimensions.addActionListener(listener);
+    }
+
     public void setControladorBotoTeclat(ActionListener listener) {
         this.listenerTeclat = listener;
         if (botonsTeclat != null) {
@@ -374,6 +379,9 @@ public class Vista extends JFrame {
     public void setProcessant(boolean processant) {
         btnCalcular.setEnabled(!processant);
         btnRestablir.setEnabled(!processant);
+        if (btnMesclar != null) {
+            btnMesclar.setEnabled(!processant);
+        }
         spinSumaInicial.setEnabled(!processant);
         spinLimit.setEnabled(!processant);
         spinDarrerNombre.setEnabled(!processant);

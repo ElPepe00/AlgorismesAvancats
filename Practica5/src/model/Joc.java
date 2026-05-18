@@ -4,97 +4,106 @@ import java.util.ArrayList;
 
 /**
  * @author Josep Oliver y Hugo Valls
- * @date 5 may 2026
+ * @date 18 may 2026
  * @name Joc
  */
 public class Joc {
 
-    private boolean[][] dpGuanyador;
-    private long[][] dpPartides;
-    
-    // Matriu per saber si ja hem calculat un estat (memoization)
-    private boolean[][] calculat;
-    
+    // Classe per encapsular l'estat memoitzat (POO)
+    private static class EstatCalculat {
+        private final int perdedor;
+        private final long partides;
+
+        public EstatCalculat(int perdedor, long partides) {
+            this.perdedor = perdedor;
+            this.partides = partides;
+        }
+
+        public int getPerdedor() {
+            return perdedor;
+        }
+
+        public long getPartides() {
+            return partides;
+        }
+    }
+
+    // Una sola matriu d'objectes en lloc de tres primitives
+    private final EstatCalculat[][] dp;
     private final int limit;
     private final Teclat teclat;
+    private final int numJugadors;
 
-    public Joc(int limit, Teclat teclat) {
+    public Joc(int limit, Teclat teclat, int numJugadors) {
         this.limit = limit;
         this.teclat = teclat;
+        this.numJugadors = numJugadors;
         
         int maxNombre = teclat.getMaxNombre();
-        this.dpGuanyador = new boolean[limit][maxNombre + 1];
-        this.dpPartides = new long[limit][maxNombre + 1];
-        this.calculat = new boolean[limit][maxNombre + 1];
+        this.dp = new EstatCalculat[limit][maxNombre + 1];
     }
 
-    /**
-     * Inicia el càlcul per saber qui guanyarà la partida des d'un estat inicial.
-     * @param sumaInicial Suma actual a la calculadora.
-     * @param darrerNombre Darrer nombre triat (0 si és el primer torn).
-     * @return true si el jugador actual (a qui li toca triar) té estratègia guanyadora.
-     */
-    public boolean calcularEstat(int sumaInicial, int darrerNombre) {
-        // Si la suma inicial ja supera o iguala el límit, el jugador anterior va perdre.
-        // Tècnicament el joc ja hauria d'haver acabat.
+    // Retorna el perdedor relatiu (0 = actual, 1 = següent...)
+    public int calcularEstat(int sumaInicial, int darrerNombre) {
         if (sumaInicial >= limit) {
-            return true; // El jugador actual ha guanyat (perquè l'altre ja ha passat el límit)
+            return 0; 
         }
-        
-        // Cridem al mètode recursiu amb memoization
-        return avaluarEstat(sumaInicial, darrerNombre);
+        return avaluarEstat(sumaInicial, darrerNombre).getPerdedor();
     }
     
-    /**
-     * Mètode de Programació Dinàmica (Top-Down amb Memoization)
-     */
-    private boolean avaluarEstat(int suma, int darrerNombre) {
-        // Si ja l'hem calculat prèviament, retornem el resultat guardat
-        if (calculat[suma][darrerNombre]) {
-            return dpGuanyador[suma][darrerNombre];
+    // Lògica recursiva de programació dinàmica
+    private EstatCalculat avaluarEstat(int suma, int darrerNombre) {
+        if (dp[suma][darrerNombre] != null) {
+            return dp[suma][darrerNombre];
         }
         
         ArrayList<Integer> movimentsValids = teclat.getMovimentsValids(darrerNombre);
-        
-        boolean guanyador = false;
         long partides = 0;
+        int millorPerdedorRelatiu = 0; 
+        boolean trobatAlgunaSalvacio = false;
         
         for (int m : movimentsValids) {
             int novaSuma = suma + m;
+            int perdedorAquestMoviment;
             
             if (novaSuma >= limit) {
-                // Si amb aquest moviment arribem o superem el límit,
-                // és una jugada que fa perdre immediatament a qui la fa.
-                // Aquest moviment acaba una partida (perdem nosaltres).
+                // El jugador actual perd immediatament
+                perdedorAquestMoviment = 0; 
                 partides++;
             } else {
-                // El joc continua, passem el torn a l'altre jugador.
-                // Hem de veure si l'altre jugador perd amb aquest nou estat.
-                boolean guanyaSeguent = avaluarEstat(novaSuma, m);
-                partides += dpPartides[novaSuma][m];
-                
-                // Si l'altre jugador perd (guanyaSeguent == false), 
-                // significa que AQUEST moviment ens fa guanyar a nosaltres.
-                if (!guanyaSeguent) {
-                    guanyador = true;
+                // El torn passa al següent jugador
+                EstatCalculat estatSeguent = avaluarEstat(novaSuma, m);
+                partides += estatSeguent.getPartides();
+                perdedorAquestMoviment = (estatSeguent.getPerdedor() + 1) % numJugadors;
+            }
+            
+            // Elecció racional del moviment (evitar perdre i fer perdre el següent)
+            if (perdedorAquestMoviment != 0) {
+                if (!trobatAlgunaSalvacio) {
+                    millorPerdedorRelatiu = perdedorAquestMoviment;
+                    trobatAlgunaSalvacio = true;
+                } else {
+                    if (perdedorAquestMoviment < millorPerdedorRelatiu) {
+                        millorPerdedorRelatiu = perdedorAquestMoviment;
+                    }
                 }
             }
         }
         
-        // Guardem els resultats a les taules DP
-        dpGuanyador[suma][darrerNombre] = guanyador;
-        dpPartides[suma][darrerNombre] = partides;
-        calculat[suma][darrerNombre] = true;
+        if (!trobatAlgunaSalvacio) {
+            millorPerdedorRelatiu = 0;
+        }
         
-        return guanyador;
+        dp[suma][darrerNombre] = new EstatCalculat(millorPerdedorRelatiu, partides);
+        return dp[suma][darrerNombre];
     }
     
+    // Retorna el total de partides possibles des d'un estat
     public long getTotalPartides(int sumaInicial, int darrerNombre) {
         if (sumaInicial >= limit) return 0;
-        // Ens assegurem que s'hagi calculat
-        if (!calculat[sumaInicial][darrerNombre]) {
+        if (dp[sumaInicial][darrerNombre] == null) {
             avaluarEstat(sumaInicial, darrerNombre);
         }
-        return dpPartides[sumaInicial][darrerNombre];
+        return dp[sumaInicial][darrerNombre].getPartides();
     }
 }
