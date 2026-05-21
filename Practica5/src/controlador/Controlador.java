@@ -26,6 +26,14 @@ public class Controlador {
         this.vista.setControladorCalcular(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if (ignorarEvents) return;
+                
+                assegurarTeclat();
+                int darrer = vista.getDarrerNombre();
+                vista.habilitarBotonsValids(teclat.getMovimentsValids(darrer));
+                vista.setEstat("Càlcul manual en procés...", java.awt.Color.GRAY);
+                
+                System.out.println("Càlcul llançat manualment. Suma: " + vista.getSumaInicial() + ", Límit: " + vista.getLimit() + ", Darrer: " + darrer);
                 calcularGuanyador();
             }
         });

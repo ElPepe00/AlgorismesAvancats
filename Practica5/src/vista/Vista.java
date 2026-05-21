@@ -13,9 +13,9 @@ import javax.swing.border.TitledBorder;
 public class Vista extends JFrame {
 
     // Botons d'accions
-    private JButton btnCalcular;
     private JButton btnRestablir;
     private JButton btnMesclar;
+    private JButton btnCalcular;
     private ActionListener listenerTeclat;
 
     // Elements de configuració
@@ -41,8 +41,12 @@ public class Vista extends JFrame {
     private final Color COLOR_VERD = new Color(39, 174, 96);
     private final Color COLOR_BLAU = new Color(52, 152, 219);
     private final Color COLOR_RESSALTAT = new Color(174, 214, 241); // Blau clar pel darrer nombre
+    private final Color COLOR_TECLA_VALIDA = new Color(171, 235, 198); // Verd clar pels moviments vàlids
+    private final Color COLOR_TECLA_INVALIDA = new Color(235, 237, 239); // Gris pels moviments invàlids
     private final Font FONT_TITOLS = new Font("Segoe UI", Font.BOLD, 14);
     private final Font FONT_NORMAL = new Font("Segoe UI", Font.PLAIN, 13);
+
+    private java.util.List<Integer> darrersValids = null;
 
     public Vista() {
         setTitle("Pràctica 5 - Joc del 31");
@@ -184,7 +188,6 @@ public class Vista extends JFrame {
         // ==========================================
         // LISTENERS INTERNS
         // ==========================================
-        spinDarrerNombre.addChangeListener(e -> ressaltarNombreSeleccionat());
         btnRestablir.addActionListener(e -> restablirValors());
     }
 
@@ -217,22 +220,31 @@ public class Vista extends JFrame {
             }
         }
 
-        ressaltarNombreSeleccionat();
+        actualitzarColorsTeclat();
         panelTeclat.revalidate();
         panelTeclat.repaint();
     }
 
-    private void ressaltarNombreSeleccionat() {
+    private void actualitzarColorsTeclat() {
+        if (botonsTeclat == null) return;
+        
         int seleccionat = (int) spinDarrerNombre.getValue();
 
-        for (JButton btn : botonsTeclat) {
+        for (int i = 0; i < botonsTeclat.length; i++) {
+            JButton btn = botonsTeclat[i];
             if (btn != null) {
-                btn.setBackground(new Color(245, 245, 245));
+                int val = i + 1;
+                if (val == seleccionat) {
+                    btn.setBackground(COLOR_RESSALTAT);
+                    btn.setEnabled(false); // El darrer premut no es pot tornar a premer en el mateix torn
+                } else if (darrersValids == null || darrersValids.contains(val)) {
+                    btn.setBackground(COLOR_TECLA_VALIDA);
+                    btn.setEnabled(true);
+                } else {
+                    btn.setBackground(COLOR_TECLA_INVALIDA);
+                    btn.setEnabled(false);
+                }
             }
-        }
-
-        if (seleccionat > 0 && seleccionat <= botonsTeclat.length) {
-            botonsTeclat[seleccionat - 1].setBackground(COLOR_RESSALTAT);
         }
     }
 
@@ -322,16 +334,8 @@ public class Vista extends JFrame {
     }
 
     public void habilitarBotonsValids(java.util.List<Integer> valids) {
-        for (JButton btn : botonsTeclat) {
-            if (btn != null) {
-                btn.setEnabled(false);
-            }
-        }
-        for (Integer valid : valids) {
-            if (valid > 0 && valid <= botonsTeclat.length && botonsTeclat[valid - 1] != null) {
-                botonsTeclat[valid - 1].setEnabled(true);
-            }
-        }
+        this.darrersValids = valids;
+        actualitzarColorsTeclat();
     }
 
     public void setSumaInicial(int suma) {

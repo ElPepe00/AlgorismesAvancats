@@ -3,7 +3,7 @@
 package main;
 
 import vista.Vista;
-
+import controlador.Controlador;
 import javax.swing.SwingUtilities;
 
 
@@ -21,7 +21,7 @@ public class main {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             Vista vista = new Vista();
-            controlador.Controlador controlador = new controlador.Controlador(vista);
+            new Controlador(vista);
             vista.setVisible(true);
         });
     }
