@@ -42,7 +42,7 @@ public class Vista extends JFrame {
     private final Color COLOR_BLAU = new Color(52, 152, 219);
     private final Color COLOR_RESSALTAT = new Color(174, 214, 241); // Blau clar pel darrer nombre
     private final Color COLOR_TECLA_VALIDA = new Color(171, 235, 198); // Verd clar pels moviments vàlids
-    private final Color COLOR_TECLA_INVALIDA = new Color(235, 237, 239); // Gris pels moviments invàlids
+    private final Color COLOR_TECLA_INVALIDA = new Color(149, 165, 166); // Gris fosc pels moviments invàlids
     private final Font FONT_TITOLS = new Font("Segoe UI", Font.BOLD, 14);
     private final Font FONT_NORMAL = new Font("Segoe UI", Font.PLAIN, 13);
 
@@ -337,6 +337,18 @@ public class Vista extends JFrame {
         this.darrersValids = valids;
         actualitzarColorsTeclat();
     }
+    
+    public void setHabilitarMesclar(boolean habilitar) {
+        btnMesclar.setEnabled(habilitar);
+    }
+
+    public void setHabilitarConfiguracio(boolean habilitar) {
+        spinSumaInicial.setEnabled(habilitar);
+        spinLimit.setEnabled(habilitar);
+        spinDarrerNombre.setEnabled(habilitar);
+        comboDimensions.setEnabled(habilitar);
+        spinNumJugadors.setEnabled(habilitar);
+    }
 
     public void setSumaInicial(int suma) {
         spinSumaInicial.setValue(suma);
@@ -383,14 +395,6 @@ public class Vista extends JFrame {
     public void setProcessant(boolean processant) {
         btnCalcular.setEnabled(!processant);
         btnRestablir.setEnabled(!processant);
-        if (btnMesclar != null) {
-            btnMesclar.setEnabled(!processant);
-        }
-        spinSumaInicial.setEnabled(!processant);
-        spinLimit.setEnabled(!processant);
-        spinDarrerNombre.setEnabled(!processant);
-        comboDimensions.setEnabled(!processant);
-        spinNumJugadors.setEnabled(!processant);
         setCursor(processant ? Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR) : Cursor.getDefaultCursor());
     }
 }

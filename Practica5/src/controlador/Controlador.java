@@ -30,11 +30,16 @@ public class Controlador {
                 
                 assegurarTeclat();
                 int darrer = vista.getDarrerNombre();
-                vista.habilitarBotonsValids(teclat.getMovimentsValids(darrer));
-                vista.setEstat("Càlcul manual en procés...", java.awt.Color.GRAY);
                 
                 System.out.println("Càlcul llançat manualment. Suma: " + vista.getSumaInicial() + ", Límit: " + vista.getLimit() + ", Darrer: " + darrer);
-                calcularGuanyador();
+                boolean continua = actualitzarEstatJoc(vista.getSumaInicial(), darrer);
+                if (continua) {
+                    vista.setEstat("Càlcul manual en procés...", java.awt.Color.GRAY);
+                    calcularGuanyador();
+                } else {
+                    vista.setHabilitarMesclar(false);
+                    vista.setHabilitarConfiguracio(false);
+                }
             }
         });
         
@@ -54,7 +59,6 @@ public class Controlador {
                 vista.setEstat("Teclat mesclat aleatòriament.", new java.awt.Color(155, 89, 182));
                 
                 System.out.println("S'ha mesclat el teclat aleatòriament.");
-                calcularGuanyador();
             }
         });
         
@@ -68,8 +72,11 @@ public class Controlador {
                 teclat = null;
                 assegurarTeclat();
                 vista.setTornActual(1);
+                vista.setHabilitarMesclar(true);
+                vista.setHabilitarConfiguracio(true);
                 vista.habilitarBotonsValids(teclat.getMovimentsValids(0));
                 
+                vista.setEstat("Partida restablida.", java.awt.Color.GRAY);
                 System.out.println("Partida restablida.");
                 
                 // Desactivem el flag un cop processats els esdeveniments asíncrons de Swing
@@ -97,7 +104,6 @@ public class Controlador {
                 vista.setEstat("Dimensions canviades a " + dimensions, java.awt.Color.GRAY);
                 
                 System.out.println("Dimensions canviades a " + dimensions + ".");
-                calcularGuanyador();
             }
         });
         
@@ -125,6 +131,8 @@ public class Controlador {
     // Calcula les prediccions en un fil de fons
     private void calcularGuanyador() {
         vista.setProcessant(true);
+        vista.setHabilitarMesclar(false);
+        vista.setHabilitarConfiguracio(false);
         
         new Thread(() -> {
             try {
@@ -187,46 +195,45 @@ public class Controlador {
             vista.setSumaInicial(novaSuma);
             vista.setDarrerNombre(valor);
             
-            // Derrota per superar el límit
-            if (novaSuma >= limit) {
-                System.out.println("FI DE LA PARTIDA. Jugador " + jugadorQueJuga + " perd per superar el límit!");
-                vista.mostrarResultat("Jugador " + jugadorQueJuga + " ha arribat a " + novaSuma + "! HA PERDUT.");
-                vista.setEstat("Fi del joc.", java.awt.Color.RED);
-                vista.habilitarBotonsValids(new java.util.ArrayList<>());
-                return;
-            }
-            
             // Canvi de torn
             int numJugadors = vista.getNumJugadors();
             jugadorActual = (jugadorActual % numJugadors) + 1;
             vista.setTornActual(jugadorActual);
             
-            assegurarTeclat();
-            java.util.ArrayList<Integer> valids = teclat.getMovimentsValids(valor);
-            
-            // Comprovació de derrota inevitable
-            boolean totesExcedeixen = true;
-            for (int m : valids) {
-                if (novaSuma + m < limit) {
-                    totesExcedeixen = false;
-                    break;
-                }
+            boolean continua = actualitzarEstatJoc(novaSuma, valor);
+            if (continua) {
+                calcularGuanyador();
+            } else {
+                vista.setHabilitarMesclar(false);
+                vista.setHabilitarConfiguracio(false);
             }
-            
-            if (totesExcedeixen) {
-                System.out.println("FI DE LA PARTIDA. Jugador " + jugadorActual + " perd per derrota inevitable!");
-                vista.mostrarResultat("Jugador " + jugadorActual + " no té moviments segurs! HA PERDUT.");
-                vista.setEstat("Fi del joc (Derrota inevitable).", java.awt.Color.RED);
-                vista.habilitarBotonsValids(new java.util.ArrayList<>());
-                return;
-            }
-            
-            vista.habilitarBotonsValids(valids);
-            System.out.println("Torn del Jugador " + jugadorActual + ". Tecles vàlides: " + valids);
-            
-            calcularGuanyador();
             
         } catch (NumberFormatException e) {
+        }
+    }
+
+    private boolean actualitzarEstatJoc(int suma, int darrer) {
+        int limit = vista.getLimit();
+        
+        if (suma >= limit) {
+            vista.mostrarResultat("Jugador " + (((jugadorActual - 2 + vista.getNumJugadors()) % vista.getNumJugadors()) + 1) + " ha perdut!");
+            vista.setEstat("Fi del joc.", java.awt.Color.RED);
+            vista.habilitarBotonsValids(new java.util.ArrayList<>());
+            return false;
+        }
+
+        assegurarTeclat();
+        java.util.ArrayList<Integer> valids = teclat.getMovimentsValids(darrer);
+        boolean hiHaMovimentSegur = valids.stream().anyMatch(m -> suma + m < limit);
+
+        if (!hiHaMovimentSegur) {
+            vista.mostrarResultat("Jugador " + jugadorActual + " no té moviments segurs! HA PERDUT.");
+            vista.setEstat("Fi del joc (Derrota inevitable)", java.awt.Color.RED);
+            vista.habilitarBotonsValids(new java.util.ArrayList<>());
+            return false;
+        } else {
+            vista.habilitarBotonsValids(valids);
+            return true;
         }
     }
 }
