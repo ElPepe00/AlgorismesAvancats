@@ -14,6 +14,10 @@ public class main {
      * Static Main
      */
     public static void main(String[] args) {
+        // Crear y mostrar la vista
+        javax.swing.SwingUtilities.invokeLater(() -> {
+            new vista.Vista().setVisible(true);
+        });
     }
 
 }
