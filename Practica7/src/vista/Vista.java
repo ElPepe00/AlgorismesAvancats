@@ -81,7 +81,7 @@ public class Vista extends JFrame {
                     Random rand = new Random();
                     for (int i = 0; i < 10; i++) {
                         int cara = rand.nextInt(6) + 1;
-                        SwingUtilities.invokeLater(() -> btnDado.setIcon(new ImageIcon("images/dado" + cara + ".png")));
+                        SwingUtilities.invokeLater(() -> btnDado.setIcon(new ImageIcon("images/cara" + cara + ".png")));
                         Thread.sleep(60); // Pequeña pausa para simular el giro rápido
                     }
                 } catch (InterruptedException ex) {
