@@ -2,6 +2,10 @@
 
 package main;
 
+import controlador.Controlador;
+import modelo.Modelo;
+import vista.Vista;
+
 /**
  *
  * @author Josep Oliver y Hugo Valls
@@ -16,7 +20,18 @@ public class main {
     public static void main(String[] args) {
         // Crear y mostrar la vista
         javax.swing.SwingUtilities.invokeLater(() -> {
-            new vista.Vista().setVisible(true);
+            
+            // 1. Crear el núcleo lógico (Modelo)
+            Modelo motorSimulacion = new Modelo();
+            
+            // 2. Crear la interfaz gráfica (Vista)
+            Vista interfazUsuario = new Vista();
+            
+            // 3. Crear el coordinador táctico pasándole ambas instancias (Controlador)
+            new Controlador(interfazUsuario, motorSimulacion);
+            
+            // 4. Iniciar visualización
+            interfazUsuario.setVisible(true);
         });
     }
 }

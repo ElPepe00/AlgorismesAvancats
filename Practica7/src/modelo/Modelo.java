@@ -1,134 +1,137 @@
 package modelo;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Random;
-import modelo.Estadisticas;
 
 /**
- *
- * @author Josep Oliver y Hugo Valls
- * @date 28 may 2026
- * @name Modelo
+ * Lógica de negocio e ingeniería del Simulador del Juego de la Oca.
+ * Implementa el motor estocástico Monte Carlo.
+ * * @author Josep Oliver y Hugo Valls
+ * @date 10 jun 2026
  */
 public class Modelo {
 
-    // Constante estática para mapear los saltos de "Oca a Oca" de forma eficiente
-    private static final Map<Integer, Integer> OCAS = new HashMap<>();
-
-    static {
-        int[] origen = { 5, 9, 14, 18, 23, 27, 32, 36, 41, 45, 50, 54, 59 };
-        int[] destino = { 9, 14, 18, 23, 27, 32, 36, 41, 45, 50, 54, 59, 63 };
-        for (int i = 0; i < origen.length; i++) {
-            OCAS.put(origen[i], destino[i]);
-        }
-    }
-
-    private final Random random;
+    private final Random pseudoRandom;
 
     public Modelo() {
-        this.random = new Random();
+        this.pseudoRandom = new Random();
     }
 
     /**
-     * Método principal del Modelo. Ejecuta las simulaciones y devuelve los
-     * resultados.
-     * 
-     * @param nPartidas Número de partidas a simular.
-     * @return Objeto Estadisticas con todos los cálculos solicitados.
+     * Ejecuta una simulación Monte Carlo compuesta por N iteraciones independientes.
+     * * @param numeroPartidas N (número de iteraciones simuladas).
+     * @return El objeto Estadisticas con los resultados calculados listos para presentarse.
      */
-    public Estadisticas simular(int nPartidas) {
-        if (nPartidas <= 0) {
-            throw new IllegalArgumentException("El número de partidas debe ser mayor que 0.");
+    public Estadisticas ejecutarSimulacionMonteCarlo(int numeroPartidas) {
+        int[] resultadosTurnos = new int[numeroPartidas];
+
+        for (int i = 0; i < numeroPartidas; i++) {
+            resultadosTurnos[i] = simularPartidaUnica();
         }
 
-        int[] resultados = new int[nPartidas];
-        for (int i = 0; i < nPartidas; i++) {
-            resultados[i] = jugarPartida();
-        }
-
-        // Ordenar es necesario para calcular los percentiles correctamente
-        Arrays.sort(resultados);
-
-        return calcularEstadisticas(resultados);
+        return new Estadisticas(resultadosTurnos);
     }
 
     /**
-     * Lógica pura del Juego de la Oca para una sola partida.
+     * Simula el ciclo de vida completo de una partida para un jugador único.
+     * * @return Cantidad total de turnos (tiradas normales + penalizaciones consumidas).
      */
-    private int jugarPartida() {
-        int pos = 0;
-        int turnos = 0;
-        int penalizaciones = 0;
+    private int simularPartidaUnica() {
+        int posicionActual = 0;
+        int totalTurnos = 0;
+        int turnosPenalizacionPendientes = 0;
 
-        while (pos != 63) {
-            turnos++;
+        // La partida finaliza estrictamente en la casilla de meta 63
+        while (posicionActual < 63) {
+            totalTurnos++;
 
-            // Gestión de tiradas anuladas (penalizaciones)
-            if (penalizaciones > 0) {
-                penalizaciones--;
-                continue; // Pasa al siguiente turno sin mover ni tirar el dado
+            // Manejo de penalizaciones de posada, pozo y cárcel
+            if (turnosPenalizacionPendientes > 0) {
+                turnosPenalizacionPendientes--;
+                continue; // El turno se consume pero el jugador permanece inmóvil
             }
 
-            boolean volverATirar = true;
+            // Lanzamiento del dado idóneo (1 a 6)
+            int dado = pseudoRandom.nextInt(6) + 1;
+            
+            // 1. Cálculo de avance inicial y rebote
+            int nuevaPosicion = posicionActual + dado;
+            if (nuevaPosicion > 63) {
+                nuevaPosicion = 63 - (nuevaPosicion - 63); // Mecánica de rebote inverso
+            }
 
-            // Bucle que maneja el tiro extra de la oca en el mismo turno
-            while (volverATirar && pos != 63) {
-                volverATirar = false;
-                int dado = random.nextInt(6) + 1; // Dado de 1 a 6
-                pos += dado;
+            // Verificación inmediata de fin de partida antes de aplicar cualquier efecto secundario
+            if (nuevaPosicion == 63) {
+                posicionActual = nuevaPosicion;
+                break;
+            }
 
-                // Efecto de rebote al final del tablero
-                if (pos > 63) {
-                    pos = 63 - (pos - 63);
-                }
-
-                // Condición de fin inmediata si cae exactamente en 63
-                if (pos == 63) {
+            // 2. Evaluación de reglas de Casilla Especial (Máximo 1 efecto por tirada)
+            CasillaEspecial tipoCasilla = CasillaEspecial.obtenerPorCasilla(nuevaPosicion);
+            
+            switch (tipoCasilla) {
+                case OCA:
+                    // De oca a oca y tiro porque me toca (No computa turno adicional)
+                    posicionActual = obtenerSiguienteOca(nuevaPosicion);
+                    // Como indica el PDF, saltar a la 63 desde la 59 finaliza de inmediato
                     break;
-                }
 
-                // Casillas especiales (Se aplica máximo 1 efecto por tirada mediante if-else)
-                if (OCAS.containsKey(pos)) {
-                    pos = OCAS.get(pos);
-                    volverATirar = true; // "De oca a oca y tiro porque me toca"
-                } else if (pos == 6) {
-                    pos = 12; // Puente
-                } else if (pos == 12) {
-                    pos = 6; // Puente
-                } else if (pos == 26) {
-                    pos = 53; // Dados
-                } else if (pos == 53) {
-                    pos = 26; // Dados
-                } else if (pos == 19) {
-                    penalizaciones = 1; // Posada
-                } else if (pos == 31) {
-                    penalizaciones = 2; // Pozo
-                } else if (pos == 42) {
-                    pos = 30; // Laberinto
-                } else if (pos == 52) {
-                    penalizaciones = 3; // Cárcel
-                } else if (pos == 58) {
-                    pos = 0; // Muerte
-                }
+                case PUENTE:
+                    // Intercambio simétrico 6 <-> 12
+                    posicionActual = (nuevaPosicion == 6) ? 12 : 6;
+                    break;
+
+                case DADOS:
+                    // Intercambio simétrico 26 <-> 53
+                    posicionActual = (nuevaPosicion == 26) ? 53 : 26;
+                    break;
+
+                case LABERINTO:
+                    // Retroceso directo a la casilla 30
+                    posicionActual = 30;
+                    break;
+
+                case MUERTE:
+                    // Reseteo absoluto al origen
+                    posicionActual = 0;
+                    break;
+
+                case POSADA:
+                case POZO:
+                case CARCEL:
+                    // Almacena la penalización correspondiente y sitúa al jugador en la casilla
+                    turnosPenalizacionPendientes = tipoCasilla.getTurnosPenalizacion();
+                    posicionActual = nuevaPosicion;
+                    break;
+
+                case NORMAL:
+                default:
+                    posicionActual = nuevaPosicion;
+                    break;
             }
         }
-        return turnos;
+
+        return totalTurnos;
     }
 
     /**
-     * Calcula un percentil utilizando interpolación lineal.
+     * Calcula estáticamente la correspondencia de saltos entre casillas de ocas.
      */
-    private double percentilEmpirico(int[] datosOrdenados, double p) {
-        double k = (datosOrdenados.length - 1) * p;
-        int f = (int) Math.floor(k);
-        int c = (int) Math.ceil(k);
-
-        if (f == c) {
-            return datosOrdenados[(int) k];
+    private int obtenerSiguienteOca(int casillaActual) {
+        switch (casillaActual) {
+            case 5: return 9;
+            case 9: return 14;
+            case 14: return 18;
+            case 18: return 23;
+            case 23: return 27;
+            case 27: return 32;
+            case 32: return 36;
+            case 36: return 41;
+            case 41: return 45;
+            case 45: return 50;
+            case 50: return 54;
+            case 54: return 59;
+            case 59: return 63; // Fin de circuito
+            default: return casillaActual;
         }
-        return datosOrdenados[f] * (c - k) + datosOrdenados[c] * (k - f);
     }
-
 }

@@ -13,7 +13,7 @@ public class CasillaPanel extends JPanel {
     
     private final int numero;
 
-    private static final String IMG_PATH ="C:\\Users\\hugop\\Desktop\\aa4\\AlgorismesAvancats\\Practica7\\images\\";
+    private static final String IMG_PATH ="images/";
 
     public CasillaPanel(int numero) {
         this.numero = numero;
