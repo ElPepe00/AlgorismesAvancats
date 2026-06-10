@@ -64,4 +64,118 @@ public class TableroPanel extends JPanel {
             }
         }
     }
+
+    private CasillaPanel buscarCasilla(int numero) {
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                if (matrizCasillas[i][j] != null &&
+                    matrizCasillas[i][j].getNumero() == numero) {
+                    return matrizCasillas[i][j];
+                }
+            }
+        }
+        return null;
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+
+        Graphics2D g2 = (Graphics2D) g.create();
+
+        g2.setColor(Color.black);
+        g2.setStroke(new BasicStroke(7));
+
+        // 0 - 6 abajo
+        for (int i = 0; i <= 6; i++)
+            dibujarLado(g2, i, "ABAJO");
+
+        // 8 - 13 izquierda
+        for (int i = 8; i <= 13; i++)
+            dibujarLado(g2, i, "IZQUIERDA");
+
+        // 15 - 21 arriba
+        for (int i = 15; i <= 20; i++)
+            dibujarLado(g2, i, "ARRIBA");
+
+        // 22 - 26 derecha
+        for (int i = 22; i <= 26; i++)
+            dibujarLado(g2, i, "DERECHA");
+
+        // 28 - 32 abajo
+        for (int i = 28; i <= 32; i++)
+            dibujarLado(g2, i, "ABAJO");
+
+        // 34 - 37 izquierda
+        for (int i = 34; i <= 37; i++)
+            dibujarLado(g2, i, "IZQUIERDA");
+
+        // 39 - 42 arriba
+        for (int i = 39; i <= 42; i++)
+            dibujarLado(g2, i, "ARRIBA");
+
+        // 44 - 46 derecha
+        for (int i = 44; i <= 46; i++)
+            dibujarLado(g2, i, "DERECHA");
+
+        // 48 - 50 abajo
+        for (int i = 48; i <= 50; i++)
+            dibujarLado(g2, i, "ABAJO");
+
+        // 52 - 53 izquierda
+        for (int i = 52; i <= 53; i++)
+            dibujarLado(g2, i, "IZQUIERDA");
+
+        // 55 - 56 arriba
+        for (int i = 55; i <= 56; i++)
+            dibujarLado(g2, i, "ARRIBA");
+
+        // 58 derecha
+        dibujarLado(g2, 58, "DERECHA");
+
+        // 60 abajo
+        dibujarLado(g2, 60, "ABAJO");
+
+        g2.dispose();
+    }
+
+
+    private void dibujarLado(Graphics2D g2, int numero, String lado) {
+
+        CasillaPanel casilla = buscarCasilla(numero);
+
+        if (casilla == null) return;
+
+        Rectangle r = SwingUtilities.convertRectangle(
+                casilla.getParent(),
+                casilla.getBounds(),
+                this);
+
+        switch (lado) {
+
+            case "ARRIBA":
+                g2.drawLine(r.x, r.y, r.x + r.width, r.y);
+                break;
+
+            case "ABAJO":
+                g2.drawLine(r.x, r.y + r.height,
+                        r.x + r.width, r.y + r.height);
+                break;
+
+            case "IZQUIERDA":
+                g2.drawLine(r.x, r.y,
+                        r.x, r.y + r.height);
+                break;
+
+            case "DERECHA":
+                g2.drawLine(r.x + r.width, r.y,
+                        r.x + r.width, r.y + r.height);
+                break;
+        }
+    }
+
+    
+
+
+   
 }
