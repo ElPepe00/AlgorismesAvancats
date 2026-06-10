@@ -2,6 +2,7 @@ package controlador;
 
 import modelo.Modelo;
 import modelo.Estadisticas;
+import modelo.Partida;
 import vista.Vista;
 
 import javax.swing.*;
@@ -18,6 +19,7 @@ public class Controlador {
 
     private final Vista vista;
     private final Modelo modelo;
+    private Partida partidaInteractiva;
 
     public Controlador(Vista vista, Modelo modelo) {
         this.vista = vista;
@@ -29,7 +31,6 @@ public class Controlador {
      * Vincula los estímulos físicos de la interfaz gráfica con las rutinas de negocio.
      */
     private void inicializarEventadores() {
-        // Escuchador para el botón de simulación de Monte Carlo
         vista.getBtnSimular().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -37,16 +38,72 @@ public class Controlador {
             }
         });
 
-        // Escuchador para el dado del juego interactivo (Ampliación)
+        partidaInteractiva = new Partida(vista.getNumJugadores());
+        vista.actualizarPosicionesTablero(partidaInteractiva.getPosiciones());
+        vista.actualizarTurnoActual("Turno: Jugador 1", 0);
+
+        vista.getCbNumJugadores().addActionListener(e -> {
+            reiniciarPartidaInteractiva();
+        });
+
+        vista.getBtnReiniciarJuego().addActionListener(e -> {
+            reiniciarPartidaInteractiva();
+        });
+
         vista.getBtnDado().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Aquí se integraría la lógica para avanzar las fichas visuales en el TableroPanel
-                // delegando el cálculo de la posición exacta y reglas al Modelo.
-                System.out.println("Lanzamiento de dado interactivo registrado para " + 
-                                   vista.getNumJugadores() + " jugador(es).");
+                if (partidaInteractiva.isPartidaTerminada()) {
+                    vista.mostrarRegistroJuego("Partida terminada. Pulsa 'Reiniciar Partida' para jugar de nuevo.");
+                    return;
+                }
+
+                if (vista.getCbNumJugadores().isEnabled()) {
+                    vista.getCbNumJugadores().setEnabled(false);
+                }
+
+                int tirada = (int) (Math.random() * 6) + 1;
+                
+                // Sincronizar la animación visual con la tirada matemática
+                vista.animarDado(tirada);
+                
+                // Bloqueamos el dado temporalmente para evitar que el usuario pulse varias veces seguidas
+                vista.getBtnDado().setEnabled(false);
+
+                // Retrasamos el movimiento lógico 650ms para que termine primero la animación visual
+                Timer timer = new Timer(650, new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent evt) {
+                        String resultado = partidaInteractiva.jugarTurno(tirada);
+                        
+                        vista.mostrarRegistroJuego(resultado);
+                        vista.actualizarPosicionesTablero(partidaInteractiva.getPosiciones());
+
+                        if (partidaInteractiva.isPartidaTerminada()) {
+                            vista.actualizarTurnoActual("¡FIN!", -1);
+                            vista.getCbNumJugadores().setEnabled(true);
+                        } else {
+                            vista.actualizarTurnoActual("Turno: Jugador " + (partidaInteractiva.getTurnoActual() + 1), partidaInteractiva.getTurnoActual());
+                        }
+                        vista.getBtnDado().setEnabled(true); // Rehabilitar el botón del dado
+                    }
+                });
+                timer.setRepeats(false);
+                timer.start();
             }
         });
+    }
+
+    /**
+     * Restablece el estado de la partida interactiva y la interfaz visual.
+     */
+    private void reiniciarPartidaInteractiva() {
+        partidaInteractiva = new Partida(vista.getNumJugadores());
+        vista.getCbNumJugadores().setEnabled(true);
+        vista.limpiarRegistroJuego();
+        vista.mostrarRegistroJuego("--- NUEVA PARTIDA (" + vista.getNumJugadores() + " Jugadores) ---");
+        vista.actualizarPosicionesTablero(partidaInteractiva.getPosiciones());
+        vista.actualizarTurnoActual("Turno: Jugador 1", 0);
     }
 
     /**
@@ -62,34 +119,29 @@ public class Controlador {
                 return;
             }
 
-            // Deshabilitar el botón temporalmente para evitar sobrecarga de clics
             vista.getBtnSimular().setEnabled(false);
             vista.mostrarResultados("Procesando carga matemática simulando " + nPartidas + " partidas...\nPor favor, espera.");
 
-            // SwingWorker <TipoResultadoFinal, TipoProgresoIntermedio>
             SwingWorker<Estadisticas, Void> worker = new SwingWorker<Estadisticas, Void>() {
                 @Override
                 protected Estadisticas doInBackground() throws Exception {
-                    // Delegamos el esfuerzo intenso al motor estocástico
                     return modelo.ejecutarSimulacionMonteCarlo(nPartidas);
                 }
 
                 @Override
                 protected void done() {
                     try {
-                        // Recuperamos los datos de rendimiento estadístico
                         Estadisticas resultados = get();
                         vista.mostrarResultados(resultados.generarFormatoTexto());
                     } catch (Exception ex) {
                         vista.mostrarError("Error crítico durante la simulación: " + ex.getMessage());
                     } finally {
-                        // Restauramos la interfaz a su estado base
                         vista.getBtnSimular().setEnabled(true);
                     }
                 }
             };
 
-            worker.execute(); // Inicia el entrenamiento en segundo plano
+            worker.execute(); 
 
         } catch (NumberFormatException ex) {
             vista.mostrarError("Formato de entrada inválido. Asegúrate de introducir un número entero sin espacios ni letras.");

@@ -12,6 +12,26 @@ public class Modelo {
 
     private final Random pseudoRandom;
 
+    // Look-Up Table (LUT) para resolver las conexiones de OCA en tiempo constante O(1)
+    private static final int[] SIGUIENTE_OCA = new int[64];
+    
+    static {
+        for (int i = 0; i < 64; i++) SIGUIENTE_OCA[i] = i;
+        SIGUIENTE_OCA[5] = 9;
+        SIGUIENTE_OCA[9] = 14;
+        SIGUIENTE_OCA[14] = 18;
+        SIGUIENTE_OCA[18] = 23;
+        SIGUIENTE_OCA[23] = 27;
+        SIGUIENTE_OCA[27] = 32;
+        SIGUIENTE_OCA[32] = 36;
+        SIGUIENTE_OCA[36] = 41;
+        SIGUIENTE_OCA[41] = 45;
+        SIGUIENTE_OCA[45] = 50;
+        SIGUIENTE_OCA[50] = 54;
+        SIGUIENTE_OCA[54] = 59;
+        SIGUIENTE_OCA[59] = 63;
+    }
+
     public Modelo() {
         this.pseudoRandom = new Random();
     }
@@ -39,10 +59,16 @@ public class Modelo {
         int posicionActual = 0;
         int totalTurnos = 0;
         int turnosPenalizacionPendientes = 0;
+        boolean turnoExtra = false;
 
         // La partida finaliza estrictamente en la casilla de meta 63
         while (posicionActual < 63) {
-            totalTurnos++;
+            
+            // Solo computamos el turno de dado si no provenimos de una Oca
+            if (!turnoExtra) {
+                totalTurnos++;
+            }
+            turnoExtra = false; // Resetear la bandera para la iteración actual
 
             // Manejo de penalizaciones de posada, pozo y cárcel
             if (turnosPenalizacionPendientes > 0) {
@@ -70,9 +96,10 @@ public class Modelo {
             
             switch (tipoCasilla) {
                 case OCA:
-                    // De oca a oca y tiro porque me toca (No computa turno adicional)
-                    posicionActual = obtenerSiguienteOca(nuevaPosicion);
-                    // Como indica el PDF, saltar a la 63 desde la 59 finaliza de inmediato
+                    // De oca a oca y tiro porque me toca
+                    posicionActual = SIGUIENTE_OCA[nuevaPosicion];
+                    // Aplicamos el flag para que la nueva tirada NO sume turno según dictamina el PDF
+                    turnoExtra = true;
                     break;
 
                 case PUENTE:
@@ -111,27 +138,5 @@ public class Modelo {
         }
 
         return totalTurnos;
-    }
-
-    /**
-     * Calcula estáticamente la correspondencia de saltos entre casillas de ocas.
-     */
-    private int obtenerSiguienteOca(int casillaActual) {
-        switch (casillaActual) {
-            case 5: return 9;
-            case 9: return 14;
-            case 14: return 18;
-            case 18: return 23;
-            case 23: return 27;
-            case 27: return 32;
-            case 32: return 36;
-            case 36: return 41;
-            case 41: return 45;
-            case 45: return 50;
-            case 50: return 54;
-            case 54: return 59;
-            case 59: return 63; // Fin de circuito
-            default: return casillaActual;
-        }
     }
 }

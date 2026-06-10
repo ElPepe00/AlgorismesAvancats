@@ -1,7 +1,5 @@
 package modelo;
 
-import java.util.Arrays;
-
 /**
  * Representa los diferentes tipos de casillas especiales del Juego de la Oca
  * y sus respectivas reglas de negocio asociadas.
@@ -23,15 +21,46 @@ public enum CasillaEspecial {
     private final int turnosPenalizacion;
     private final boolean esOca;
 
+    // Tabla de búsqueda estática (O(1)) para optimizar la simulación Monte Carlo
+    private static final CasillaEspecial[] TABLERO = new CasillaEspecial[64];
+
+    static {
+        // 1. Inicializar todas a NORMAL
+        for (int i = 0; i < 64; i++) {
+            TABLERO[i] = NORMAL;
+        }
+        // 2. Configurar las OCAS
+        int[] ocas = { 5, 9, 14, 18, 23, 27, 32, 36, 41, 45, 50, 54, 59 };
+        for (int oca : ocas) {
+            TABLERO[oca] = OCA;
+        }
+        // 3. Configurar el resto de casos especiales
+        TABLERO[6] = PUENTE;
+        TABLERO[12] = PUENTE;
+        TABLERO[26] = DADOS;
+        TABLERO[53] = DADOS;
+        TABLERO[19] = POSADA;
+        TABLERO[31] = POZO;
+        TABLERO[42] = LABERINTO;
+        TABLERO[52] = CARCEL;
+        TABLERO[58] = MUERTE;
+    }
+
     CasillaEspecial(int turnosPenalizacion, boolean esOca) {
         this.turnosPenalizacion = turnosPenalizacion;
         this.esOca = esOca;
     }
 
+    /**
+     * Obtiene el número de turnos de penalización asociados a la casilla.
+     */
     public int getTurnosPenalizacion() {
         return turnosPenalizacion;
     }
 
+    /**
+     * Indica si la casilla es de tipo Oca.
+     */
     public boolean esOca() {
         return esOca;
     }
@@ -41,30 +70,7 @@ public enum CasillaEspecial {
      * específico.
      */
     public static CasillaEspecial obtenerPorCasilla(int casilla) {
-        int[] ocas = { 5, 9, 14, 18, 23, 27, 32, 36, 41, 45, 50, 54, 59 };
-        if (Arrays.stream(ocas).anyMatch(x -> x == casilla)) {
-            return OCA;
-        }
-
-        switch (casilla) {
-            case 6:
-            case 12:
-                return PUENTE;
-            case 26:
-            case 53:
-                return DADOS;
-            case 19:
-                return POSADA;
-            case 31:
-                return POZO;
-            case 42:
-                return LABERINTO;
-            case 52:
-                return CARCEL;
-            case 58:
-                return MUERTE;
-            default:
-                return NORMAL;
-        }
+        if (casilla < 0 || casilla > 63) return NORMAL;
+        return TABLERO[casilla];
     }
 }

@@ -22,16 +22,16 @@ public class main {
         javax.swing.SwingUtilities.invokeLater(() -> {
             
             // 1. Crear el núcleo lógico (Modelo)
-            Modelo motorSimulacion = new Modelo();
+            Modelo modelo = new Modelo();
             
             // 2. Crear la interfaz gráfica (Vista)
-            Vista interfazUsuario = new Vista();
+            Vista vista = new Vista();
             
             // 3. Crear el coordinador táctico pasándole ambas instancias (Controlador)
-            new Controlador(interfazUsuario, motorSimulacion);
+            new Controlador(vista, modelo);
             
             // 4. Iniciar visualización
-            interfazUsuario.setVisible(true);
+            vista.setVisible(true);
         });
     }
 }

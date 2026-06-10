@@ -24,6 +24,37 @@ public class Estadisticas {
         calcularEstadisticas();
     }
 
+    /**
+     * Genera la cadena de salida formateada con total fidelidad a las restricciones del PDF.
+     */
+    public String generarFormatoTexto() {
+        return String.format(Locale.US,
+                "Minimo: %d\n" +
+                        "P1: %.6f\n" +
+                        "P2: %.6f\n" +
+                        "P3: %.6f\n" +
+                        "P4: %.6f\n" +
+                        "Mediana: %.6f\n" +
+                        "P6: %.6f\n" +
+                        "P7: %.6f\n" +
+                        "P8: %.6f\n" +
+                        "P9: %.6f\n" +
+                        "Maximo: %d\n" +
+                        "Media: %.6f",
+                minimo, percentiles[0], percentiles[1], percentiles[2], percentiles[3],
+                mediana, percentiles[4], percentiles[5], percentiles[6], percentiles[7],
+                maximo, media);
+    }
+
+    public int getMinimo() { return minimo; }
+    public int getMaximo() { return maximo; }
+    public double getMedia() { return media; }
+    public double getMediana() { return mediana; }
+    public double[] getPercentiles() { return percentiles.clone(); }
+
+    /**
+     * Calcula los estadísticos descriptivos básicos y los percentiles empíricos requeridos.
+     */
     private void calcularEstadisticas() {
         if (turnosPorPartida == null || turnosPorPartida.length == 0)
             return;
@@ -78,51 +109,4 @@ public class Estadisticas {
         return datos[indiceBajo] + (pos - indiceBajo) * (datos[indiceAlto] - datos[indiceBajo]);
     }
 
-    /**
-     * Genera la cadena de salida formateada con total fidelidad a las restricciones
-     * del PDF.
-     * Muestra la media con exactamente seis cifras decimales usando la
-     * configuración regional US
-     * para asegurar el separador de punto en entornos científicos.
-     */
-    public String generarFormatoTexto() {
-        return String.format(Locale.US,
-                "Minimo: %d\n" +
-                        "P1: %.1f\n" +
-                        "P2: %.1f\n" +
-                        "P3: %.1f\n" +
-                        "P4: %.1f\n" +
-                        "Mediana: %.1f\n" +
-                        "P6: %.1f\n" +
-                        "P7: %.1f\n" +
-                        "P8: %.1f\n" +
-                        "P9: %.1f\n" +
-                        "Maximo: %d\n" +
-                        "Media: %.6f",
-                minimo, percentiles[0], percentiles[1], percentiles[2], percentiles[3],
-                mediana, percentiles[4], percentiles[5], percentiles[6], percentiles[7],
-                maximo, media);
-    }
-
-    // Getters de encapsulamiento por si la vista o controladores necesitan explotar
-    // los datos de forma individual
-    public int getMinimo() {
-        return minimo;
-    }
-
-    public int getMaximo() {
-        return maximo;
-    }
-
-    public double getMedia() {
-        return media;
-    }
-
-    public double getMediana() {
-        return mediana;
-    }
-
-    public double[] getPercentiles() {
-        return percentiles.clone();
-    }
 }

@@ -2,6 +2,8 @@ package vista;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -12,6 +14,8 @@ import java.awt.*;
 public class CasillaPanel extends JPanel {
     
     private final int numero;
+    
+    private final List<Integer> jugadoresEnCasilla = new ArrayList<>();
 
     private static final String IMG_PATH ="images/";
 
@@ -34,6 +38,68 @@ public class CasillaPanel extends JPanel {
         
     }
 
+    /**
+     * Actualiza la lista de jugadores que se encuentran en esta casilla.
+     */
+    public void setJugadores(List<Integer> jugadores) {
+        this.jugadoresEnCasilla.clear();
+        if (jugadores != null) {
+            this.jugadoresEnCasilla.addAll(jugadores);
+        }
+        repaint();
+    }
+
+    @Override
+    protected void paintChildren(Graphics g) {
+        super.paintChildren(g);
+
+        if (jugadoresEnCasilla.isEmpty()) return;
+
+        Graphics2D g2 = (Graphics2D) g.create();
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON); // Bordes suaves
+
+        int diametro = 16;
+        int padding = 4;
+        int w = getWidth();
+        int h = getHeight();
+
+        Point[] esquinas = {
+                new Point(padding, padding), // Arriba-Izquierda
+                new Point(w - diametro - padding, padding), // Arriba-Derecha
+                new Point(padding, h - diametro - padding), // Abajo-Izquierda
+                new Point(w - diametro - padding, h - diametro - padding) // Abajo-Derecha
+        };
+
+        Color[] colores = {
+                new Color(52, 152, 219), // Azul (J1)
+                new Color(241, 196, 15), // Amarillo (J2)
+                new Color(39, 174, 96), // Verde (J3)
+                new Color(231, 76, 60) // Rojo (J4)
+        };
+
+        for (int i = 0; i < jugadoresEnCasilla.size(); i++) {
+            int jugadorIdx = jugadoresEnCasilla.get(i);
+            if (i < esquinas.length && jugadorIdx >= 0 && jugadorIdx < colores.length) {
+                g2.setColor(colores[jugadorIdx]);
+                g2.fillOval(esquinas[i].x, esquinas[i].y, diametro, diametro);
+                g2.setColor(Color.BLACK);
+                g2.setStroke(new BasicStroke(1.5f));
+                g2.drawOval(esquinas[i].x, esquinas[i].y, diametro, diametro);
+            }
+        }
+        g2.dispose();
+    }
+
+    /**
+     * Obtiene el número asignado a la casilla.
+     */
+    public int getNumero() {
+        return numero;
+    }
+
+    /**
+     * Renderiza una imagen representativa para casillas especiales.
+     */
     private void mostrarImagen(String nombreArchivo) {
 
         ImageIcon icon = new ImageIcon(IMG_PATH + nombreArchivo);
@@ -55,6 +121,9 @@ public class CasillaPanel extends JPanel {
         add(lblNumero, BorderLayout.SOUTH);
     }
 
+    /**
+     * Aplica los colores de fondo y las imágenes a las casillas según su número.
+     */
     private void aplicarEstiloEspecial(JLabel lblNumero) {
        if (esCasillaDeOca(numero)) {
             setBackground(new Color(255, 235, 153));
@@ -94,13 +163,12 @@ public class CasillaPanel extends JPanel {
         }
     }
 
+    /**
+     * Comprueba si la casilla es de tipo Oca.
+     */
     private boolean esCasillaDeOca(int i) {
         int[] ocas = {5, 9, 14, 18, 23, 27, 32, 36, 41, 45, 50, 54, 59};
         for (int oca : ocas) if (i == oca) return true;
         return false;
-    }
-
-    public int getNumero() {
-        return numero;
     }
 }
