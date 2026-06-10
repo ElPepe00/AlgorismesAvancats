@@ -19,5 +19,4 @@ public class main {
             new vista.Vista().setVisible(true);
         });
     }
-
 }
