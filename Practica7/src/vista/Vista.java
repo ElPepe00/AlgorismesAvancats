@@ -45,9 +45,7 @@ public class Vista extends JFrame {
         tabbedPane = new JTabbedPane();
         tabbedPane.setFont(new Font("SansSerif", Font.BOLD, 14));
 
-        // =====================================================================
-        // PESTAÑA 1: SIMULACIÓN ESTADÍSTICA (Requisito estricto del PDF)
-        // =====================================================================
+        // PESTAÑA 1: SIMULACIÓN ESTADÍSTICA
         JPanel panelSimulacion = new JPanel(new BorderLayout(15, 15));
         panelSimulacion.setBorder(new EmptyBorder(20, 20, 20, 20));
 
@@ -82,9 +80,7 @@ public class Vista extends JFrame {
         panelSimulacion.add(panelConfiguracion, BorderLayout.NORTH);
         panelSimulacion.add(panelResultados, BorderLayout.CENTER);
 
-        // =====================================================================
-        // PESTAÑA 2: JUEGO INTERACTIVO (Ampliación: 1 a 4 jugadores + Tablero)
-        // =====================================================================
+        // PESTAÑA 2: JUEGO INTERACTIVO 
         JPanel panelJuego = new JPanel(new BorderLayout(15, 15));
         panelJuego.setBorder(new EmptyBorder(15, 15, 15, 15));
 
@@ -102,7 +98,7 @@ public class Vista extends JFrame {
         JPanel panelDado = new JPanel(new FlowLayout(FlowLayout.CENTER));
         panelDado.setBorder(BorderFactory.createTitledBorder("Lanzar Dado"));
         btnDado = new JButton();
-        btnDado.setIcon(new ImageIcon("images/dado1.png")); // Asegúrate de tener dado1.png a dado6.png
+        btnDado.setIcon(new ImageIcon("images/cara1.png")); // Asegúrate de tener dado1.png a dado6.png
         btnDado.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnDado.setContentAreaFilled(false);
         btnDado.setBorderPainted(false);

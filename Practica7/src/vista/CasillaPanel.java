@@ -26,6 +26,8 @@ public class CasillaPanel extends JPanel {
         aplicarEstiloEspecial(lblNumero);
 
         add(lblNumero, BorderLayout.CENTER);
+
+        
     }
 
     private void aplicarEstiloEspecial(JLabel lblNumero) {
