@@ -161,7 +161,8 @@ public class Modelo {
      * @return String con el Top 5 listo para la Vista.
      */
     public String obtenerTop5CasillasMasVisitadas() {
-        return IntStream.range(0, 64)
+        // Recorremos de 0 a 62 (excluimos la 63 ya que siempre registrará exactamente N visitas sesgando el Top)
+        return IntStream.range(0, 63)
                 .boxed()
                 .sorted((a, b) -> Long.compare(frecuenciasVisitas.get(b), frecuenciasVisitas.get(a)))
                 .limit(5)
