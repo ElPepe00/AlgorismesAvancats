@@ -30,20 +30,29 @@ public class Estadisticas {
     public String generarFormatoTexto() {
         return String.format(Locale.US,
                 "Minimo: %d\n" +
-                        "P1: %.6f\n" +
-                        "P2: %.6f\n" +
-                        "P3: %.6f\n" +
-                        "P4: %.6f\n" +
-                        "Mediana: %.6f\n" +
-                        "P6: %.6f\n" +
-                        "P7: %.6f\n" +
-                        "P8: %.6f\n" +
-                        "P9: %.6f\n" +
+                        "P1: %s\n" +
+                        "P2: %s\n" +
+                        "P3: %s\n" +
+                        "P4: %s\n" +
+                        "Mediana: %s\n" +
+                        "P6: %s\n" +
+                        "P7: %s\n" +
+                        "P8: %s\n" +
+                        "P9: %s\n" +
                         "Maximo: %d\n" +
                         "Media: %.6f",
-                minimo, percentiles[0], percentiles[1], percentiles[2], percentiles[3],
-                mediana, percentiles[4], percentiles[5], percentiles[6], percentiles[7],
+                minimo, formatear(percentiles[0]), formatear(percentiles[1]), formatear(percentiles[2]), formatear(percentiles[3]),
+                formatear(mediana), formatear(percentiles[4]), formatear(percentiles[5]), formatear(percentiles[6]), formatear(percentiles[7]),
                 maximo, media);
+    }
+
+    /**
+     * Muestra el valor sin decimales inútiles si resulta ser entero (ej: 45.0 -> 45), 
+     * o con sus decimales exactos si es fraccionario tras interpolar (ej: 45.5).
+     */
+    private String formatear(double valor) {
+        if (valor == (long) valor) return String.format(Locale.US, "%d", (long) valor);
+        return String.valueOf(valor);
     }
 
     public int getMinimo() { return minimo; }
@@ -51,6 +60,13 @@ public class Estadisticas {
     public double getMedia() { return media; }
     public double getMediana() { return mediana; }
     public double[] getPercentiles() { return percentiles.clone(); }
+
+    /**
+     * Retorna el conjunto de datos completo (turnos de todas las partidas).
+     */
+    public int[] getTurnosPorPartida() {
+        return turnosPorPartida;
+    }
 
     /**
      * Calcula los estadísticos descriptivos básicos y los percentiles empíricos requeridos.

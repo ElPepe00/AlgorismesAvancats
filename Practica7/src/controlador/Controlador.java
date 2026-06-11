@@ -123,8 +123,11 @@ public class Controlador {
             vista.mostrarResultados("Procesando carga matemática simulando " + nPartidas + " partidas...\nPor favor, espera.");
 
             SwingWorker<Estadisticas, Void> worker = new SwingWorker<Estadisticas, Void>() {
+                private long tiempoInicio;
+
                 @Override
                 protected Estadisticas doInBackground() throws Exception {
+                    tiempoInicio = System.currentTimeMillis();
                     return modelo.ejecutarSimulacionMonteCarlo(nPartidas);
                 }
 
@@ -132,7 +135,12 @@ public class Controlador {
                 protected void done() {
                     try {
                         Estadisticas resultados = get();
-                        vista.mostrarResultados(resultados.generarFormatoTexto());
+                        String top5 = modelo.obtenerTop5CasillasMasVisitadas();
+                        long tiempoTotal = System.currentTimeMillis() - tiempoInicio;
+                        vista.mostrarResultados(resultados.generarFormatoTexto() + 
+                                "\n\n- TOP 5 CASILLAS MÁS VISITADAS -\n" + top5 +
+                                "\n\n(Tiempo de ejecución: " + tiempoTotal + " ms)");
+                        vista.actualizarHistograma(resultados.getTurnosPorPartida());
                     } catch (Exception ex) {
                         vista.mostrarError("Error crítico durante la simulación: " + ex.getMessage());
                     } finally {

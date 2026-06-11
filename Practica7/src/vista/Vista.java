@@ -2,7 +2,6 @@
 package vista;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.util.Random;
@@ -32,6 +31,7 @@ public class Vista extends JFrame {
     private JTabbedPane tabbedPane;
     private JTextArea txtRegistroJuego;
     private JLabel lblTurnoActual;
+    private HistogramaPanel panelHistograma;
 
     public Vista() {
         // Configuración básica de la ventana
@@ -136,6 +136,14 @@ public class Vista extends JFrame {
     }
 
     /**
+     * Envia los datos completos de las partidas simuladas para que se pinte el histograma.
+     * @param datos array con los turnos consumidos en cada partida
+     */
+    public void actualizarHistograma(int[] datos) {
+        panelHistograma.actualizarHistograma(datos);
+    }
+
+    /**
      * Ejecuta una animación visual del dado y se asegura de que la última imagen
      * coincida con la cara real obtenida en la tirada lógica.
      */
@@ -220,7 +228,7 @@ public class Vista extends JFrame {
         txtResultados.setMargin(new Insets(20, 20, 20, 20));
         txtResultados.setCaretColor(Color.WHITE);
         txtResultados.setText(
-                "Esperando ejecución...\n\n(El formato de salida seguirá exactamente lo especificado en el PDF)");
+                "Esperando ejecución...\n\n");
 
         JScrollPane scrollResultados = new JScrollPane(txtResultados);
         scrollResultados.setBorder(BorderFactory.createEmptyBorder()); // Eliminar borde interno
@@ -309,9 +317,14 @@ public class Vista extends JFrame {
         panelJuego.add(panelTablero, BorderLayout.CENTER);
         panelJuego.add(panelInferiorJuego, BorderLayout.SOUTH);
 
+        // PESTAÑA 3: HISTOGRAMA
+        panelHistograma = new HistogramaPanel();
+
         // Añadir pestañas al contenedor principal
         tabbedPane.addTab("Simulación Estadística", panelSimulacion);
+         tabbedPane.addTab("Histograma de Resultados", panelHistograma);
         tabbedPane.addTab("Juego Interactivo", panelJuego);
+       
 
         add(tabbedPane, BorderLayout.CENTER);
     }
