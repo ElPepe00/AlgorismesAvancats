@@ -33,6 +33,8 @@ public class Vista extends JFrame {
     private JLabel lblTurnoActual;
     private HistogramaPanel panelHistograma;
 
+    private JComboBox<Integer> cbJugadoresSimulados;
+
     public Vista() {
         // Configuración básica de la ventana
         setTitle("Simulador Monte Carlo - Juego de la Oca");
@@ -61,6 +63,10 @@ public class Vista extends JFrame {
 
     public String getNumPartidas() {
         return txtNumPartidas.getText();
+    }
+
+    public Integer getNumJugadoresSimulados() {
+        return (Integer) cbJugadoresSimulados.getSelectedItem();
     }
 
     public JButton getBtnDado() {
@@ -194,8 +200,23 @@ public class Vista extends JFrame {
         lblTitolMenuSim.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         JPanel targetaConfigSim = crearTargeta("1. Parámetros");
+
         txtNumPartidas = new JTextField("10000");
-        afegirCampConfiguracio(targetaConfigSim, "Partidas a simular:", txtNumPartidas);
+        afegirCampConfiguracio(
+                targetaConfigSim,
+                "Partidas a simular:",
+                txtNumPartidas
+        );
+
+        cbJugadoresSimulados = new JComboBox<>(
+                new Integer[]{1, 2, 3, 4}
+        );
+
+        afegirCampConfiguracio(
+                targetaConfigSim,
+                "Jugadores simulados:",
+                cbJugadoresSimulados
+        );
 
         JPanel targetaAccionsSim = crearTargeta("2. Ejecución");
         btnSimular = crearBotoAccion("Ejecutar Simulación", COLOR_BLAU);

@@ -11,7 +11,7 @@ public class Partida {
     private final int[] penalizaciones;
     private int turnoActual;
     private boolean partidaTerminada;
-
+   
     public Partida(int numJugadores) {
         this.numJugadores = numJugadores;
         this.posiciones = new int[numJugadores];
@@ -26,7 +26,7 @@ public class Partida {
      */
     public String jugarTurno(int dado) {
         if (partidaTerminada) return "La partida ya ha concluido.";
-
+        
         // Comprobar penalizaciones (Cárcel, Pozo, Posada)
         if (penalizaciones[turnoActual] > 0) {
             penalizaciones[turnoActual]--;
@@ -97,7 +97,8 @@ public class Partida {
 
         return mensaje;
     }
-
+    
+   
     /**
      * Obtiene el estado actual de las posiciones de todos los jugadores.
      */

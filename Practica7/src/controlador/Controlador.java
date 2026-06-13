@@ -8,6 +8,9 @@ import vista.Vista;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import modelo.SimuladorMultijugador;
+
+import modelo.ResultadoMultijugador;
 
 /**
  *
@@ -19,11 +22,14 @@ public class Controlador {
 
     private final Vista vista;
     private final Modelo modelo;
+    private final SimuladorMultijugador simuladorMultijugador;
     private Partida partidaInteractiva;
+    
 
     public Controlador(Vista vista, Modelo modelo) {
         this.vista = vista;
         this.modelo = modelo;
+        this.simuladorMultijugador = new SimuladorMultijugador();
         inicializarEventadores();
     }
 
@@ -112,47 +118,142 @@ public class Controlador {
      */
     private void ejecutarSimulacionAsincrona() {
         try {
+
             int nPartidas = Integer.parseInt(vista.getNumPartidas());
-            
+            int jugadores = vista.getNumJugadoresSimulados();
+
             if (nPartidas <= 0) {
                 vista.mostrarError("El volumen de partidas debe ser un valor entero positivo.");
                 return;
             }
 
             vista.getBtnSimular().setEnabled(false);
-            vista.mostrarResultados("Procesando carga matemática simulando " + nPartidas + " partidas...\nPor favor, espera.");
 
-            SwingWorker<Estadisticas, Void> worker = new SwingWorker<Estadisticas, Void>() {
-                private long tiempoInicio;
+            vista.mostrarResultados(
+                    "Procesando carga matemática simulando "
+                            + nPartidas
+                            + " partidas...\nPor favor, espera."
+            );
 
-                @Override
-                protected Estadisticas doInBackground() throws Exception {
-                    tiempoInicio = System.currentTimeMillis();
-                    return modelo.ejecutarSimulacionMonteCarlo(nPartidas);
-                }
+            // ==========================
+            // SIMULACIÓN MULTIJUGADOR
+            // ==========================
 
-                @Override
-                protected void done() {
-                    try {
-                        Estadisticas resultados = get();
-                        String top5 = modelo.obtenerTop5CasillasMasVisitadas();
-                        long tiempoTotal = System.currentTimeMillis() - tiempoInicio;
-                        vista.mostrarResultados(resultados.generarFormatoTexto() + 
-                                "\n\n- TOP 5 CASILLAS MÁS VISITADAS -\n" + top5 +
-                                "\n\n(Tiempo de ejecución: " + tiempoTotal + " ms)");
-                        vista.actualizarHistograma(resultados.getTurnosPorPartida());
-                    } catch (Exception ex) {
-                        vista.mostrarError("Error crítico durante la simulación: " + ex.getMessage());
-                    } finally {
-                        vista.getBtnSimular().setEnabled(true);
+            if (jugadores > 1) {
+
+                SwingWorker<String, Void> worker = new SwingWorker<String, Void>() {
+
+                    private long tiempoInicio;
+
+                    @Override
+                    protected String doInBackground() {
+
+                        tiempoInicio = System.currentTimeMillis();
+
+                        ResultadoMultijugador resultado = simuladorMultijugador.ejecutarSimulacion(nPartidas,jugadores);
+
+                        String informe =
+                                simuladorMultijugador.generarInforme(
+                                        resultado,
+                                        nPartidas
+                                );
+
+                        long tiempoTotal =
+                                System.currentTimeMillis() - tiempoInicio;
+
+                        return informe
+                                + "\n\n(Tiempo de ejecución: "
+                                + tiempoTotal
+                                + " ms)";
                     }
-                }
-            };
 
-            worker.execute(); 
+                    @Override
+                    protected void done() {
+
+                        try {
+
+                            vista.mostrarResultados(get());
+
+                        } catch (Exception ex) {
+
+                            vista.mostrarError(
+                                    "Error crítico durante la simulación: "
+                                            + ex.getMessage()
+                            );
+
+                        } finally {
+
+                            vista.getBtnSimular().setEnabled(true);
+                        }
+                    }
+                };
+
+                worker.execute();
+                return;
+            }
+
+            // ==========================
+            // SIMULACIÓN ORIGINAL
+            // ==========================
+
+            SwingWorker<Estadisticas, Void> worker =
+                    new SwingWorker<Estadisticas, Void>() {
+
+                        private long tiempoInicio;
+
+                        @Override
+                        protected Estadisticas doInBackground() throws Exception {
+                            tiempoInicio = System.currentTimeMillis();
+                            return modelo.ejecutarSimulacionMonteCarlo(nPartidas);
+                        }
+
+                        @Override
+                        protected void done() {
+
+                            try {
+
+                                Estadisticas resultados = get();
+
+                                String top5 =
+                                        modelo.obtenerTop5CasillasMasVisitadas();
+
+                                long tiempoTotal =
+                                        System.currentTimeMillis() - tiempoInicio;
+
+                                vista.mostrarResultados(
+                                        resultados.generarFormatoTexto()
+                                                + "\n\n- TOP 5 CASILLAS MÁS VISITADAS -\n"
+                                                + top5
+                                                + "\n\n(Tiempo de ejecución: "
+                                                + tiempoTotal
+                                                + " ms)"
+                                );
+
+                                vista.actualizarHistograma(
+                                        resultados.getTurnosPorPartida()
+                                );
+
+                            } catch (Exception ex) {
+
+                                vista.mostrarError(
+                                        "Error crítico durante la simulación: "
+                                                + ex.getMessage()
+                                );
+
+                            } finally {
+
+                                vista.getBtnSimular().setEnabled(true);
+                            }
+                        }
+                    };
+
+            worker.execute();
 
         } catch (NumberFormatException ex) {
-            vista.mostrarError("Formato de entrada inválido. Asegúrate de introducir un número entero sin espacios ni letras.");
+
+            vista.mostrarError(
+                    "Formato de entrada inválido. Asegúrate de introducir un número entero sin espacios ni letras."
+            );
         }
     }
 }
