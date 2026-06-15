@@ -13,8 +13,6 @@ import java.util.Random;
  * @name Vista
  */
 public class Vista extends JFrame {
-
-    // Colores y Fuentes globales (Estilo heredado del Joc del 31)
     private final Color COLOR_FONS_MENU = new Color(240, 244, 248);
     private final Color COLOR_VERD = new Color(39, 174, 96);
     private final Color COLOR_BLAU = new Color(52, 152, 219);
@@ -36,26 +34,18 @@ public class Vista extends JFrame {
     private JComboBox<Integer> cbJugadoresSimulados;
 
     public Vista() {
-        // Configuración básica de la ventana
         setTitle("Simulador Monte Carlo - Juego de la Oca");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1100, 800); // Ajustado a medidas ideales para albergar el tablero caracol
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
-
-        // Intenta usar el diseño (Look and Feel) moderno del sistema operativo
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception e) {
-            // Se ignora y usa el L&F por defecto de Java
         }
 
         inicializarComponentes();
     }
-
-    // ==========================================
-    // MÉTODOS PÚBLICOS (Controlador / MVC)
-    // ==========================================
 
     public JButton getBtnSimular() {
         return btnSimular;
@@ -86,21 +76,21 @@ public class Vista extends JFrame {
     }
 
     /**
-     * Muestra los resultados de la simulación en el panel central.
+     * Muestra los resultados de la simulación.
      */
     public void mostrarResultados(String texto) {
         txtResultados.setText(texto);
     }
 
     /**
-     * Muestra una alerta de error al usuario.
+     * Muestra una alerta de error.
      */
     public void mostrarError(String mensaje) {
         JOptionPane.showMessageDialog(this, mensaje, "Error", JOptionPane.ERROR_MESSAGE);
     }
 
     /**
-     * Añade un evento al registro de la partida interactiva.
+     * Añade un evento al registro de la partida.
      */
     public void mostrarRegistroJuego(String texto) {
         txtRegistroJuego.append("\n" + texto);
@@ -108,30 +98,29 @@ public class Vista extends JFrame {
     }
 
     /**
-     * Transmite al tablero interactivo el vector con las posiciones actualizadas.
+     * Actualiza las posiciones en el tablero.
      */
     public void actualizarPosicionesTablero(int[] posiciones) {
         panelTablero.actualizarPosiciones(posiciones);
     }
 
     /**
-     * Limpia el registro de eventos de la partida.
+     * Limpia el registro de eventos.
      */
     public void limpiarRegistroJuego() {
         txtRegistroJuego.setText("");
     }
 
     /**
-     * Actualiza el indicador del turno actual y le asigna el color corporativo del jugador.
+     * Actualiza el turno actual con el color del jugador.
      */
     public void actualizarTurnoActual(String texto, int jugadorIndex) {
         lblTurnoActual.setText(texto);
-        
         Color[] coloresTexto = {
-                new Color(52, 152, 219),  // Azul (J1)
-                new Color(230, 126, 34),  // Naranja oscuro (J2) en vez de amarillo para que se lea en fondo blanco
-                new Color(39, 174, 96),   // Verde (J3)
-                new Color(231, 76, 60)    // Rojo (J4)
+                new Color(52, 152, 219),
+                new Color(230, 126, 34),
+                new Color(39, 174, 96),
+                new Color(231, 76, 60)
         };
         
         if (jugadorIndex >= 0 && jugadorIndex < coloresTexto.length) {
@@ -142,16 +131,14 @@ public class Vista extends JFrame {
     }
 
     /**
-     * Envia los datos completos de las partidas simuladas para que se pinte el histograma.
-     * @param datos array con los turnos consumidos en cada partida
+     * Actualiza el histograma con los datos de simulación.
      */
     public void actualizarHistograma(int[] datos) {
         panelHistograma.actualizarHistograma(datos);
     }
 
     /**
-     * Ejecuta una animación visual del dado y se asegura de que la última imagen
-     * coincida con la cara real obtenida en la tirada lógica.
+     * Anima el dado visualmente hasta mostrar la cara final.
      */
     public void animarDado(int caraFinal) {
         new Thread(() -> {
@@ -160,9 +147,8 @@ public class Vista extends JFrame {
                 for (int i = 0; i < 10; i++) {
                     int cara = rand.nextInt(6) + 1;
                     SwingUtilities.invokeLater(() -> btnDado.setIcon(new ImageIcon("images/cara" + cara + ".png")));
-                    Thread.sleep(60); // Pequeña pausa para simular el giro rápido
+                    Thread.sleep(60);
                 }
-                // Establecer la cara definitiva calculada por el Controlador
                 SwingUtilities.invokeLater(() -> btnDado.setIcon(new ImageIcon("images/cara" + caraFinal + ".png")));
             } catch (InterruptedException ex) {
                 Thread.currentThread().interrupt();
@@ -170,18 +156,12 @@ public class Vista extends JFrame {
         }).start();
     }
 
-    // ==========================================
-    // MÉTODOS PRIVADOS DE INICIALIZACIÓN Y DISEÑO
-    // ==========================================
-
     /**
-     * Inicializa y organiza todos los componentes visuales de la ventana.
+     * Inicializa todos los componentes visuales.
      */
     private void inicializarComponentes() {
         tabbedPane = new JTabbedPane();
         tabbedPane.setFont(new Font("Segoe UI", Font.BOLD, 14));
-
-        // PESTAÑA 1: SIMULACIÓN ESTADÍSTICA
         JPanel panelSimulacion = new JPanel(new BorderLayout(15, 15));
         panelSimulacion.setBackground(Color.WHITE);
 

@@ -7,10 +7,10 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
- * Simulador Monte Carlo multijugador basado en las mismas reglas que la
- * simulación individual.
  *
  * @author Josep Oliver y Hugo Valls
+ * @date 28 may 2026
+ * @name SimuladorMultijugador
  */
 public class SimuladorMultijugador {
 

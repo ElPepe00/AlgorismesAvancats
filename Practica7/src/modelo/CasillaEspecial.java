@@ -1,11 +1,10 @@
 package modelo;
 
 /**
- * Representa los diferentes tipos de casillas especiales del Juego de la Oca
- * y sus respectivas reglas de negocio asociadas.
+ *
  * @author Josep Oliver y Hugo Valls
- * 
- * @date 10 jun 2026
+ * @date 28 may 2026
+ * @name CasillaEspecial
  */
 public enum CasillaEspecial {
     NORMAL(0, false),
@@ -25,16 +24,13 @@ public enum CasillaEspecial {
     private static final CasillaEspecial[] TABLERO = new CasillaEspecial[64];
 
     static {
-        // 1. Inicializar todas a NORMAL
         for (int i = 0; i < 64; i++) {
             TABLERO[i] = NORMAL;
         }
-        // 2. Configurar las OCAS
         int[] ocas = { 5, 9, 14, 18, 23, 27, 32, 36, 41, 45, 50, 54, 59 };
         for (int oca : ocas) {
             TABLERO[oca] = OCA;
         }
-        // 3. Configurar el resto de casos especiales
         TABLERO[6] = PUENTE;
         TABLERO[12] = PUENTE;
         TABLERO[26] = DADOS;

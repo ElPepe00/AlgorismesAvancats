@@ -12,16 +12,13 @@ import java.util.Map;
  *
  * @author Josep Oliver y Hugo Valls
  * @date 28 may 2026
- * @name Vista
- *       Panel principal que contiene las casillas organizadas en forma de
- *       espiral (caracol).
+ * @name TableroPanel
  */
 public class TableroPanel extends JPanel {
-
     private final CasillaPanel[][] matrizCasillas;
 
     public TableroPanel() {
-        setLayout(new GridLayout(8, 8, 4, 4)); // Tablero de 8x8 con un poco de separación
+        setLayout(new GridLayout(8, 8, 4, 4));
         setBorder(new EmptyBorder(15, 15, 15, 15));
         setBackground(new Color(245, 245, 245));
 
@@ -33,8 +30,6 @@ public class TableroPanel extends JPanel {
     private void generarEspiral() {
         int val = 0;
         int top = 0, bottom = 7, left = 0, right = 7;
-
-        // Algoritmo para llenar la matriz de manera circular (Caracol)
         while (val <= 63) {
             // De izquierda a derecha
             for (int i = left; i <= right && val <= 63; i++) {
@@ -72,7 +67,7 @@ public class TableroPanel extends JPanel {
     }
 
     /**
-     * Dibuja una línea de conexión en un lado específico de una casilla.
+     * Dibuja una línea de conexión en un lado de una casilla.
      */
     private void dibujarLado(Graphics2D g2, int numero, String lado) {
         CasillaPanel casilla = buscarCasilla(numero);
@@ -96,7 +91,7 @@ public class TableroPanel extends JPanel {
     }
 
     /**
-     * Obtiene el componente de la casilla según su número.
+     * Busca la casilla por número.
      */
     public CasillaPanel buscarCasilla(int numero) {
         for (int i = 0; i < 8; i++) {

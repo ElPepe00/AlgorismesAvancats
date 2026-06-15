@@ -25,7 +25,7 @@ public class Estadisticas {
     }
 
     /**
-     * Genera la cadena de salida formateada con total fidelidad a las restricciones del PDF.
+     * Genera la cadena formateada con los resultados estadísticos.
      */
     public String generarFormatoTexto() {
         return String.format(Locale.US,
@@ -47,8 +47,7 @@ public class Estadisticas {
     }
 
     /**
-     * Muestra el valor sin decimales inútiles si resulta ser entero (ej: 45.0 -> 45), 
-     * o con sus decimales exactos si es fraccionario tras interpolar (ej: 45.5).
+     * Formatea un valor numérico eliminando decimales innecesarios.
      */
     private String formatear(double valor) {
         if (valor == (long) valor) return String.format(Locale.US, "%d", (long) valor);
@@ -62,21 +61,19 @@ public class Estadisticas {
     public double[] getPercentiles() { return percentiles.clone(); }
 
     /**
-     * Retorna el conjunto de datos completo (turnos de todas las partidas).
+     * Retorna el conjunto de turnos de todas las partidas simuladas.
      */
     public int[] getTurnosPorPartida() {
         return turnosPorPartida;
     }
 
     /**
-     * Calcula los estadísticos descriptivos básicos y los percentiles empíricos requeridos.
+     * Calcula estadísticos y percentiles de los datos.
      */
     private void calcularEstadisticas() {
         if (turnosPorPartida == null || turnosPorPartida.length == 0)
             return;
 
-        // Se clona y ordena el array para no mutar los datos originales y asegurar los
-        // percentiles empíricos
         int[] datosOrdenados = turnosPorPartida.clone();
         Arrays.sort(datosOrdenados);
 
@@ -84,23 +81,17 @@ public class Estadisticas {
         this.minimo = datosOrdenados[0];
         this.maximo = datosOrdenados[n - 1];
 
-        // Cálculo de la Media Aritmética
         long sumaTotal = 0;
         for (int valor : datosOrdenados) {
             sumaTotal += valor;
         }
         this.media = (double) sumaTotal / n;
-
-        // Cálculo de la Mediana (Percentil 0.5)
         this.mediana = calcularPercentilEmpirico(datosOrdenados, 0.5);
-
-        // Cálculo de Percentiles requeridos: P1 a P4
         this.percentiles[0] = calcularPercentilEmpirico(datosOrdenados, 0.1);
         this.percentiles[1] = calcularPercentilEmpirico(datosOrdenados, 0.2);
         this.percentiles[2] = calcularPercentilEmpirico(datosOrdenados, 0.3);
         this.percentiles[3] = calcularPercentilEmpirico(datosOrdenados, 0.4);
 
-        // Cálculo de Percentiles requeridos: P6 a P9
         this.percentiles[4] = calcularPercentilEmpirico(datosOrdenados, 0.6);
         this.percentiles[5] = calcularPercentilEmpirico(datosOrdenados, 0.7);
         this.percentiles[6] = calcularPercentilEmpirico(datosOrdenados, 0.8);
@@ -108,8 +99,7 @@ public class Estadisticas {
     }
 
     /**
-     * Algoritmo de interpolación lineal estándar para percentiles empíricos
-     * continuos.
+     * Calcula percentil empírico con interpolación lineal.
      */
     private double calcularPercentilEmpirico(int[] datos, double p) {
         int n = datos.length;
@@ -121,7 +111,6 @@ public class Estadisticas {
             return datos[indiceBajo];
         }
 
-        // Interpolación lineal entre los dos rangos vecinos
         return datos[indiceBajo] + (pos - indiceBajo) * (datos[indiceAlto] - datos[indiceBajo]);
     }
 

@@ -1,14 +1,14 @@
 package vista;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
+import java.awt.*;
 import javax.swing.JPanel;
 
+/**
+ *
+ * @author Josep Oliver y Hugo Valls
+ * @date 28 may 2026
+ * @name HistogramaPanel
+ */
 public class HistogramaPanel extends JPanel {
     private int[] frecuencias;
     private int minTurnos;
@@ -22,8 +22,6 @@ public class HistogramaPanel extends JPanel {
 
     public void actualizarHistograma(int[] datos) {
         if (datos == null || datos.length == 0) return;
-
-        // Calcular frecuencias y encontrar los límites para dibujar el gráfico
         int min = datos[0];
         int max = datos[0];
         long suma = 0;
@@ -37,8 +35,6 @@ public class HistogramaPanel extends JPanel {
         int rango = max - min + 1;
         int[] frecs = new int[rango];
         int maxFrec = 0;
-
-        // Tabulación lineal O(N): Eficiente incluso procesando 10 millones de partidas
         for (int turnos : datos) {
             int idx = turnos - min;
             frecs[idx]++;
@@ -58,7 +54,6 @@ public class HistogramaPanel extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        
         if (frecuencias == null || frecuencias.length == 0) {
             String msg = "Ejecuta una simulación en el panel de control para visualizar el histograma.";
             g.setFont(new Font("Segoe UI", Font.BOLD, 16));
@@ -70,23 +65,16 @@ public class HistogramaPanel extends JPanel {
 
         Graphics2D g2 = (Graphics2D) g;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
         int paddingX = 70;
         int paddingY = 50;
         int width = getWidth();
         int height = getHeight();
-
-        // Dibujar el título superior
         g2.setFont(new Font("Segoe UI", Font.BOLD, 18));
         g2.setColor(new Color(44, 62, 80));
         String title = "Distribución del Volumen de Partidas según Turnos Consumidos";
         g2.drawString(title, (width - g2.getFontMetrics().stringWidth(title)) / 2, 30);
-
-        // Dibujar fondo sutil del área del gráfico
         g2.setColor(new Color(248, 250, 252));
         g2.fillRect(paddingX, paddingY, width - 2 * paddingX, height - 2 * paddingY);
-
-        // Dibujar la cuadrícula horizontal de guías y etiquetas Y
         g2.setColor(new Color(220, 225, 230));
         for (int i = 0; i <= 5; i++) {
             int y = paddingY + i * (height - 2 * paddingY) / 5;

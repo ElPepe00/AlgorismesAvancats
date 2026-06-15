@@ -1,5 +1,11 @@
 package modelo;
 
+/**
+ *
+ * @author Josep Oliver y Hugo Valls
+ * @date 28 may 2026
+ * @name ResultadoMultijugador
+ */
 public class ResultadoMultijugador {
 
     private final long[] victorias;

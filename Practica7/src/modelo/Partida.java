@@ -1,8 +1,10 @@
 package modelo;
 
 /**
- * Gestiona el estado interactivo de una partida multijugador del Juego de la Oca.
- * Mantiene el control de posiciones, turnos y penalizaciones en tiempo real.
+ *
+ * @author Josep Oliver y Hugo Valls
+ * @date 28 may 2026
+ * @name Partida
  */
 public class Partida {
     
@@ -16,13 +18,12 @@ public class Partida {
         this.numJugadores = numJugadores;
         this.posiciones = new int[numJugadores];
         this.penalizaciones = new int[numJugadores];
-        this.turnoActual = 0; // Empieza el Jugador 1 (índice 0)
+        this.turnoActual = 0;
         this.partidaTerminada = false;
     }
 
     /**
-     * Ejecuta el avance del jugador actual en base a una tirada de dado real.
-     * @return Mensaje descriptivo con lo que ha sucedido en el turno para mostrar en pantalla.
+     * Ejecuta el turno del jugador actual con la tirada de dado indicada.
      */
     public String jugarTurno(int dado) {
         if (partidaTerminada) return "La partida ya ha concluido.";
@@ -97,10 +98,8 @@ public class Partida {
 
         return mensaje;
     }
-    
-   
     /**
-     * Obtiene el estado actual de las posiciones de todos los jugadores.
+     * Obtiene las posiciones de todos los jugadores.
      */
     public int[] getPosiciones() {
         return posiciones.clone();

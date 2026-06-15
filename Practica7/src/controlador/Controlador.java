@@ -34,7 +34,7 @@ public class Controlador {
     }
 
     /**
-     * Vincula los estímulos físicos de la interfaz gráfica con las rutinas de negocio.
+     * Vincula los eventos de la interfaz gráfica con las rutinas de negocio.
      */
     private void inicializarEventadores() {
         vista.getBtnSimular().addActionListener(new ActionListener() {
@@ -69,14 +69,8 @@ public class Controlador {
                 }
 
                 int tirada = (int) (Math.random() * 6) + 1;
-                
-                // Sincronizar la animación visual con la tirada matemática
                 vista.animarDado(tirada);
-                
-                // Bloqueamos el dado temporalmente para evitar que el usuario pulse varias veces seguidas
                 vista.getBtnDado().setEnabled(false);
-
-                // Retrasamos el movimiento lógico 650ms para que termine primero la animación visual
                 Timer timer = new Timer(650, new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent evt) {
